@@ -45,3 +45,4 @@ app.*.map.json
 /android/app/release
 images/utils/server_key.json
 images/utils/server_key.json
+images/utils/server_key.json
