@@ -66,8 +66,8 @@ class MyDrawer extends StatelessWidget {
             onTap: () {
               Navigator.pop(context);
               // Navigate to settings
-              Navigator.push(context, MaterialPageRoute(builder: (context)=>LineSettingScreen()));
-           //  Navigator.push(context, MaterialPageRoute(builder: (context)=>SearchDropdownScreen()));
+            //  Navigator.push(context, MaterialPageRoute(builder: (context)=>LineSettingScreen()));
+             Navigator.push(context, MaterialPageRoute(builder: (context)=>SearchDropdownScreen()));
             },
           ),
           const Divider(),

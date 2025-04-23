@@ -115,7 +115,7 @@ class _HomeScreenState extends State<HomeScreen> {
             const SizedBox(height: 30),
             _buildActionButton(
               icon: Icons.table_chart_rounded,
-              text: 'In Table Check',
+              text: 'End Table Check',
               color: Colors.blue,
               onPressed: () {
                 // Handle first button press

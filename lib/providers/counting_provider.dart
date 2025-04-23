@@ -107,7 +107,7 @@ class CountingProvider with ChangeNotifier {
       buyer: buyerPro.buyerInfo.toString(),
       style: buyerPro.buyerStyle.toString(),
       po: buyerPro.buyerPo.toString(),
-      color: buyerPro.color!.toString(),
+      color: buyerPro.color.toString(),
       size: buyerPro.size.toString(),
     );
     //save data to sync
