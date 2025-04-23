@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "1020643123653",
+    "project_id": "yunusco-system",
+    "storage_bucket": "yunusco-system.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1020643123653:android:c50973256f0b5c74606bac",
+        "android_client_info": {
+          "package_name": "com.system.yunusco_group"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBLTsVJavfkZhqabtMU1E6WLwwlQz2aKr8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1020643123653:android:5b671899e2d40a98606bac",
+        "android_client_info": {
+          "package_name": "com.yunusco.qms"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBLTsVJavfkZhqabtMU1E6WLwwlQz2aKr8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
