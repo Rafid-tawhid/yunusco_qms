@@ -140,22 +140,39 @@ class CountingProvider with ChangeNotifier {
   }
 
 
+
   Timer? _periodicTimer;
 
-  // Start the timer when needed
+// Function to stop the periodic task
+  void stopPeriodicTask() {
+    if (_periodicTimer != null) {
+      _periodicTimer!.cancel();
+      _periodicTimer = null;
+      debugPrint('Periodic task stopped');
+    } else {
+      debugPrint('No periodic task running to stop');
+    }
+  }
+
+// Improved version of your start function with safety checks
   void startPeriodicTask(BuyerProvider buyerPro) {
-    _periodicTimer?.cancel(); // Cancel existing timer if any
+    // First stop any existing timer
+    stopPeriodicTask();
+
+    debugPrint('Starting periodic task with 5-second interval');
+
     _periodicTimer = Timer.periodic(
-      const Duration(seconds: 5), // Runs every 2 minutes
-          (timer) => saveCountingDataLocally(buyerPro),
+      const Duration(seconds: 5),
+          (timer) {
+        debugPrint('Executing periodic task...');
+        saveCountingDataLocally(buyerPro);
+      },
     );
   }
 
-  // Cancel the timer when not needed (e.g., when user logs out)
-  void stopPeriodicTask() {
-    _periodicTimer?.cancel();
-    _periodicTimer = null;
-  }
+// Usage example:
+// To start: startPeriodicTask(myBuyerProvider);
+// To stop: stopPeriodicTask();
 
   // Don't forget to cancel in dispose
   @override

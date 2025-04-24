@@ -53,7 +53,8 @@ class _QualityControlScreenState extends State<QualityControlScreen> with Widget
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.paused) {
       // App is going to background (minimized/switched away)
-      // startSchedulerCallToSaveData();
+      saveData();
+      endSchedularSaveData();
     }
   }
 
@@ -295,31 +296,31 @@ class _QualityControlScreenState extends State<QualityControlScreen> with Widget
                 if (showChartTab) Expanded(flex: 1, child: QualityChart(pass: 120, reject: 15, alter: 8, time: 'Today')),
               ],
             ),
-            SizedBox(height: 40),
-            SizedBox(
-              height: 80,
-              child: Consumer<CountingProvider>(
-                builder: (context,pro,_)=>Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 12.0,horizontal: 16),
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(backgroundColor: Colors.blue, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)), elevation: 4),
-                    onPressed:
-                    _selectColor != null && _selectSize != null
-                        ? () {
-                      var bp=context.read<BuyerProvider>();
-                      pro.saveCountingDataLocally(bp);
-                    }
-                        : null,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text('Save', textAlign: TextAlign.center, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white)),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            )
+            // SizedBox(height: 40),
+            // SizedBox(
+            //   height: 80,
+            //   child: Consumer<CountingProvider>(
+            //     builder: (context,pro,_)=>Padding(
+            //       padding: const EdgeInsets.symmetric(vertical: 12.0,horizontal: 16),
+            //       child: ElevatedButton(
+            //         style: ElevatedButton.styleFrom(backgroundColor: Colors.blue, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)), elevation: 4),
+            //         onPressed:
+            //         _selectColor != null && _selectSize != null
+            //             ? () {
+            //           var bp=context.read<BuyerProvider>();
+            //           pro.saveCountingDataLocally(bp);
+            //         }
+            //             : null,
+            //         child: Row(
+            //           mainAxisAlignment: MainAxisAlignment.center,
+            //           children: [
+            //             Text('Save', textAlign: TextAlign.center, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white)),
+            //           ],
+            //         ),
+            //       ),
+            //     ),
+            //   ),
+            // )
           ],
         ),
       ),
@@ -397,6 +398,17 @@ class _QualityControlScreenState extends State<QualityControlScreen> with Widget
     var cp=context.read<CountingProvider>();
     var bp=context.read<BuyerProvider>();
     cp.startPeriodicTask(bp);
+  }
+  void endSchedularSaveData() async {
+    var cp=context.read<CountingProvider>();
+    var bp=context.read<BuyerProvider>();
+    cp.stopPeriodicTask();
+  }
+
+  void saveData() async{
+    var cp=context.read<CountingProvider>();
+    var bp=context.read<BuyerProvider>();
+    cp.saveCountingDataLocally(bp);
   }
 }
 
