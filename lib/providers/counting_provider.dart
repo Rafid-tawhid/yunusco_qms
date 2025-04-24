@@ -104,9 +104,9 @@ class CountingProvider with ChangeNotifier {
       reject: reject.toString(),
       alter: alter.toString(),
       alt_check: alter_check.toString(),
-      buyer: buyerPro.buyerInfo.toString(),
-      style: buyerPro.buyerStyle.toString(),
-      po: buyerPro.buyerPo.toString(),
+      buyer: buyerPro.buyerInfo!.code.toString(),
+      style: buyerPro.buyerStyle!.style.toString(),
+      po: buyerPro.buyerPo!.po.toString(),
       color: buyerPro.color.toString(),
       size: buyerPro.size.toString(),
     );

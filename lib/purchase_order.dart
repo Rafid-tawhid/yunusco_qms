@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:hive/hive.dart';
 import 'package:nidle_qty/models/po_models.dart';
 import 'package:nidle_qty/providers/buyer_provider.dart';
 import 'package:nidle_qty/providers/counting_provider.dart';
 import 'package:nidle_qty/quality_check_screen.dart';
 import 'package:nidle_qty/utils/dashboard_helpers.dart';
 import 'package:provider/provider.dart';
+
+import 'models/send_data_model.dart';
 
 class PurchaseOrderSelectionScreen extends StatefulWidget {
   const PurchaseOrderSelectionScreen({super.key});
@@ -28,42 +31,48 @@ class _PurchaseOrderSelectionScreenState extends State<PurchaseOrderSelectionScr
   Future<void> _navigateToNextScreen() async {
     // 1. Validate if an order is selected
     if (_selectedOrder == null) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please select a purchase order')));
-      return; // Exit early if no order is selected
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please select a purchase order')),
+      );
+      return;
     }
 
-    // 2. Get providers
     final buyerProvider = context.read<BuyerProvider>();
     final countingProvider = context.read<CountingProvider>();
+    final box = Hive.box<SendDataModel>('sendDataBox');
+    final sendData = box.get('sendDataKey');
 
-    // 3. Check if the selected PO is different from the current one
-    if (buyerProvider.buyerPo != null && buyerProvider.buyerPo!.po != _selectedOrder!.po) {
-      debugPrint('New PO selected - Resetting counts');
-      countingProvider.resetAllCount(); // Reset counts for a new PO
-    }
-    // 4. If the same PO is selected, load local counting data
-    else if (buyerProvider.buyerPo != null && buyerProvider.buyerPo!.po == _selectedOrder!.po) {
+    // Handle different PO scenarios
+    if (sendData != null && sendData.po == _selectedOrder!.po) {
+      debugPrint('PURCHASE ORDER PREVIOUS VALUE SELECTED VALUE SAME');
       countingProvider.getCountingDataLocally(); // Load cached data for next page
+    } else if (sendData != null && sendData.po != _selectedOrder!.po) {
+      debugPrint('PURCHASE ORDER New PO selected - Resetting counts ${sendData.po}');
+      countingProvider.resetAllCount(); // Reset counts for a new PO
     }
 
     try {
-      // 5. Show loading indicator
+      // Show loading indicator
       EasyLoading.show(maskType: EasyLoadingMaskType.black);
 
-      // 6. Update the selected PO in the provider
+      // Update the selected PO and fetch data
       buyerProvider.setBuyersStylePoInfo(buyerPO: _selectedOrder);
+      await Future.wait([
+        buyerProvider.getColor(_selectedOrder!.po),
+        buyerProvider.getSize(_selectedOrder!.po),
+      ]);
 
-      // 7. Fetch color and size data in parallel (faster than sequential awaits)
-      await Future.wait([buyerProvider.getColor(_selectedOrder!.po), buyerProvider.getSize(_selectedOrder!.po)]);
-
-      // 8. Navigate to the next screen
-      Navigator.push(context, MaterialPageRoute(builder: (context) => const QualityControlScreen()));
+      // Navigate to the next screen
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const QualityControlScreen()),
+      );
     } catch (e) {
-      // 9. Handle errors gracefully
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to load data: ${e.toString()}')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to load data: ${e.toString()}')),
+      );
       debugPrint('Error in _navigateToNextScreen: $e');
     } finally {
-      // 10. Dismiss loading indicator (even if an error occurs)
       EasyLoading.dismiss();
     }
   }

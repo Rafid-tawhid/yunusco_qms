@@ -39,7 +39,7 @@ class _QualityControlScreenState extends State<QualityControlScreen> with Widget
     WidgetsBinding.instance.addPostFrameCallback((_) {
       WidgetsBinding.instance.addObserver(this);
       //getPreviousCount();
-      startSchedulerCallToSaveData();
+      // startSchedulerCallToSaveData();
     });
   }
 
@@ -53,7 +53,7 @@ class _QualityControlScreenState extends State<QualityControlScreen> with Widget
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.paused) {
       // App is going to background (minimized/switched away)
-      startSchedulerCallToSaveData();
+      // startSchedulerCallToSaveData();
     }
   }
 
@@ -282,6 +282,8 @@ class _QualityControlScreenState extends State<QualityControlScreen> with Widget
                                         ),
                                       ],
                                     ),
+                                    SizedBox(height: 60,),
+                                    //saveCountingDataLocally
                                   ],
                                 ),
                           ),
@@ -294,6 +296,30 @@ class _QualityControlScreenState extends State<QualityControlScreen> with Widget
               ],
             ),
             SizedBox(height: 40),
+            SizedBox(
+              height: 80,
+              child: Consumer<CountingProvider>(
+                builder: (context,pro,_)=>Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 12.0,horizontal: 16),
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(backgroundColor: Colors.blue, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)), elevation: 4),
+                    onPressed:
+                    _selectColor != null && _selectSize != null
+                        ? () {
+                      var bp=context.read<BuyerProvider>();
+                      pro.saveCountingDataLocally(bp);
+                    }
+                        : null,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text('Save', textAlign: TextAlign.center, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white)),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            )
           ],
         ),
       ),
