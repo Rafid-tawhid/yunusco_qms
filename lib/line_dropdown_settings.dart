@@ -1,7 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:nidle_qty/home_screen.dart';
+import 'package:nidle_qty/login_screen.dart';
 import 'package:nidle_qty/providers/buyer_provider.dart';
+import 'package:nidle_qty/utils/dashboard_helpers.dart';
 import 'package:provider/provider.dart';
 import 'package:searchfield/searchfield.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -67,6 +69,8 @@ class _SearchDropdownScreenState extends State<SearchDropdownScreen> {
       await _prefs.setString('selectedSectionId', selectedSection!.item!['unitID'].toString());
       await _prefs.setString('selectedLine', selectedLine!.item!['name']);
       await _prefs.setString('selectedLineId', selectedLine!.item!['lineId'].toString());
+      DashboardHelpers.setString('section', selectedSection!.item!['unitName']);
+      DashboardHelpers.setString('line', selectedLine!.item!['name']);
     }
   }
 
@@ -134,12 +138,14 @@ class _SearchDropdownScreenState extends State<SearchDropdownScreen> {
             icon: const Icon(Icons.refresh),
             tooltip: 'Reset Selections',
             onPressed: () async {
+              DashboardHelpers.clearUser();
               await _prefs.remove('selectedSection');
               await _prefs.remove('selectedLine');
               setState(() {
                 selectedSection = null;
                 selectedLine = null;
               });
+              Navigator.push(context, MaterialPageRoute(builder: (context)=>LoginScreen()));
             },
           ),
         ],

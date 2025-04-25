@@ -45,6 +45,7 @@ class _AlterationReasonScreenState extends State<AlterationReasonScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(title: const Text('Select Alteration Reasons')),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

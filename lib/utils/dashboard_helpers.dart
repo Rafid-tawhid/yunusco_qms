@@ -729,8 +729,12 @@ class DashboardHelpers {
     final prefs = await SharedPreferences.getInstance();
     prefs.remove("user");
     prefs.remove("token");
+    prefs.remove("line");
+    prefs.remove("section");
     userModel=null;
     AppConstants.token='';
+    final box = Hive.box<SendDataModel>('sendDataBox');
+    await box.clear();
   }
 
 
@@ -770,6 +774,28 @@ class DashboardHelpers {
       debugPrint('Data cleared at ${now.toIso8601String()}');
     } else {
       debugPrint('Data already cleared today');
+    }
+  }
+
+  static String formatExactLunchTime(String startTimeStr, String endTimeStr) {
+    try {
+      // Extract just the time portion (HH:MM:SS)
+      final startTime = startTimeStr.split(' ')[1];
+      final endTime = endTimeStr.split(' ')[1];
+
+      // Convert to 12-hour format (without seconds)
+      String formatTime(String time24) {
+        final parts = time24.split(':');
+        final hour = int.parse(parts[0]);
+        final minute = parts[1];
+        final period = hour >= 12 ? 'PM' : 'AM';
+        final hour12 = hour > 12 ? hour - 12 : hour == 0 ? 12 : hour;
+        return '$hour12:$minute $period';
+      }
+
+      return '${formatTime(startTime)} to ${formatTime(endTime)}';
+    } catch (e) {
+      return 'Invalid time format ${startTimeStr} end ${endTimeStr}';
     }
   }
 

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -13,8 +15,10 @@ import 'models/send_data_model.dart';
 
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();  WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+  if(Platform.isAndroid){
+    await Firebase.initializeApp();  WidgetsFlutterBinding.ensureInitialized();
+    await Firebase.initializeApp();
+  }
   await Hive.initFlutter();
   Hive.registerAdapter(SendDataModelAdapter());
   await Hive.openBox<SendDataModel>('sendDataBox');

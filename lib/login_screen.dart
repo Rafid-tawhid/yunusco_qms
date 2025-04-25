@@ -8,6 +8,7 @@ import 'package:provider/provider.dart';
 
 import 'buyer_list.dart';
 import 'home_screen.dart';
+import 'line_dropdown_settings.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -187,7 +188,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                     await DashboardHelpers.setString('pass', _passCon.text);
                                     Navigator.pushReplacement(
                                         context,
-                                        MaterialPageRoute(builder: (context) => HomeScreen())
+                                        MaterialPageRoute(builder: (context) => SearchDropdownScreen())
                                     );
                                   }
                                 } catch (e) {

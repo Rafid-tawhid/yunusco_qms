@@ -113,11 +113,11 @@ class ApiService {
   Future<dynamic> postData2(String endpoint, dynamic body) async {
     try {
       // Perform the POST request
-      debugPrint('URL: ${AppConstants.baseUrl}$endpoint');
+      debugPrint('URL: $endpoint');
       debugPrint('SEND DATA: $body');
 
       final response = await client.post(
-        Uri.parse('${{AppConstants.baseUrl}}${endpoint}'),
+        Uri.parse('${endpoint}'),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer ${{AppConstants.token}}', // Optional

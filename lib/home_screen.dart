@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -11,6 +12,7 @@ import 'package:nidle_qty/providers/buyer_provider.dart';
 import 'package:nidle_qty/service_class/notofication_helper.dart';
 import 'package:nidle_qty/tabview_buyer_screen.dart';
 import 'package:nidle_qty/utils/dashboard_helpers.dart';
+import 'package:nidle_qty/widgets/logout_alert.dart';
 import 'package:provider/provider.dart';
 
 import 'utils/drawer.dart';
@@ -28,8 +30,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void initState() {
-    NotificationServices.setupPushNotifications(context);
-    NotificationServices.initializeNotifications();
+    if(Platform.isAndroid){
+      NotificationServices.setupPushNotifications(context);
+      NotificationServices.initializeNotifications();
+    }
     //_getBearerTokenFromServer();
 
     super.initState();
@@ -91,9 +95,12 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(
         title: const Text('Welcome'),
         actions: [
-          IconButton(onPressed: (){
-            DashboardHelpers.clearUser();
-            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>LoginScreen()));
+          IconButton(onPressed: () async {
+            await showLogoutAlert(context);
+            // Handle logout
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Logging out...')),
+            );
           }, icon: Icon(Icons.logout))
         ],
       ),

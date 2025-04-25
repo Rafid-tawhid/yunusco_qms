@@ -80,6 +80,91 @@ class CountingProvider with ChangeNotifier {
     notifyListeners();
   }
 
+
+
+  bool _isLoadingLunchTime = false;
+  Map<String, dynamic>? _lunchTime;
+
+  bool get isLoadingLunchTime => _isLoadingLunchTime;
+  Map<String, dynamic>? get lunchTime => _lunchTime;
+
+  Future<void> getLunchTimeBySectionId(String secId) async {
+    _isLoadingLunchTime = true;
+    notifyListeners();
+
+    try {
+      final result = await apiService.getData(
+        'api/PreSalesApi/GetLunchTime?SectionId=10',
+      );
+
+      if (result != null) {
+        _lunchTime = result['returnvalue'][0];
+
+        isCurrentTimeInLunchRangeFixed(_lunchTime!); // Your existing check
+      }
+    } catch (e) {
+      debugPrint('Error fetching lunch time: $e');
+    } finally {
+      _isLoadingLunchTime = false;
+      notifyListeners();
+    }
+  }
+
+
+
+  bool _isLunchTime=false;
+  bool get isLunchTime=>_isLunchTime;
+
+  bool isCurrentTimeInLunchRange(Map<String, dynamic> lunchTimeData) {
+    try {
+      // Parse the input times
+      final lunchStart = DateTime.parse(lunchTimeData['lunchStartTime'].toString());
+      final lunchEnd = DateTime.parse(lunchTimeData['lunchEndTime'].toString());
+      final currentTime = DateTime.now();
+
+      // Compare with current time (ignoring milliseconds)
+      _isLunchTime = (currentTime.isAfter(lunchStart) || currentTime.isAtSameMomentAs(lunchStart)) &&
+          (currentTime.isBefore(lunchEnd) || currentTime.isAtSameMomentAs(lunchEnd));
+      notifyListeners();
+      return _isLunchTime;
+    } catch (e) {
+      print('Error parsing time: $e');
+      return false;
+    }
+  }
+
+  bool isCurrentTimeInLunchRangeFixed(Map<String, dynamic> lunchTimeData) {
+    try {
+      // Parse the time strings (ignoring the date part)
+      final startTimeStr = lunchTimeData['lunchStartTime'].toString().split(' ')[1];
+      final endTimeStr = lunchTimeData['lunchEndTime'].toString().split(' ')[1];
+
+      debugPrint('startTimeStr $startTimeStr');
+      debugPrint('endTimeStr $endTimeStr');
+
+      // Get current date components
+      final now = DateTime.now();
+      final todayDate = "${now.year.toString().padLeft(4, '0')}-"
+          "${now.month.toString().padLeft(2, '0')}-"
+          "${now.day.toString().padLeft(2, '0')}";
+
+      // Convert to DateTime objects (using today's date)
+      final lunchStart = DateTime.parse("$todayDate $startTimeStr");
+      final lunchEnd = DateTime.parse("$todayDate $endTimeStr");
+      final currentTime = DateTime.now();
+
+      // Compare only the time components
+      _isLunchTime = (currentTime.isAfter(lunchStart) || currentTime.isAtSameMomentAs(lunchStart)) &&
+          (currentTime.isBefore(lunchEnd) || currentTime.isAtSameMomentAs(lunchEnd));
+      notifyListeners();
+      return _isLunchTime;
+    } catch (e) {
+      debugPrint('Error parsing time: $e');
+      return false;
+    }
+  }
+
+
   void resetAllCount() {
     checked = 0;
     reject = 0;

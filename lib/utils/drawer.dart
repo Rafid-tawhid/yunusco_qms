@@ -5,6 +5,7 @@ import 'package:nidle_qty/utils/dashboard_helpers.dart';
 import '../home_screen.dart';
 import '../line_dropdown_settings.dart';
 import '../line_setting_screen.dart';
+import '../widgets/logout_alert.dart';
 
 class MyDrawer extends StatelessWidget {
   const MyDrawer({super.key});
@@ -74,8 +75,9 @@ class MyDrawer extends StatelessWidget {
           ListTile(
             leading: const Icon(Icons.exit_to_app, color: Colors.red),
             title: const Text('Logout', style: TextStyle(color: Colors.red)),
-            onTap: () {
-              Navigator.pop(context);
+            onTap: () async {
+
+              await showLogoutAlert(context);
               // Handle logout
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(content: Text('Logging out...')),

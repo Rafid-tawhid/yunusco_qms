@@ -5,7 +5,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:nidle_qty/login_screen.dart';
 import 'package:nidle_qty/utils/dashboard_helpers.dart';
 
-import '../home_screen.dart'; // For SVG logos
+import '../home_screen.dart';
+import '../line_dropdown_settings.dart'; // For SVG logos
 
 class LauncherScreen extends StatefulWidget {
   const LauncherScreen({super.key});
@@ -50,8 +51,18 @@ class _LauncherScreenState extends State<LauncherScreen>
     var token=await DashboardHelpers.getString('token');
     if (token!='') {
       DashboardHelpers.setUserInfo();
-      DashboardHelpers.setToken(token);
-      Navigator.pushReplacement(context, CupertinoPageRoute(builder: (context)=>HomeScreen()));
+     DashboardHelpers.setToken(token);
+      var section=await DashboardHelpers.getString('section');
+      var line=await DashboardHelpers.getString('line');
+      if(section==''&&line==''){
+        debugPrint('This is calling');
+        Navigator.pushReplacement(context, CupertinoPageRoute(builder: (context)=>SearchDropdownScreen()));
+      }
+      else{
+        debugPrint('Line :${line}');
+        debugPrint('Sec :${section}');
+        Navigator.pushReplacement(context, CupertinoPageRoute(builder: (context)=>HomeScreen()));
+      }
     }
     else {
       Navigator.pushReplacement(context, CupertinoPageRoute(builder: (context)=>LoginScreen()));
