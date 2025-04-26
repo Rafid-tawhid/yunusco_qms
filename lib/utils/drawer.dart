@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:nidle_qty/data_history_screen.dart';
 import 'package:nidle_qty/utils/dashboard_helpers.dart';
 
 import '../home_screen.dart';
@@ -73,6 +74,23 @@ class MyDrawer extends StatelessWidget {
           ),
           const Divider(),
           ListTile(
+            leading: const Icon(Icons.settings, color: Colors.black54),
+            title: const Text('Production'),
+            onTap: () {
+              Navigator.pop(context);
+              /// Navigate to this screen from another widget
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => DataHistoryScreen(
+
+                  ),
+                ),
+              );
+            },
+          ),
+          const Divider(),
+          ListTile(
             leading: const Icon(Icons.exit_to_app, color: Colors.red),
             title: const Text('Logout', style: TextStyle(color: Colors.red)),
             onTap: () async {
@@ -89,3 +107,4 @@ class MyDrawer extends StatelessWidget {
     );
   }
 }
+

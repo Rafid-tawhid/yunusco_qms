@@ -67,9 +67,7 @@ class CountingProvider with ChangeNotifier {
   List<DefectModels> get allDefectList => _allDefectList;
 
   void getDefectListByOperationId(String id) async {
-    var result = await apiService.getData(
-      'api/PreSalesApi/GetDefects?OperationId=$id',
-    );
+    var result = await apiService.getData('api/PreSalesApi/GetDefects?OperationId=$id');
     if (result != null) {
       _allDefectList.clear();
       for (var i in result['returnvalue']) {
@@ -80,12 +78,11 @@ class CountingProvider with ChangeNotifier {
     notifyListeners();
   }
 
-
-
   bool _isLoadingLunchTime = false;
   Map<String, dynamic>? _lunchTime;
 
   bool get isLoadingLunchTime => _isLoadingLunchTime;
+
   Map<String, dynamic>? get lunchTime => _lunchTime;
 
   Future<void> getLunchTimeBySectionId(String secId) async {
@@ -93,9 +90,7 @@ class CountingProvider with ChangeNotifier {
     notifyListeners();
 
     try {
-      final result = await apiService.getData(
-        'api/PreSalesApi/GetLunchTime?SectionId=10',
-      );
+      final result = await apiService.getData('api/PreSalesApi/GetLunchTime?SectionId=10');
 
       if (result != null) {
         _lunchTime = result['returnvalue'][0];
@@ -110,10 +105,9 @@ class CountingProvider with ChangeNotifier {
     }
   }
 
+  bool _isLunchTime = false;
 
-
-  bool _isLunchTime=false;
-  bool get isLunchTime=>_isLunchTime;
+  bool get isLunchTime => _isLunchTime;
 
   bool isCurrentTimeInLunchRange(Map<String, dynamic> lunchTimeData) {
     try {
@@ -123,8 +117,7 @@ class CountingProvider with ChangeNotifier {
       final currentTime = DateTime.now();
 
       // Compare with current time (ignoring milliseconds)
-      _isLunchTime = (currentTime.isAfter(lunchStart) || currentTime.isAtSameMomentAs(lunchStart)) &&
-          (currentTime.isBefore(lunchEnd) || currentTime.isAtSameMomentAs(lunchEnd));
+      _isLunchTime = (currentTime.isAfter(lunchStart) || currentTime.isAtSameMomentAs(lunchStart)) && (currentTime.isBefore(lunchEnd) || currentTime.isAtSameMomentAs(lunchEnd));
       notifyListeners();
       return _isLunchTime;
     } catch (e) {
@@ -144,7 +137,8 @@ class CountingProvider with ChangeNotifier {
 
       // Get current date components
       final now = DateTime.now();
-      final todayDate = "${now.year.toString().padLeft(4, '0')}-"
+      final todayDate =
+          "${now.year.toString().padLeft(4, '0')}-"
           "${now.month.toString().padLeft(2, '0')}-"
           "${now.day.toString().padLeft(2, '0')}";
 
@@ -154,8 +148,7 @@ class CountingProvider with ChangeNotifier {
       final currentTime = DateTime.now();
 
       // Compare only the time components
-      _isLunchTime = (currentTime.isAfter(lunchStart) || currentTime.isAtSameMomentAs(lunchStart)) &&
-          (currentTime.isBefore(lunchEnd) || currentTime.isAtSameMomentAs(lunchEnd));
+      _isLunchTime = (currentTime.isAfter(lunchStart) || currentTime.isAtSameMomentAs(lunchStart)) && (currentTime.isBefore(lunchEnd) || currentTime.isAtSameMomentAs(lunchEnd));
       notifyListeners();
       return _isLunchTime;
     } catch (e) {
@@ -163,7 +156,6 @@ class CountingProvider with ChangeNotifier {
       return false;
     }
   }
-
 
   void resetAllCount() {
     checked = 0;
@@ -181,7 +173,6 @@ class CountingProvider with ChangeNotifier {
     notifyListeners();
   }
 
-
   Future<void> saveCountingDataLocally(BuyerProvider buyerPro) async {
     final sendData = SendDataModel(
       idNum: DashboardHelpers.userModel!.iDnum ?? '',
@@ -195,9 +186,19 @@ class CountingProvider with ChangeNotifier {
       color: buyerPro.color.toString(),
       size: buyerPro.size.toString(),
     );
+    var secId=await DashboardHelpers.getString('key');
+    var line=await DashboardHelpers.getString('key');
     //save data to sync
     final box = Hive.box<SendDataModel>('sendDataBox');
     await box.put('sendDataKey', sendData);
+    var data = {
+      "QmsMasterModel": {"SectionId": 1, "LineId": 5, "BuyerId": 3, "Style": "STYLE123", "PO": "PO456", "LunchId": 1, "ItemId": 10, "Status": 1},
+      "QmsDetailModel": [
+        {"Status": 12, "Quantity": 50, "OperationId": 1, "DefectId": 16},
+        {"Status": 12, "Quantity": 100, "OperationId": 1, "DefectId": 2},
+      ],
+    };
+
     debugPrint('Saved All Info: ${sendData.toJson()}');
   }
 
@@ -208,10 +209,10 @@ class CountingProvider with ChangeNotifier {
 
       if (sendData != null) {
         debugPrint('Retrieved Data: ${sendData.toJson()}');
-        checked=int.parse(sendData.passed);
-        reject=int.parse(sendData.reject);
-        alter=int.parse(sendData.alter);
-        alter_check=int.parse(sendData.alt_check);
+        checked = int.parse(sendData.passed);
+        reject = int.parse(sendData.reject);
+        alter = int.parse(sendData.alter);
+        alter_check = int.parse(sendData.alt_check);
         notifyListeners();
         return sendData;
       } else {
@@ -224,11 +225,9 @@ class CountingProvider with ChangeNotifier {
     }
   }
 
-
-
   Timer? _periodicTimer;
 
-// Function to stop the periodic task
+  // Function to stop the periodic task
   void stopPeriodicTask() {
     if (_periodicTimer != null) {
       _periodicTimer!.cancel();
@@ -239,25 +238,22 @@ class CountingProvider with ChangeNotifier {
     }
   }
 
-// Improved version of your start function with safety checks
+  // Improved version of your start function with safety checks
   void startPeriodicTask(BuyerProvider buyerPro) {
     // First stop any existing timer
     stopPeriodicTask();
 
     debugPrint('Starting periodic task with 5-second interval');
 
-    _periodicTimer = Timer.periodic(
-      const Duration(seconds: 5),
-          (timer) {
-        debugPrint('Executing periodic task...');
-        saveCountingDataLocally(buyerPro);
-      },
-    );
+    _periodicTimer = Timer.periodic(const Duration(seconds: 5), (timer) {
+      debugPrint('Executing periodic task...');
+      saveCountingDataLocally(buyerPro);
+    });
   }
 
-// Usage example:
-// To start: startPeriodicTask(myBuyerProvider);
-// To stop: stopPeriodicTask();
+  // Usage example:
+  // To start: startPeriodicTask(myBuyerProvider);
+  // To stop: stopPeriodicTask();
 
   // Don't forget to cancel in dispose
   @override
@@ -288,9 +284,4 @@ class CountingProvider with ChangeNotifier {
   //       savedInfo.color == color &&
   //       savedInfo.size == size;
   // }
-
 }
-
-
-
-

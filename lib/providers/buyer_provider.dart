@@ -292,7 +292,7 @@ class BuyerProvider extends ChangeNotifier {
   List<Map<String, dynamic>> get allLines => _allLines;
 
   Future<void> getAllLinesBySectionId(String sectionId) async {
-    var data = await apiService.getData('api/PreSalesApi/GetLines?SectionId=$sectionId');
+    var data = await apiService.getData('api/PreSalesApi/GetLines?SectionId=10');
     if (data != null) {
       _allLines.clear();
       for (var i in data['returnvalue']) {
