@@ -144,8 +144,8 @@ class _StyleSelectionScreenState extends State<StyleSelectionScreen> {
                       )
                       : GridView.builder(
                         gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 2,
+                             SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: DashboardHelpers.isLandscape(context)?4:2,
                               crossAxisSpacing: 16,
                               mainAxisSpacing: 16,
                               childAspectRatio: 0.9,
@@ -193,7 +193,7 @@ class _StyleSelectionScreenState extends State<StyleSelectionScreen> {
                                     Text(
                                       style.style ?? '',
                                       textAlign: TextAlign.center,
-                                      maxLines: 3,
+                                      maxLines: 4,
                                       style: const TextStyle(
                                         fontWeight: FontWeight.bold,
                                         fontSize: 16,

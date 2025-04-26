@@ -17,6 +17,11 @@ class CountingProvider with ChangeNotifier {
   int alter = 0;
   int alter_check = 0;
 
+  /// Returns 0 if the input is negative, otherwise returns the input value
+  int nonNegative(int value) {
+    return value < 0 ? 0 : value;
+  }
+
   Future<void> checkedItem() async {
     checked = checked + 1;
     notifyListeners();
@@ -186,20 +191,19 @@ class CountingProvider with ChangeNotifier {
       color: buyerPro.color.toString(),
       size: buyerPro.size.toString(),
     );
-    var secId=await DashboardHelpers.getString('key');
-    var line=await DashboardHelpers.getString('key');
+    var secId=await DashboardHelpers.getString('selectedSectionId');
+    var line=await DashboardHelpers.getString('selectedLineId');
     //save data to sync
     final box = Hive.box<SendDataModel>('sendDataBox');
     await box.put('sendDataKey', sendData);
     var data = {
-      "QmsMasterModel": {"SectionId": 1, "LineId": 5, "BuyerId": 3, "Style": "STYLE123", "PO": "PO456", "LunchId": 1, "ItemId": 10, "Status": 1},
+      "QmsMasterModel": {"SectionId": secId, "LineId": line, "BuyerId": buyerPro.buyerInfo!.code.toString(), "Style": buyerPro.buyerStyle!.style.toString(), "PO": buyerPro.buyerPo!.po.toString(), "LunchId": 1, "ItemId": buyerPro.buyerPo!.itemId.toString(), "Status": 1},
       "QmsDetailModel": [
-        {"Status": 12, "Quantity": 50, "OperationId": 1, "DefectId": 16},
-        {"Status": 12, "Quantity": 100, "OperationId": 1, "DefectId": 2},
+        {"Status": 12, "Quantity": checked.toString(), "OperationId": checked.toString(), "DefectId": alter.toString()},
       ],
     };
 
-    debugPrint('Saved All Info: ${sendData.toJson()}');
+    debugPrint('Saved All Info: ${data}');
   }
 
   Future<SendDataModel?> getCountingDataLocally() async {
