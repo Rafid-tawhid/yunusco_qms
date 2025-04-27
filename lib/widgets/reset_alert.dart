@@ -51,7 +51,7 @@ Future<void> _performFullReset(BuyerProvider buyerPro,CountingProvider counterPr
     final box = Hive.box<SendDataModel>('sendDataBox');
     await box.clear();
     buyerPro.clearStyleAndPoList();
-    counterPro.resetAllCount();
+    // counterPro.resetAllCount();
     debugPrint('All data has been reset successfully');
   } catch (e) {
     debugPrint('Error during reset: $e');
