@@ -9,6 +9,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:nidle_qty/buyer_list.dart';
 import 'package:nidle_qty/login_screen.dart';
 import 'package:nidle_qty/providers/buyer_provider.dart';
+import 'package:nidle_qty/qr_code_screen.dart';
 import 'package:nidle_qty/service_class/notofication_helper.dart';
 import 'package:nidle_qty/tabview_buyer_screen.dart';
 import 'package:nidle_qty/utils/dashboard_helpers.dart';
@@ -137,7 +138,7 @@ class _HomeScreenState extends State<HomeScreen> {
               onPressed: () {
 
                 // if(MediaQuery.of(context).size.width>600){
-                //   Navigator.push(context, CupertinoPageRoute(builder: (context)=>TabviewBuyerScreen()));
+                  Navigator.push(context, CupertinoPageRoute(builder: (context)=>QRViewExample()));
                 // }
                 // else {
                 //   Navigator.push(context, CupertinoPageRoute(builder: (context)=>BuyerListScreen()));
