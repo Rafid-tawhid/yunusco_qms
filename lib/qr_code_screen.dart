@@ -41,7 +41,6 @@ class _QRViewExampleState extends State<QRViewExample> {
                 Text('Barcode Type: ${describeEnum(result!.format)} Data: ${result!.code}',style: TextStyle(fontSize: 20),textAlign: TextAlign.center,)
               else
                 const Text('Scan a code'),
-
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
