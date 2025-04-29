@@ -12,6 +12,7 @@ import 'package:nidle_qty/providers/buyer_provider.dart';
 import 'package:nidle_qty/qr_code_screen.dart';
 import 'package:nidle_qty/service_class/notofication_helper.dart';
 import 'package:nidle_qty/tabview_buyer_screen.dart';
+import 'package:nidle_qty/testing_screen.dart';
 import 'package:nidle_qty/utils/constants.dart';
 import 'package:nidle_qty/utils/dashboard_helpers.dart';
 import 'package:nidle_qty/widgets/custom_button.dart';
@@ -136,7 +137,7 @@ class _HomeScreenState extends State<HomeScreen> {
               onPressed: () {
 
                 // if(MediaQuery.of(context).size.width>600){
-              //    Navigator.push(context, CupertinoPageRoute(builder: (context)=>QRViewExample()));
+                  Navigator.push(context, CupertinoPageRoute(builder: (context)=>ImageMarkerScreen()));
                 // }
                 // else {
                 //   Navigator.push(context, CupertinoPageRoute(builder: (context)=>BuyerListScreen()));
