@@ -5,6 +5,7 @@ import 'package:nidle_qty/models/po_models.dart';
 import 'package:nidle_qty/providers/buyer_provider.dart';
 import 'package:nidle_qty/providers/counting_provider.dart';
 import 'package:nidle_qty/quality_check_screen.dart';
+import 'package:nidle_qty/utils/constants.dart';
 import 'package:nidle_qty/utils/dashboard_helpers.dart';
 import 'package:provider/provider.dart';
 
@@ -91,7 +92,7 @@ class _PurchaseOrderSelectionScreenState extends State<PurchaseOrderSelectionScr
                   style: TextStyle(color: Colors.black),
                   onChanged: filterOrders,
                 )
-                : const Text('Select Purchase Order'),
+                : Text('Select Purchase Order',style: AppConstants.customTextStyle(18, Colors.black, FontWeight.w500),),
         centerTitle: true,
         elevation: 0,
         actions: [
@@ -143,11 +144,12 @@ class _PurchaseOrderSelectionScreenState extends State<PurchaseOrderSelectionScr
                     final po = pro.filteredPoListByStyle[index];
                     return Card(
                       elevation: 2,
+                      color: Colors.white,
                       margin: const EdgeInsets.only(bottom: 8),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                       child: RadioListTile<PoModels>(
                         contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
-                        title: Text(po.po ?? 'No PO Number', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                        title: Text(po.po ?? 'No PO Number', style: AppConstants.customTextStyle(16, Colors.black, FontWeight.w500)),
                         subtitle: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text('Supplier: ${po.style ?? 'N/A'}', style: TextStyle(color: Colors.grey[600]))]),
                         value: po,
                         groupValue: _selectedOrder,

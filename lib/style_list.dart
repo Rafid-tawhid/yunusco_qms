@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:nidle_qty/providers/buyer_provider.dart';
 import 'package:nidle_qty/purchase_order.dart';
+import 'package:nidle_qty/utils/constants.dart';
 import 'package:nidle_qty/utils/dashboard_helpers.dart';
 import 'package:provider/provider.dart';
 
@@ -55,12 +56,7 @@ class _StyleSelectionScreenState extends State<StyleSelectionScreen> {
       if (bp.poListByStyle.isEmpty) {
         DashboardHelpers.showAlert(msg: 'No Order Found.');
       } else {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => PurchaseOrderSelectionScreen(),
-          ),
-        );
+        Navigator.push(context, MaterialPageRoute(builder: (context) => PurchaseOrderSelectionScreen()));
       }
     }
   }
@@ -75,15 +71,11 @@ class _StyleSelectionScreenState extends State<StyleSelectionScreen> {
                 ? TextField(
                   controller: searchController,
                   autofocus: true,
-                  decoration: InputDecoration(
-                    hintText: 'Search styles...',
-                    border: InputBorder.none,
-                    hintStyle: TextStyle(color: Colors.black),
-                  ),
+                  decoration: InputDecoration(hintText: 'Search styles...', border: InputBorder.none, hintStyle: TextStyle(color: Colors.black)),
                   style: TextStyle(color: Colors.black),
                   onChanged: filterStyles,
                 )
-                : const Text('Select Garment Style'),
+                : Text('Select Garment Style',style: AppConstants.customTextStyle(18, Colors.black, FontWeight.w500),),
         centerTitle: true,
         elevation: 0,
         actions: [
@@ -118,38 +110,21 @@ class _StyleSelectionScreenState extends State<StyleSelectionScreen> {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(
-                              Icons.search_off,
-                              size: 50,
-                              color: Colors.grey[400],
-                            ),
+                            Icon(Icons.search_off, size: 50, color: Colors.grey[400]),
                             const SizedBox(height: 16),
-                            Text(
-                              'No styles found',
-                              style: TextStyle(
-                                fontSize: 18,
-                                color: Colors.grey[600],
-                              ),
-                            ),
+                            Text('No styles found', style: TextStyle(fontSize: 18, color: Colors.grey[600])),
                             const SizedBox(height: 8),
-                            Text(
-                              'Try a different search term',
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: Colors.grey[500],
-                              ),
-                            ),
+                            Text('Try a different search term', style: TextStyle(fontSize: 14, color: Colors.grey[500])),
                           ],
                         ),
                       )
                       : GridView.builder(
-                        gridDelegate:
-                             SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: DashboardHelpers.isLandscape(context)?4:2,
-                              crossAxisSpacing: 16,
-                              mainAxisSpacing: 16,
-                              childAspectRatio: 0.9,
-                            ),
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: DashboardHelpers.isLandscape(context) ? 4 : 2,
+                          crossAxisSpacing: 16,
+                          mainAxisSpacing: 16,
+                          childAspectRatio: 0.9,
+                        ),
                         itemCount: pro.filteredStyleList.length,
                         itemBuilder: (context, index) {
                           final style = pro.filteredStyleList[index];
@@ -160,16 +135,7 @@ class _StyleSelectionScreenState extends State<StyleSelectionScreen> {
                             child: Card(
                               elevation: 2,
                               color: Colors.white,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                side:
-                                    isSelected
-                                        ? BorderSide(
-                                          color: Theme.of(context).primaryColor,
-                                          width: 2,
-                                        )
-                                        : BorderSide.none,
-                              ),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12), side: isSelected ? BorderSide(color: Theme.of(context).primaryColor, width: 2) : BorderSide.none),
                               child: Padding(
                                 padding: const EdgeInsets.all(12),
                                 child: Column(
@@ -177,30 +143,12 @@ class _StyleSelectionScreenState extends State<StyleSelectionScreen> {
                                   children: [
                                     Container(
                                       padding: const EdgeInsets.all(16),
-                                      decoration: BoxDecoration(
-                                        color: Theme.of(
-                                          context,
-                                        ).primaryColor.withOpacity(0.1),
-                                        shape: BoxShape.circle,
-                                      ),
-                                      child: Icon(
-                                        Icons.style,
-                                        size: 30,
-                                        color: Theme.of(context).primaryColor,
-                                      ),
+                                      decoration: BoxDecoration(color: Theme.of(context).primaryColor.withOpacity(0.1), shape: BoxShape.circle),
+                                      child: Icon(Icons.style, size: 30, color: Theme.of(context).primaryColor),
                                     ),
                                     const SizedBox(height: 12),
-                                    Text(
-                                      style.style ?? '',
-                                      textAlign: TextAlign.center,
-                                      maxLines: 4,
-                                      style: const TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 16,
-                                      ),
-                                    ),
+                                    Text(style.style ?? '', textAlign: TextAlign.center, maxLines: 4, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
                                     const SizedBox(height: 4),
-
                                   ],
                                 ),
                               ),

@@ -4,6 +4,7 @@ import 'package:nidle_qty/home_screen.dart';
 import 'package:nidle_qty/login_screen.dart';
 import 'package:nidle_qty/providers/buyer_provider.dart';
 import 'package:nidle_qty/providers/counting_provider.dart';
+import 'package:nidle_qty/utils/constants.dart';
 import 'package:nidle_qty/utils/dashboard_helpers.dart';
 import 'package:provider/provider.dart';
 import 'package:searchfield/searchfield.dart';
@@ -251,7 +252,7 @@ class _SearchDropdownScreenState extends State<SearchDropdownScreen> {
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                         minimumSize: const Size(double.infinity, 48),
                       ),
-                      child: const Text('CONFIRM SELECTION', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
+                      child:  Text('CONFIRM SELECTION', style: AppConstants.customTextStyle(14, Colors.white, FontWeight.bold)),
                     ),
                   ],
                 ),

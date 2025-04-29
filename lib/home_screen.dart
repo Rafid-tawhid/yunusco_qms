@@ -12,7 +12,9 @@ import 'package:nidle_qty/providers/buyer_provider.dart';
 import 'package:nidle_qty/qr_code_screen.dart';
 import 'package:nidle_qty/service_class/notofication_helper.dart';
 import 'package:nidle_qty/tabview_buyer_screen.dart';
+import 'package:nidle_qty/utils/constants.dart';
 import 'package:nidle_qty/utils/dashboard_helpers.dart';
+import 'package:nidle_qty/widgets/custom_button.dart';
 import 'package:nidle_qty/widgets/logout_alert.dart';
 import 'package:provider/provider.dart';
 
@@ -112,16 +114,12 @@ class _HomeScreenState extends State<HomeScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Image.asset('images/logo2.jpeg',height: 120,width: 120,),
-            const Text(
+             Text(
               'Yunusco QMS',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: Colors.black87,
-              ),
+              style: AppConstants.customTextStyle(24, Colors.black, FontWeight.bold)
             ),
             const SizedBox(height: 30),
-            _buildActionButton(
+            ActionButton(
               icon: Icons.table_chart_rounded,
               text: 'End Table Check',
               color: Colors.blue,
@@ -131,14 +129,14 @@ class _HomeScreenState extends State<HomeScreen> {
               },
             ),
             const SizedBox(height: 20),
-            _buildActionButton(
+            ActionButton(
               icon: Icons.rocket_launch,
               text: 'In Process Check',
               color: Colors.deepPurple,
               onPressed: () {
 
                 // if(MediaQuery.of(context).size.width>600){
-                  Navigator.push(context, CupertinoPageRoute(builder: (context)=>QRViewExample()));
+              //    Navigator.push(context, CupertinoPageRoute(builder: (context)=>QRViewExample()));
                 // }
                 // else {
                 //   Navigator.push(context, CupertinoPageRoute(builder: (context)=>BuyerListScreen()));
@@ -148,7 +146,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             const SizedBox(height: 40),
             const Text(
-              'Swipe from right or tap menu icon to open drawer',
+              'Tap menu icon to open drawer',
               style: TextStyle(color: Colors.grey),
             ),
           ],
@@ -157,36 +155,6 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildActionButton({
-    required IconData icon,
-    required String text,
-    required Color color,
-    required VoidCallback onPressed,
-  }) {
-    return SizedBox(
-      width: double.infinity,
-      child: ElevatedButton.icon(
-        icon: Icon(icon, size: 24),
-        label: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 15),
-          child: Text(
-            text,
-            style: const TextStyle(fontSize: 18),
-          ),
-        ),
-        style: ElevatedButton.styleFrom(
-          foregroundColor: Colors.white,
-          backgroundColor: color,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          elevation: 5,
-          shadowColor: color.withOpacity(0.4),
-        ),
-        onPressed: onPressed,
-      ),
-    );
-  }
 
   void _getBearerTokenFromServer() async{
     var data=await NotificationServices.getFirebaseBearerToken();

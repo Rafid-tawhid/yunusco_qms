@@ -8,7 +8,7 @@ import 'package:hive_flutter/adapters.dart';
 import 'package:nidle_qty/providers/buyer_provider.dart';
 import 'package:nidle_qty/providers/counting_provider.dart';
 import 'package:nidle_qty/utils/dashboard_helpers.dart';
-import 'package:nidle_qty/utils/launcher_screen.dart';
+import 'package:nidle_qty/widgets/launcher_screen.dart';
 import 'package:provider/provider.dart';
 import 'login_screen.dart';
 import 'models/send_data_model.dart';

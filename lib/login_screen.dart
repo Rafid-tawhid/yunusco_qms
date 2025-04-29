@@ -4,6 +4,7 @@ import 'package:nidle_qty/models/user_model.dart';
 import 'package:nidle_qty/providers/buyer_provider.dart';
 import 'package:nidle_qty/utils/constants.dart';
 import 'package:nidle_qty/utils/dashboard_helpers.dart';
+import 'package:nidle_qty/widgets/text_from_field.dart';
 import 'package:provider/provider.dart';
 
 import 'buyer_list.dart';
@@ -21,9 +22,8 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   bool _isLoading = false;
   bool _obscurePassword = true;
-  TextEditingController _emailCon=TextEditingController();
-  TextEditingController _passCon=TextEditingController();
-
+  TextEditingController _emailCon = TextEditingController();
+  TextEditingController _passCon = TextEditingController();
 
   @override
   void initState() {
@@ -42,20 +42,9 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: AnnotatedRegion<SystemUiOverlayStyle>(
-        value: SystemUiOverlayStyle.light.copyWith(
-          statusBarColor: Colors.transparent,
-        ),
+        value: SystemUiOverlayStyle.light.copyWith(statusBarColor: Colors.transparent),
         child: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                Colors.deepPurple.shade800,
-                Colors.blue.shade600,
-              ],
-            ),
-          ),
+          decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [Colors.deepPurple.shade800, Color(0xff161a49)])),
           child: Center(
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(24.0),
@@ -63,19 +52,11 @@ class _LoginScreenState extends State<LoginScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   // Logo & Title
-                  Image.asset('images/logo.png',height: 140,width: 140,),
+                  Image.asset('images/logo.png', height: 140, width: 140),
                   const SizedBox(height: 20),
-                  Text(
-                    "Welcome Back",
-                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
+                  Text("Welcome Back", style: AppConstants.customTextStyle(18,Colors.white, FontWeight.bold)),
                   const SizedBox(height: 8),
-                  Text(
-                    "Sign in to continue",
-                    style: TextStyle(color: Colors.white.withOpacity(0.8)),),
+                  Text("Sign in to continue", style: AppConstants.customTextStyle(18,Colors.white.withOpacity(0.8), FontWeight.w600)),
                   const SizedBox(height: 40),
 
                   // Login Form
@@ -84,22 +65,10 @@ class _LoginScreenState extends State<LoginScreen> {
                     child: Column(
                       children: [
                         // Email Field
-                        TextFormField(
-                          style: const TextStyle(color: Colors.white),
+                        CustomTextFormField(
                           controller: _emailCon,
-                          decoration: InputDecoration(
-                            prefixIcon: const Icon(Icons.email, color: Colors.white70),
-                            labelText: "Email",
-                            labelStyle: const TextStyle(color: Colors.white70),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: const BorderSide(color: Colors.white54),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: const BorderSide(color: Colors.white),
-                            ),
-                          ),
+                          labelText: "Email",
+                          prefixIcon: Icons.email,
                           validator: (value) {
                             if (value == null || value.isEmpty) {
                               return "Please enter your email";
@@ -108,7 +77,6 @@ class _LoginScreenState extends State<LoginScreen> {
                           },
                         ),
                         const SizedBox(height: 20),
-
                         // Password Field
                         TextFormField(
                           obscureText: _obscurePassword,
@@ -117,12 +85,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           decoration: InputDecoration(
                             prefixIcon: const Icon(Icons.lock, color: Colors.white70),
                             suffixIcon: IconButton(
-                              icon: Icon(
-                                _obscurePassword
-                                    ? Icons.visibility_off
-                                    : Icons.visibility,
-                                color: Colors.white70,
-                              ),
+                              icon: Icon(_obscurePassword ? Icons.visibility_off : Icons.visibility, color: Colors.white70),
                               onPressed: () {
                                 setState(() {
                                   _obscurePassword = !_obscurePassword;
@@ -131,14 +94,8 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                             labelText: "Password",
                             labelStyle: const TextStyle(color: Colors.white70),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: const BorderSide(color: Colors.white54),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: const BorderSide(color: Colors.white),
-                            ),
+                            enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: const BorderSide(color: Colors.white54)),
+                            focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: const BorderSide(color: Colors.white)),
                           ),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
@@ -153,79 +110,49 @@ class _LoginScreenState extends State<LoginScreen> {
                         const SizedBox(height: 10),
 
                         // Forgot Password
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: TextButton(
-                            onPressed: () {},
-                            child: const Text(
-                              "Forgot Password?",
-                              style: TextStyle(color: Colors.white70),
-                            ),
-                          ),
-                        ),
+                        Align(alignment: Alignment.centerRight, child: TextButton(onPressed: () {}, child: Text("Forgot Password?",style: AppConstants.customTextStyle(12, Colors.white.withOpacity(.7), FontWeight.w400),))),
                         const SizedBox(height: 30),
-
                         // Login Button
                         SizedBox(
                           width: double.infinity,
                           height: 50,
                           child: ElevatedButton(
-                            onPressed: _isLoading
-                                ? null
-                                : () async {
-                              if (_formKey.currentState!.validate()) {
-                                setState(() => _isLoading = true);
+                            onPressed:
+                                _isLoading
+                                    ? null
+                                    : () async {
+                                      if (_formKey.currentState!.validate()) {
+                                        setState(() => _isLoading = true);
 
-                                try {
-                                  var bp = context.read<BuyerProvider>();
-                                  bool loginSuccess = await bp.userLogin(
-                                    _emailCon.text.trim(),
-                                    _passCon.text.trim(),
-                                  );
+                                        try {
+                                          var bp = context.read<BuyerProvider>();
+                                          bool loginSuccess = await bp.userLogin(_emailCon.text.trim(), _passCon.text.trim());
 
-                                  if (loginSuccess) {
-                                    await DashboardHelpers.setString('email', _emailCon.text);
-                                    await DashboardHelpers.setString('pass', _passCon.text);
-                                    Navigator.pushReplacement(
-                                        context,
-                                        MaterialPageRoute(builder: (context) => SearchDropdownScreen())
-                                    );
-                                  }
-                                } catch (e) {
-                                  // Handle error if needed
-                                  debugPrint('Login error: $e');
-                                } finally {
-                                  if (mounted) {
-                                    setState(() => _isLoading = false);
-                                  }
-                                }
-                              }
-                            },
+                                          if (loginSuccess) {
+                                            await DashboardHelpers.setString('email', _emailCon.text);
+                                            await DashboardHelpers.setString('pass', _passCon.text);
+                                            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => SearchDropdownScreen()));
+                                          }
+                                        } catch (e) {
+                                          // Handle error if needed
+                                          debugPrint('Login error: $e');
+                                        } finally {
+                                          if (mounted) {
+                                            setState(() => _isLoading = false);
+                                          }
+                                        }
+                                      }
+                                    },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.white,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10),
-                              ),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                               elevation: 5,
                               minimumSize: const Size(double.infinity, 50), // Full width button
                             ),
-                            child: _isLoading
-                                ? const SizedBox(
-                              width: 24,
-                              height: 24,
-                              child: CircularProgressIndicator(
-                                color: Colors.deepPurple,
-                                strokeWidth: 2,
-                              ),
-                            )
-                                : const Text(
-                              "LOGIN",
-                              style: TextStyle(
-                                color: Colors.deepPurple,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16,
-                              ),
-                            ),
+                            child:
+                                _isLoading
+                                    ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(color: Colors.deepPurple, strokeWidth: 2))
+                                    :  Text("LOGIN", style: AppConstants.customTextStyle(16,myColors.primaryColor, FontWeight.w500)),
                           ),
                         ),
                       ],
@@ -234,14 +161,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   const SizedBox(height: 30),
 
                   // Sign Up Link
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        "Don't have an account?",
-                        style: TextStyle(color: Colors.white.withOpacity(0.8)),)
-                    ],
-                  ),
+                  Row(mainAxisAlignment: MainAxisAlignment.center, children: [Text("Don't have an account?", style: AppConstants.customTextStyle(12, Colors.white.withOpacity(.7), FontWeight.w400))]),
                 ],
               ),
             ),
@@ -251,13 +171,13 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  void getUserInfo() async{
-    String email=await DashboardHelpers.getString('email');
-    String pass=await DashboardHelpers.getString('pass');
-    if(email!=''&&pass!=''){
+  void getUserInfo() async {
+    String email = await DashboardHelpers.getString('email');
+    String pass = await DashboardHelpers.getString('pass');
+    if (email != '' && pass != '') {
       setState(() {
-        _emailCon.text=email;
-        _passCon.text=pass;
+        _emailCon.text = email;
+        _passCon.text = pass;
       });
     }
   }
