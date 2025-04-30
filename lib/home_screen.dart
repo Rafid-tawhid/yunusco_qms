@@ -137,7 +137,7 @@ class _HomeScreenState extends State<HomeScreen> {
               onPressed: () {
 
                 // if(MediaQuery.of(context).size.width>600){
-                 /// Navigator.push(context, CupertinoPageRoute(builder: (context)=>ImageMarkerScreen()));
+               Navigator.push(context, CupertinoPageRoute(builder: (context)=>TouchMarkerScreen()));
                 // }
                 // else {
                 //   Navigator.push(context, CupertinoPageRoute(builder: (context)=>BuyerListScreen()));
