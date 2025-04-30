@@ -222,8 +222,7 @@ class ApiService {
 
         debugPrint('responseBody ${response}');
 
-        Fluttertoast.showToast(
-            msg: response['Message'] ?? "Resource Not Found");
+        Fluttertoast.showToast(msg: response['Message'] ?? "Resource Not Found");
         break;
       case 400:
         EasyLoading.dismiss();
