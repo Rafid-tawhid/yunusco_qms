@@ -278,6 +278,7 @@ class BuyerProvider extends ChangeNotifier {
     }
   }
   //
+  //
 
   bool _lock = false;
 
