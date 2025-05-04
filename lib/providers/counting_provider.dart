@@ -170,13 +170,8 @@ class CountingProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  void setPreviousValue(SendDataModel savedData) {
-    checked = int.parse(savedData.passed);
-    reject = int.parse(savedData.reject);
-    alter = int.parse(savedData.alter);
-    alter_check = int.parse(savedData.alt_check);
-    notifyListeners();
-  }
+
+
 
   Future<void> saveCountingDataLocally(BuyerProvider buyerPro) async {
     final sendData = SendDataModel(
@@ -189,8 +184,7 @@ class CountingProvider with ChangeNotifier {
       style: buyerPro.buyerStyle!.style.toString(),
       po: buyerPro.buyerPo!.po.toString(),
       color: buyerPro.color.toString(),
-      size: buyerPro.size.toString(),
-    );
+      size: buyerPro.size.toString(),);
     var secId=await DashboardHelpers.getString('selectedSectionId');
     var line=await DashboardHelpers.getString('selectedLineId');
     //save data to sync
@@ -202,8 +196,30 @@ class CountingProvider with ChangeNotifier {
         {"Status": 12, "Quantity": checked.toString(), "OperationId": checked.toString(), "DefectId": alter.toString()},
       ],
     };
-
+    _myLocalSavedData.add(sendData);
     debugPrint('Saved All Info: ${data}');
+  }
+
+
+
+  List<SendDataModel> _myLocalSavedData=[];
+  List<SendDataModel> get myLocalSavedData =>_myLocalSavedData;
+
+  Future<void> dataIsSentSuccessOrNot(SendDataModel data) async {
+    _myLocalSavedData.add(data);
+    final box = Hive.box<List>('sendDataBox2');
+    await box.put('sendDataList', _myLocalSavedData);
+  }
+
+  Future<List<SendDataModel>> loadData() async {
+    try {
+      final box = Hive.box<List>('sendDataBox2');
+      final list = box.get('sendDataList', defaultValue: <SendDataModel>[]);
+      return List<SendDataModel>.from(list!);
+    } catch (e) {
+      print('Error loading data: $e');
+      return [];
+    }
   }
 
   Future<SendDataModel?> getCountingDataLocally() async {
@@ -251,7 +267,7 @@ class CountingProvider with ChangeNotifier {
 
     _periodicTimer = Timer.periodic(const Duration(seconds: 5), (timer) {
       debugPrint('Executing periodic task...');
-      saveCountingDataLocally(buyerPro);
+      saveCountingDataLocally(buyerPro,false);
     });
   }
 

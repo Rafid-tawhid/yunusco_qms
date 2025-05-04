@@ -33,6 +33,9 @@ class SendDataModel {
   @HiveField(9)
   final String alt_check;
 
+  @HiveField(10)  // Next available field number
+  bool sent;      // Non-final to allow modification
+
   SendDataModel({
     required this.idNum,
     required this.passed,
@@ -44,7 +47,37 @@ class SendDataModel {
     required this.color,
     required this.size,
     required this.alt_check,
+    this.sent = false,  // Default value
   });
+
+  // Add copyWith method for easy modification
+  SendDataModel copyWith({
+    String? idNum,
+    String? passed,
+    String? reject,
+    String? alter,
+    String? buyer,
+    String? style,
+    String? po,
+    String? color,
+    String? size,
+    String? alt_check,
+    bool? sent,
+  }) {
+    return SendDataModel(
+      idNum: idNum ?? this.idNum,
+      passed: passed ?? this.passed,
+      reject: reject ?? this.reject,
+      alter: alter ?? this.alter,
+      buyer: buyer ?? this.buyer,
+      style: style ?? this.style,
+      po: po ?? this.po,
+      color: color ?? this.color,
+      size: size ?? this.size,
+      alt_check: alt_check ?? this.alt_check,
+      sent: sent ?? this.sent,
+    );
+  }
 
   Map<String, dynamic> toJson() {
     return {
@@ -58,6 +91,7 @@ class SendDataModel {
       'color': color,
       'size': size,
       'alt_check': alt_check,
+      'sent': sent,
     };
   }
 }

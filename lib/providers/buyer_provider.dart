@@ -277,6 +277,7 @@ class BuyerProvider extends ChangeNotifier {
       notifyListeners();
     }
   }
+
   //
   //
 

@@ -32,9 +32,7 @@ class _PurchaseOrderSelectionScreenState extends State<PurchaseOrderSelectionScr
   Future<void> _navigateToNextScreen() async {
     // 1. Validate if an order is selected
     if (_selectedOrder == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please select a purchase order')),
-      );
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please select a purchase order')));
       return;
     }
 
@@ -58,20 +56,12 @@ class _PurchaseOrderSelectionScreenState extends State<PurchaseOrderSelectionScr
 
       // Update the selected PO and fetch data
       buyerProvider.setBuyersStylePoInfo(buyerPO: _selectedOrder);
-      await Future.wait([
-        buyerProvider.getColor(_selectedOrder!.po),
-        buyerProvider.getSize(_selectedOrder!.po),
-      ]);
+      await Future.wait([buyerProvider.getColor(_selectedOrder!.po), buyerProvider.getSize(_selectedOrder!.po)]);
 
       // Navigate to the next screen
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => const QualityControlScreen()),
-      );
+      Navigator.push(context, MaterialPageRoute(builder: (context) => const QualityControlScreen()));
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to load data: ${e.toString()}')),
-      );
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to load data: ${e.toString()}')));
       debugPrint('Error in _navigateToNextScreen: $e');
     } finally {
       EasyLoading.dismiss();
@@ -92,7 +82,7 @@ class _PurchaseOrderSelectionScreenState extends State<PurchaseOrderSelectionScr
                   style: TextStyle(color: Colors.black),
                   onChanged: filterOrders,
                 )
-                : Text('Select Purchase Order',style: AppConstants.customTextStyle(18, Colors.black, FontWeight.w500),),
+                : Text('Select Purchase Order', style: AppConstants.customTextStyle(18, Colors.black, FontWeight.w500)),
         centerTitle: true,
         elevation: 0,
         actions: [

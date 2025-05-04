@@ -437,9 +437,7 @@ class _QualityControlScreenState extends State<QualityControlScreen> with Widget
 
    _section=await DashboardHelpers.getString('selectedSection');
    _line=await DashboardHelpers.getString('selectedLine');
-   setState(() {
-
-   });
+   setState(() {});
 
   }
 

@@ -22,6 +22,7 @@ void main() async{
   await Hive.initFlutter();
   Hive.registerAdapter(SendDataModelAdapter());
   await Hive.openBox<SendDataModel>('sendDataBox');
+  await Hive.openBox<List<SendDataModel>>('sendDataBox2');
   await DashboardHelpers.clearDataIfNewDay();
 
 
