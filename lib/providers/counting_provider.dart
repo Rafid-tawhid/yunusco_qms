@@ -196,31 +196,14 @@ class CountingProvider with ChangeNotifier {
         {"Status": 12, "Quantity": checked.toString(), "OperationId": checked.toString(), "DefectId": alter.toString()},
       ],
     };
-    _myLocalSavedData.add(sendData);
+
+    //if data send successful than set true
+    sendData.sent=true;
+
     debugPrint('Saved All Info: ${data}');
   }
 
 
-
-  List<SendDataModel> _myLocalSavedData=[];
-  List<SendDataModel> get myLocalSavedData =>_myLocalSavedData;
-
-  Future<void> dataIsSentSuccessOrNot(SendDataModel data) async {
-    _myLocalSavedData.add(data);
-    final box = Hive.box<List>('sendDataBox2');
-    await box.put('sendDataList', _myLocalSavedData);
-  }
-
-  Future<List<SendDataModel>> loadData() async {
-    try {
-      final box = Hive.box<List>('sendDataBox2');
-      final list = box.get('sendDataList', defaultValue: <SendDataModel>[]);
-      return List<SendDataModel>.from(list!);
-    } catch (e) {
-      print('Error loading data: $e');
-      return [];
-    }
-  }
 
   Future<SendDataModel?> getCountingDataLocally() async {
     try {
@@ -267,7 +250,7 @@ class CountingProvider with ChangeNotifier {
 
     _periodicTimer = Timer.periodic(const Duration(seconds: 5), (timer) {
       debugPrint('Executing periodic task...');
-      saveCountingDataLocally(buyerPro,false);
+      saveCountingDataLocally(buyerPro);
     });
   }
 
