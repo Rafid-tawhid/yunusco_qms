@@ -188,8 +188,7 @@ class CountingProvider with ChangeNotifier {
     var secId=await DashboardHelpers.getString('selectedSectionId');
     var line=await DashboardHelpers.getString('selectedLineId');
     //save data to sync
-    final box = Hive.box<SendDataModel>('sendDataBox');
-    await box.put('sendDataKey', sendData);
+
     var data = {
       "QmsMasterModel": {"SectionId": secId, "LineId": line, "BuyerId": buyerPro.buyerInfo!.code.toString(), "Style": buyerPro.buyerStyle!.style.toString(), "PO": buyerPro.buyerPo!.po.toString(), "LunchId": 1, "ItemId": buyerPro.buyerPo!.itemId.toString(), "Status": 1},
       "QmsDetailModel": [
@@ -198,8 +197,9 @@ class CountingProvider with ChangeNotifier {
     };
 
     //if data send successful than set true
-    sendData.sent=true;
-
+    sendData.sent=false;
+    final box = Hive.box<SendDataModel>('sendDataBox');
+    await box.put('sendDataKey', sendData);
     debugPrint('Saved All Info: ${data}');
   }
 
