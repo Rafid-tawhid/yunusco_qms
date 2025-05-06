@@ -80,7 +80,6 @@ class CountingProvider with ChangeNotifier {
       }
     }
     debugPrint('_allDefectList ${_allDefectList.length}');
-    debugPrint('_allDefectList ${_allDefectList.length}');
     notifyListeners();
   }
 
