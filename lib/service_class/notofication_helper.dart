@@ -126,7 +126,7 @@ class NotificationServices {
     debugPrint('Sending token to server...');
     ApiService apiService=ApiService();
 
-    var response=await apiService.postData2('http://192.168.15.6:8085/login/CheckDeviceToken', {
+    var response=await apiService.postData('api/user/CheckDeviceToken', {
       "FirebaseDeviceToken": "$token",
       "Userid":"${DashboardHelpers.userModel!.userId}",
       "roleId": "${DashboardHelpers.userModel!.roleId}"
