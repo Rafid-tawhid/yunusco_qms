@@ -9,9 +9,9 @@ class PoModels {
 }
 
   PoModels.fromJson(dynamic json) {
-    _style = json['style'];
-    _po = json['po'];
-    _itemId = json['itemId'];
+    _style = json['Style'];
+    _po = json['PO'];
+    _itemId = json['ItemId'];
   }
   String? _style;
   String? _po;
@@ -29,9 +29,9 @@ PoModels copyWith({  String? style,
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
-    map['style'] = _style;
-    map['po'] = _po;
-    map['itemId'] = _itemId;
+    map['Style'] = _style;
+    map['PO'] = _po;
+    map['ItemId'] = _itemId;
     return map;
   }
 

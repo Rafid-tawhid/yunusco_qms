@@ -53,7 +53,7 @@ class _LauncherScreenState extends State<LauncherScreen>
       DashboardHelpers.setUserInfo();
      DashboardHelpers.setToken(token);
       var section=await DashboardHelpers.getString('section');
-      var line=await DashboardHelpers.getString('line');
+      var line=await DashboardHelpers.getString('selectedLine');
       if(section==''&&line==''){
         debugPrint('This is calling');
         Navigator.pushReplacement(context, CupertinoPageRoute(builder: (context)=>SearchDropdownScreen()));

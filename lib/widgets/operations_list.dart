@@ -45,7 +45,7 @@ class _OperationListState extends State<OperationList> {
                   selectedIndex = isSelected ? null : index;
                 });
                 var cp=context.read<CountingProvider>();
-                cp.getDefectListByOperationId(widget.items[index]['operationId'].toString());
+                cp.getDefectListByOperationId(widget.items[index]['OperationId'].toString());
               },
               child: Container(
                 margin: const EdgeInsets.all(4),
@@ -63,7 +63,7 @@ class _OperationListState extends State<OperationList> {
                       child: Padding(
                         padding: const EdgeInsets.all(8),
                         child: Text(
-                          widget.items[index]['operationName'],
+                          widget.items[index]['OperationName'],
                           style:  TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w500,

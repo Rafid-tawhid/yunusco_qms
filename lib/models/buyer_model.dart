@@ -7,8 +7,8 @@ class BuyerModel {
 }
 
   BuyerModel.fromJson(dynamic json) {
-    _name = json['name'];
-    _code = json['code'].toString();
+    _name = json['BuyerName'];
+    _code = json['BuyerId'].toString();
   }
   String? _name;
   String? _code;
@@ -22,8 +22,8 @@ BuyerModel copyWith({  String? name,
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
-    map['name'] = _name;
-    map['code'] = _code;
+    map['BuyerName'] = _name;
+    map['BuyerId'] = _code;
     return map;
   }
 

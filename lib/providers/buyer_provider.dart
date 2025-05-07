@@ -33,7 +33,7 @@ class BuyerProvider extends ChangeNotifier {
 
   Future<bool> userLogin(String email, String pass) async {
     debugPrint('Email : $email and Pass : ${pass}');
-    var result = await apiService.postData('api/LoginApi/GetUserLogin', {'username': email, 'password': pass});
+    var result = await apiService.postData('api/Accounts/GetUserLogin', {'username': email, 'password': pass});
     if (result != null) {
       DashboardHelpers.setToken(result['token']);
 
@@ -61,11 +61,11 @@ class BuyerProvider extends ChangeNotifier {
   bool get loadingBuyer => _loadingBuyer;
 
   Future<bool> getAllBuyerList() async {
-    var data = await apiService.getData('api/PreSalesApi/AllBuyer');
+    var data = await apiService.getData('api/qms/AllBuyer');
     if (data != null) {
       _allBuyers.clear();
       _filteredBuyers.clear();
-      for (var i in data['returnvalue']) {
+      for (var i in data['Results']) {
         _allBuyers.add(BuyerModel.fromJson(i));
       }
       _filteredBuyers.addAll(_allBuyers);
@@ -145,11 +145,11 @@ class BuyerProvider extends ChangeNotifier {
   List<BuyerStyleModel> get filteredStyleList => _filteredBuyerStyleList;
 
   Future<bool> getStyleDataByBuyerId(String id) async {
-    var data = await apiService.getData('api/PreSalesApi/BuyerwiseStyle?BuyerId=$id');
+    var data = await apiService.getData('api/qms/BuyerwiseStyle/$id');
     if (data != null) {
       _buyerStyleList.clear();
       _filteredBuyerStyleList.clear();
-      for (var i in data['returnvalue']) {
+      for (var i in data['Results']) {
         _buyerStyleList.add(BuyerStyleModel.fromJson(i));
       }
       _filteredBuyerStyleList.addAll(_buyerStyleList);
@@ -170,11 +170,11 @@ class BuyerProvider extends ChangeNotifier {
   List<PoModels> get filteredPoListByStyle => _filteredPoListByStyle;
 
   Future<void> getBoByStyleOfBuyers(String styleName) async {
-    var data = await apiService.getData('api/PreSalesApi/StyleWisePO?Style=${styleName}');
+    var data = await apiService.getData('api/qms/StyleWisePO/${styleName}');
     if (data != null) {
       _poListByStyle.clear();
       _filteredPoListByStyle.clear();
-      for (var i in data['returnvalue']) {
+      for (var i in data['Results']) {
         _poListByStyle.add(PoModels.fromJson(i));
       }
       _filteredPoListByStyle.addAll(_poListByStyle);
@@ -235,10 +235,10 @@ class BuyerProvider extends ChangeNotifier {
   List<ColorModel> get colorList => _colorList;
 
   Future<void> getColor(String? buyerPo) async {
-    var data = await apiService.getData('api/PreSalesApi/GetColors?PO=$buyerPo');
+    var data = await apiService.getData('api/qms/GetColors/$buyerPo');
     if (data != null) {
       _colorList.clear();
-      for (var i in data['returnvalue']) {
+      for (var i in data['Results']) {
         _colorList.add(ColorModel.fromJson(i));
       }
       debugPrint('_colorList ${_colorList.length}');
@@ -251,10 +251,10 @@ class BuyerProvider extends ChangeNotifier {
   List<SizeModel> get sizeList => _sizeList;
 
   Future<void> getSize(String? buyerPo) async {
-    var data = await apiService.getData('api/PreSalesApi/GetSizes?PO=$buyerPo');
+    var data = await apiService.getData('api/qms/GetSizes/$buyerPo');
     if (data != null) {
       _sizeList.clear();
-      for (var i in data['returnvalue']) {
+      for (var i in data['Results']) {
         _sizeList.add(SizeModel.fromJson(i));
       }
       debugPrint('_sizeList ${_sizeList.length}');
@@ -267,10 +267,10 @@ class BuyerProvider extends ChangeNotifier {
   List<Map<String, dynamic>> get allSection => _allSections;
 
   void getAllSections() async {
-    var data = await apiService.getData('api/PreSalesApi/GetSections');
+    var data = await apiService.getData('api/qms/GetSections');
     if (data != null) {
       _allSections.clear();
-      for (var i in data['returnvalue']) {
+      for (var i in data['Results']) {
         _allSections.add(i);
       }
       debugPrint('_allSections ${_allSections.length}');
@@ -295,10 +295,10 @@ class BuyerProvider extends ChangeNotifier {
   List<Map<String, dynamic>> get allLines => _allLines;
 
   Future<void> getAllLinesBySectionId(String sectionId) async {
-    var data = await apiService.getData('api/PreSalesApi/GetLines?SectionId=$sectionId');
+    var data = await apiService.getData('api/qms/GetLines/$sectionId');
     if (data != null) {
       _allLines.clear();
-      for (var i in data['returnvalue']) {
+      for (var i in data['Results']) {
         _allLines.add(i);
       }
       debugPrint('_allLines ${_allLines.length}');

@@ -50,6 +50,7 @@ class DashboardHelpers {
 
   static Future<void> setString(String key, String val) async {
     SharedPreferences sp = await SharedPreferences.getInstance();
+    debugPrint('This ${key} value is saved as $val');
     sp.setString(key, val);
   }
 
@@ -731,6 +732,10 @@ class DashboardHelpers {
     prefs.remove("token");
     prefs.remove("line");
     prefs.remove("section");
+    prefs.remove("selectedSection");
+    prefs.remove("selectedSectionId");
+    prefs.remove("selectedLine");
+    prefs.remove("selectedLineId");
     userModel=null;
     AppConstants.token='';
     final box = Hive.box<SendDataModel>('sendDataBox');

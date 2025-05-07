@@ -7,8 +7,8 @@ class ColorModel {
 }
 
   ColorModel.fromJson(dynamic json) {
-    _po = json['po'];
-    _color = json['color'];
+    _po = json['PO'];
+    _color = json['Color'];
   }
   String? _po;
   String? _color;
@@ -22,8 +22,8 @@ ColorModel copyWith({  String? po,
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
-    map['po'] = _po;
-    map['color'] = _color;
+    map['PO'] = _po;
+    map['Color'] = _color;
     return map;
   }
 

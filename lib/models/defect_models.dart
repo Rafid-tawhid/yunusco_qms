@@ -9,9 +9,9 @@ class DefectModels {
 }
 
   DefectModels.fromJson(dynamic json) {
-    _defectId = json['defectId'];
-    _defectName = json['defectName'];
-    _operationId = json['operationId'];
+    _defectId = json['DefectId'];
+    _defectName = json['DefectName'];
+    _operationId = json['OperationId'];
   }
   num? _defectId;
   String? _defectName;
@@ -29,9 +29,9 @@ DefectModels copyWith({  num? defectId,
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
-    map['defectId'] = _defectId;
-    map['defectName'] = _defectName;
-    map['operationId'] = _operationId;
+    map['DefectId'] = _defectId;
+    map['DefectName'] = _defectName;
+    map['OperationId'] = _operationId;
     return map;
   }
 

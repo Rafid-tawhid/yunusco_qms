@@ -57,10 +57,10 @@ class CountingProvider with ChangeNotifier {
   List<Map<String, dynamic>> get allOperations => _allOperations;
 
   void getAllOperations({required PoModels buyerPo}) async {
-    var result = await apiService.getData('api/PreSalesApi/GetOperations?itemId=${buyerPo.itemId}');
+    var result = await apiService.getData('api/qms/GetOperations/${buyerPo.itemId}');
     if (result != null) {
       _allOperations.clear();
-      for (var i in result['returnvalue']) {
+      for (var i in result['Results']) {
         _allOperations.add(i);
       }
     }
@@ -72,10 +72,10 @@ class CountingProvider with ChangeNotifier {
   List<DefectModels> get allDefectList => _allDefectList;
 
   void getDefectListByOperationId(String id) async {
-    var result = await apiService.getData('api/PreSalesApi/GetDefects?OperationId=$id');
+    var result = await apiService.getData('api/qms/GetDefects/$id');
     if (result != null) {
       _allDefectList.clear();
-      for (var i in result['returnvalue']) {
+      for (var i in result['Results']) {
         _allDefectList.add(DefectModels.fromJson(i));
       }
     }
@@ -95,10 +95,10 @@ class CountingProvider with ChangeNotifier {
     notifyListeners();
 
     try {
-      final result = await apiService.getData('api/PreSalesApi/GetLunchTime?SectionId=10');
+      final result = await apiService.getData('api/qms/GetLunchTime/10');
 
       if (result != null) {
-        _lunchTime = result['returnvalue'][0];
+        _lunchTime = result['Results'][0];
 
         isCurrentTimeInLunchRangeFixed(_lunchTime!); // Your existing check
       }
@@ -185,8 +185,8 @@ class CountingProvider with ChangeNotifier {
       po: buyerPro.buyerPo!.po.toString(),
       color: buyerPro.color.toString(),
       size: buyerPro.size.toString(),);
-    var secId=await DashboardHelpers.getString('selectedSectionId');
-    var line=await DashboardHelpers.getString('selectedLineId');
+    var secId=await DashboardHelpers.getString('section');
+    var line=await DashboardHelpers.getString('line');
     //save data to sync
 
     var data = {

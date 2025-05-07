@@ -54,15 +54,15 @@ class _SearchDropdownScreenState extends State<SearchDropdownScreen> {
 
   Future<void> _saveSelections() async {
     if (selectedSection != null && selectedLine != null) {
-      await _prefs.setString('selectedSection', selectedSection!.item!['unitName']);
-      await _prefs.setString('selectedSectionId', selectedSection!.item!['unitID'].toString());
-      await _prefs.setString('selectedLine', selectedLine!.item!['name']);
-      await _prefs.setString('selectedLineId', selectedLine!.item!['lineId'].toString());
-      DashboardHelpers.setString('section', selectedSection!.item!['unitName']);
-      DashboardHelpers.setString('line', selectedLine!.item!['name']);
+      DashboardHelpers.setString('selectedSection', selectedSection!.item!['SectionName']);
+      DashboardHelpers.setString('selectedSectionId', selectedSection!.item!['SectionId'].toString());
+      DashboardHelpers.setString('selectedLine', selectedLine!.item!['Name']);
+      DashboardHelpers.setString('selectedLineId', selectedLine!.item!['selectedLineId'].toString());
+      DashboardHelpers.setString('section', selectedSection!.item!['SectionName']);
+      DashboardHelpers.setString('line', selectedLine!.item!['Name']);
       //get Lunch time
       var cp=context.read<CountingProvider>();
-      cp.getLunchTimeBySectionId(selectedSection!.item!['unitID'].toString());
+      cp.getLunchTimeBySectionId(selectedSection!.item!['SectionId'].toString());
     }
   }
 
@@ -72,19 +72,19 @@ class _SearchDropdownScreenState extends State<SearchDropdownScreen> {
 
     if (sectionName != null) {
       final sections = context.read<BuyerProvider>().allSection;
-      final section = sections.firstWhere((s) => s['unitName'] == sectionName, orElse: () => {});
+      final section = sections.firstWhere((s) => s['SectionName'] == sectionName, orElse: () => {});
 
       if (section.isNotEmpty) {
-        selectedSection = SearchFieldListItem(section['unitName'], item: section);
+        selectedSection = SearchFieldListItem(section['SectionName'], item: section);
 
-        await context.read<BuyerProvider>().getAllLinesBySectionId(_prefs.getString('selectedSectionId') ?? section['unitID'].toString());
+        await context.read<BuyerProvider>().getAllLinesBySectionId(_prefs.getString('selectedSectionId') ?? section['SectionId'].toString());
 
         if (lineName != null) {
           final lines = context.read<BuyerProvider>().allLines;
-          final line = lines.firstWhere((l) => l['name'] == lineName, orElse: () => {});
+          final line = lines.firstWhere((l) => l['Name'] == lineName, orElse: () => {});
 
           if (line.isNotEmpty) {
-            selectedLine = SearchFieldListItem(line['name'], item: line);
+            selectedLine = SearchFieldListItem(line['Name'], item: line);
           }
         }
       }
@@ -160,15 +160,14 @@ class _SearchDropdownScreenState extends State<SearchDropdownScreen> {
                           selectedSection = section;
                           selectedLine = null;
                         });
-                        await provider.getAllLinesBySectionId(section.item!['unitID'].toString());
-                        await _saveSelections();
+                        await provider.getAllLinesBySectionId(section.item!['SectionId'].toString());
                       },
                       suggestions:
                           provider.allSection.map((section) {
                             return SearchFieldListItem(
-                              section['unitName'],
+                              section['SectionName'],
                               item: section,
-                              child: _buildSuggestionItem(section['unitName'], isSelected: selectedSection?.item?['unitName'] == section['unitName']),
+                              child: _buildSuggestionItem(section['SectionName'], isSelected: selectedSection?.item?['SectionName'] == section['SectionName']),
                             );
                           }).toList(),
                     );
@@ -189,7 +188,7 @@ class _SearchDropdownScreenState extends State<SearchDropdownScreen> {
                 child: Consumer<BuyerProvider>(
                   builder: (context, provider, _) {
                     return SearchField<Map<String, dynamic>>(
-                      hint: selectedSection != null ? 'Search line in ${selectedSection!.item!['unitName']}...' : 'Select section first...',
+                      hint: selectedSection != null ? 'Search line in ${selectedSection!.item!['SectionName']}...' : 'Select section first...',
                       searchInputDecoration: SearchInputDecoration(border: InputBorder.none, hintStyle: TextStyle(color: Colors.grey[600]), contentPadding: const EdgeInsets.symmetric(horizontal: 16)),
                       maxSuggestionsInViewPort: 6,
                       suggestionsDecoration: SuggestionDecoration(
@@ -204,7 +203,7 @@ class _SearchDropdownScreenState extends State<SearchDropdownScreen> {
                       },
                       suggestions:
                           provider.allLines.map((line) {
-                            return SearchFieldListItem(line['name'], item: line, child: _buildSuggestionItem(line['name'], isSelected: selectedLine?.item?['name'] == line['name']));
+                            return SearchFieldListItem(line['Name'], item: line, child: _buildSuggestionItem(line['Name'], isSelected: selectedLine?.item?['Name'] == line['Name']));
                           }).toList(),
                       enabled: selectedSection != null,
                     );
@@ -226,9 +225,9 @@ class _SearchDropdownScreenState extends State<SearchDropdownScreen> {
                   children: [
                     Text('SELECTED:', style: Theme.of(context).textTheme.labelSmall?.copyWith(color: Colors.grey, letterSpacing: 1)),
                     const SizedBox(height: 12),
-                    _buildSelectionRow(Icons.category, 'Section:', selectedSection!.item!['unitName']),
+                    _buildSelectionRow(Icons.category, 'Section:', selectedSection!.item!['SectionName']),
                     const SizedBox(height: 8),
-                    _buildSelectionRow(Icons.line_style, 'Line:', selectedLine!.item!['name']),
+                    _buildSelectionRow(Icons.line_style, 'Line:', selectedLine!.item!['Name']),
                     const SizedBox(height: 8),
                     Consumer<CountingProvider>(
                       builder:
@@ -238,7 +237,7 @@ class _SearchDropdownScreenState extends State<SearchDropdownScreen> {
                                   : _buildSelectionRow(
                                     Icons.emoji_food_beverage_sharp,
                                     'Lunch:',
-                                    DashboardHelpers.formatExactLunchTime(pro.lunchTime!['lunchStartTime'], pro.lunchTime!['lunchEndTime']),
+                                    DashboardHelpers.formatExactLunchTime(pro.lunchTime!['LunchStartTime'], pro.lunchTime!['LunchEndTime']),
                                   ),
                     ),
                     const SizedBox(height: 12),

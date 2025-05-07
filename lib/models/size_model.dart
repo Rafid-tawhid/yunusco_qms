@@ -7,8 +7,8 @@ class SizeModel {
 }
 
   SizeModel.fromJson(dynamic json) {
-    _po = json['po'];
-    _sIze = json['sIze'];
+    _po = json['PO'];
+    _sIze = json['Size'];
   }
   String? _po;
   String? _sIze;
@@ -22,8 +22,8 @@ SizeModel copyWith({  String? po,
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
-    map['po'] = _po;
-    map['sIze'] = _sIze;
+    map['PO'] = _po;
+    map['Size'] = _sIze;
     return map;
   }
 
