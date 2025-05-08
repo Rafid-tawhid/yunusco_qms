@@ -55,6 +55,7 @@ dependencies:
   qr_code_scanner_plus: ^2.0.10+1
   image_gallery_saver_plus: ^4.0.1
   permission_handler: ^12.0.0+1
+  connectivity_plus: ^6.1.4
 
 
 

@@ -7,8 +7,10 @@ import 'package:hive/hive.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:nidle_qty/providers/buyer_provider.dart';
 import 'package:nidle_qty/providers/counting_provider.dart';
+import 'package:nidle_qty/providers/network_provider.dart';
 import 'package:nidle_qty/utils/dashboard_helpers.dart';
 import 'package:nidle_qty/widgets/launcher_screen.dart';
+import 'package:nidle_qty/widgets/network_alert.dart';
 import 'package:provider/provider.dart';
 import 'login_screen.dart';
 import 'models/send_data_model.dart';
@@ -29,25 +31,34 @@ void main() async{
       providers: [
         ChangeNotifierProvider(create: (_)=>BuyerProvider()),
         ChangeNotifierProvider(create: (_)=>CountingProvider()),
+        ChangeNotifierProvider(create: (_)=>NetworkProvider()),
       ],
-      child: const MyApp()));
+      child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Yunusco QMS',
-      builder: EasyLoading.init(),
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
+      builder: (context, child) {
+        print('App: MaterialApp builder called');
+
+        // Initialize network listener
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          print('App: Initializing network listener');
+          Provider.of<NetworkProvider>(context, listen: false).initConnectivity();
+        });
+
+        return EasyLoading.init()(context, child);
+      },
       home: LauncherScreen(),
     );
   }
 }
+
 
