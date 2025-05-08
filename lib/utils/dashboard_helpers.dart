@@ -403,10 +403,10 @@ class DashboardHelpers {
   }
 
   static showCustomAnimatedDialog(
-      {required BuildContext context, required Widget child, double? height}) {
+      {required BuildContext context, required Widget child, double? height,bool? dismiss}) {
     showGeneralDialog(
       context: context,
-      barrierDismissible: true,
+      barrierDismissible: dismiss??true,
       barrierLabel: "Dismiss",
       barrierColor: Colors.black.withOpacity(0.5),
       // Background dimming

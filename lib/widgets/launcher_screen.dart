@@ -3,7 +3,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:nidle_qty/login_screen.dart';
+import 'package:nidle_qty/providers/network_provider.dart';
 import 'package:nidle_qty/utils/dashboard_helpers.dart';
+import 'package:provider/provider.dart';
 
 import '../home_screen.dart';
 import '../line_dropdown_settings.dart'; // For SVG logos
@@ -47,26 +49,30 @@ class _LauncherScreenState extends State<LauncherScreen>
   }
 
   void _navigateToHome() async {
-    await Future.delayed(const Duration(seconds: 2));
-    var token=await DashboardHelpers.getString('token');
-    if (token!='') {
-      DashboardHelpers.setUserInfo();
-     DashboardHelpers.setToken(token);
-      var section=await DashboardHelpers.getString('section');
-      var line=await DashboardHelpers.getString('selectedLine');
-      if(section==''&&line==''){
-        debugPrint('This is calling');
-        Navigator.pushReplacement(context, CupertinoPageRoute(builder: (context)=>SearchDropdownScreen()));
+
+
+      await Future.delayed(const Duration(seconds: 2));
+      var token=await DashboardHelpers.getString('token');
+      if (token!='') {
+        DashboardHelpers.setUserInfo();
+        DashboardHelpers.setToken(token);
+        var section=await DashboardHelpers.getString('section');
+        var line=await DashboardHelpers.getString('selectedLine');
+        if(section==''&&line==''){
+          debugPrint('This is calling');
+          Navigator.pushReplacement(context, CupertinoPageRoute(builder: (context)=>SearchDropdownScreen()));
+        }
+        else{
+          debugPrint('Line :${line}');
+          debugPrint('Sec :${section}');
+          Navigator.pushReplacement(context, CupertinoPageRoute(builder: (context)=>HomeScreen()));
+        }
       }
-      else{
-        debugPrint('Line :${line}');
-        debugPrint('Sec :${section}');
-        Navigator.pushReplacement(context, CupertinoPageRoute(builder: (context)=>HomeScreen()));
+      else {
+        Navigator.pushReplacement(context, CupertinoPageRoute(builder: (context)=>LoginScreen()));
       }
-    }
-    else {
-      Navigator.pushReplacement(context, CupertinoPageRoute(builder: (context)=>LoginScreen()));
-    }
+
+
   }
 
   @override
