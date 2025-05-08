@@ -114,7 +114,7 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Image.asset('images/logo2.jpeg',height: 120,width: 120,),
+            Image.asset('images/logo.png',height: 120,width: 120,),
              Text(
               'Yunusco QMS',
               style: AppConstants.customTextStyle(24, Colors.black, FontWeight.bold)

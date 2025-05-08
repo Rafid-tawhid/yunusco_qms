@@ -190,9 +190,10 @@ class CountingProvider with ChangeNotifier {
     //save data to sync
 
     var data = {
-      "QmsMasterModel": {"SectionId": secId, "LineId": line, "BuyerId": buyerPro.buyerInfo!.code.toString(), "Style": buyerPro.buyerStyle!.style.toString(), "PO": buyerPro.buyerPo!.po.toString(), "LunchId": 1, "ItemId": buyerPro.buyerPo!.itemId.toString(), "Status": 1},
+      "QmsMasterModel": {"SectionId": secId, "LineId": line, "BuyerId": buyerPro.buyerInfo!.code.toString(), "Style": buyerPro.buyerStyle!.style.toString(), "PO": buyerPro.buyerPo!.po.toString(), "LunchId": 1, "ItemId": buyerPro.buyerPo!.itemId.toString(), "Status": 1,"Size":buyerPro.size,"Color":buyerPro.color},
       "QmsDetailModel": [
-        {"Status": 12, "Quantity": checked.toString(), "OperationId": checked.toString(), "DefectId": alter.toString()},
+        {"Status": 12, "Quantity": checked.toString(),
+          "OperationId": checked.toString(), "DefectId": alter.toString()},
       ],
     };
 
