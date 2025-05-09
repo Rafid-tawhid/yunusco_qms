@@ -160,10 +160,10 @@ class _SearchDropdownScreenState extends State<SearchDropdownScreen> {
                           selectedSection = section;
                           selectedLine = null;
                         });
+                        debugPrint('HERE : ${section.item!['SectionId'].toString()}');
                         await provider.getAllLinesBySectionId(section.item!['SectionId'].toString());
                       },
-                      suggestions:
-                          provider.allSection.map((section) {
+                      suggestions: provider.allSection.map((section) {
                             return SearchFieldListItem(
                               section['SectionName'],
                               item: section,
