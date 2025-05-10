@@ -171,9 +171,11 @@ class CountingProvider with ChangeNotifier {
   }
 
 
+  List<Map<String,dynamic>> reportDataList=[];
 
 
-  Future<void> saveCountingDataLocally(BuyerProvider buyerPro) async {
+
+  Future<void> saveCountingDataLocally(BuyerProvider buyerPro, {bool? from, Map<String,dynamic>? info}) async {
     final sendData = SendDataModel(
       idNum: DashboardHelpers.userModel!.iDnum ?? '',
       passed: checked.toString(),
@@ -189,18 +191,20 @@ class CountingProvider with ChangeNotifier {
     var line=await DashboardHelpers.getString('line');
     //save data to sync
 
-    var data = {
-      "QmsMasterModel": {"SectionId": secId, "LineId": line, "BuyerId": buyerPro.buyerInfo!.code.toString(), "Style": buyerPro.buyerStyle!.style.toString(), "PO": buyerPro.buyerPo!.po.toString(), "LunchId": 1, "ItemId": buyerPro.buyerPo!.itemId.toString(), "Status": 1,"Size":buyerPro.size,"Color":buyerPro.color},
-      "QmsDetailModel": [
-        {"Status": 12, "Quantity": checked.toString(),
-          "OperationId": checked.toString(), "DefectId": alter.toString()},
-      ],
+    var data={
+      'count':sendData.toJson(),
+       'secId':secId,
+       'line': line,
+       'quality': from==true?info!['operation']:null,
+       'reasons': from==true?info!['reasons']:null,
+        'time':DateTime.now().toString()
     };
 
     //if data send successful than set true
     sendData.sent=false;
     final box = Hive.box<SendDataModel>('sendDataBox');
     await box.put('sendDataKey', sendData);
+    reportDataList.add(data);
     debugPrint('Saved All Info: ${data}');
   }
 
