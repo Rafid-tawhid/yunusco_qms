@@ -106,3 +106,6 @@ class _OperationListState extends State<OperationList> {
     cp.getAllOperations(buyerPo: bp.buyerPo!);
   }
 }
+
+
+

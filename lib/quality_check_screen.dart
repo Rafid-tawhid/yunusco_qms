@@ -16,6 +16,7 @@ import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 import 'alteration_screen.dart';
+import 'alteration_testing_screen.dart';
 import 'models/send_data_model.dart';
 
 class QualityControlScreen extends StatefulWidget {
@@ -256,7 +257,8 @@ class _QualityControlScreenState extends State<QualityControlScreen> with Widget
                                               showRejectionDialog(
                                                 context,
                                                 onConfirm: () {
-                                                  Navigator.push(context, CupertinoPageRoute(builder: (context) => AlterationReasonScreen(form: 'Reject')));
+                                               //   Navigator.push(context, CupertinoPageRoute(builder: (context) => AlterationReasonScreen(form: 'Reject')));
+                                                  Navigator.push(context, CupertinoPageRoute(builder: (context) => GarmentQualityApp(form: 'Reject')));
                                                 },
                                               );
                                             }
@@ -274,7 +276,8 @@ class _QualityControlScreenState extends State<QualityControlScreen> with Widget
                                             onPressed:
                                             _selectColor != null && _selectSize != null
                                                 ? () {
-                                              Navigator.push(context, CupertinoPageRoute(builder: (context) => AlterationReasonScreen(form: 'alter')));
+                                            //  Navigator.push(context, CupertinoPageRoute(builder: (context) => AlterationReasonScreen(form: 'alter')));
+                                              Navigator.push(context, CupertinoPageRoute(builder: (context) => GarmentQualityApp(form: 'alter')));
                                             }
                                                 : null,
                                             child: Text('ALTER (${pro.alter})', textAlign: TextAlign.center, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)),

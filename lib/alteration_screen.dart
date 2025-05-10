@@ -4,6 +4,8 @@ import 'package:nidle_qty/providers/counting_provider.dart';
 import 'package:nidle_qty/widgets/operations_list.dart';
 import 'package:provider/provider.dart';
 
+import 'alteration_testing_screen.dart';
+
 class AlterationReasonScreen extends StatefulWidget {
 
   final String form;
@@ -65,7 +67,8 @@ class _AlterationReasonScreenState extends State<AlterationReasonScreen> {
                     ],
                   ),
                 ),
-                Consumer<CountingProvider>(builder: (context,pro,_)=>OperationList(items: pro.allOperations))
+                Consumer<CountingProvider>(builder: (context,pro,_)=>OperationList(items: pro.allOperations)),
+
               ],
             ),
           ),
