@@ -134,7 +134,7 @@ class _ProductionReportScreenState extends State<ProductionReportScreen> {
         const SizedBox(width: 8),
         Expanded(child: _buildSummaryCard('Altered', totalAltered.toString(), Colors.orange, Icons.build)),
         const SizedBox(width: 8),
-        Expanded(child: _buildSummaryCard('Rejection Rate', '${rejectionRate.toStringAsFixed(1)}%', Colors.blue, Icons.analytics)),
+        Expanded(child: _buildSummaryCard('Rejection', '${rejectionRate.toStringAsFixed(1)}%', Colors.blue, Icons.analytics)),
       ],
     );
   }
