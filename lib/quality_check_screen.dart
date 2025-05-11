@@ -242,8 +242,10 @@ class _QualityControlScreenState extends State<QualityControlScreen> with Widget
                                                                 //need a buyer provider obj
                                                                 var bp = context.read<BuyerProvider>();
                                                                 //set counting data locally
-                                                                pro.saveCountingDataLocally(bp,status: CheckedStatus.pass);
-                                                                pro.checkedItem();
+                                                                var checked=await pro.saveCountingDataLocally(bp,status: CheckedStatus.pass);
+                                                                if(checked){
+                                                                  pro.checkedItem();
+                                                                }
                                                                //  pro.saveDataToFirebase(bp, status: CheckedStatus.pass);
                                                               }
                                                               : null,

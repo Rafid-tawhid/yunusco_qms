@@ -176,63 +176,77 @@ class CountingProvider with ChangeNotifier {
 
   List<Map<String, dynamic>> reportDataList = [];
 
-  Future<void> saveCountingDataLocally(BuyerProvider buyerPro, {bool? from, Map<String, dynamic>? info, required String status}) async {
+  Future<bool> saveCountingDataLocally(
+      BuyerProvider buyerPro, {
+        bool? from,
+        Map<String, dynamic>? info,
+        required String status,
+      }) async {
+    try {
+      // Get section and line IDs
+      final secId = await DashboardHelpers.getString('selectedSectionId');
+      final line = await DashboardHelpers.getString('selectedLineId');
 
-    // Get section and line IDs
-    final secId = await DashboardHelpers.getString('selectedSectionId');
-    final line = await DashboardHelpers.getString('selectedLineId');
+      // Create data model
+      final sendData = SendDataModel(
+        idNum: DashboardHelpers.userModel!.iDnum ?? '',
+        passed: checked.toString(),
+        reject: reject.toString(),
+        alter: alter.toString(),
+        alt_check: alter_check.toString(),
+        buyer: buyerPro.buyerInfo!.code.toString(),
+        style: buyerPro.buyerStyle!.style.toString(),
+        po: buyerPro.buyerPo!.po.toString(),
+        color: buyerPro.color.toString(),
+        size: buyerPro.size.toString(),
+      );
 
-    // Create data model
-    final sendData = SendDataModel(
-      idNum: DashboardHelpers.userModel!.iDnum ?? '',
-      passed: checked.toString(),
-      reject: reject.toString(),
-      alter: alter.toString(),
-      alt_check: alter_check.toString(),
-      buyer: buyerPro.buyerInfo!.code.toString(),
-      style: buyerPro.buyerStyle!.style.toString(),
-      po: buyerPro.buyerPo!.po.toString(),
-      color: buyerPro.color.toString(),
-      size: buyerPro.size.toString(),
-    );
+      // Prepare data for API
+      final sendingData = {
+        "QmsMasterModel": {
+          "SectionId": secId,
+          "LineId": line,
+          "BuyerId": buyerPro.buyerStyle!.buyerId,
+          "Style": buyerPro.buyerStyle!.style,
+          "PO": buyerPro.buyerPo!.po,
+          "LunchId": 10,
+          "ItemId": buyerPro.buyerPo!.itemId,
+          "Status": 000,
+          "SizeId": 000,
+          "ColorId": 000,
+        },
+        "QmsDetailModel": [
+          {"Status": 000, "Quantity": 1, "OperationId": 000, "DefectId": 000},
+        ],
+      };
 
-    // Prepare data for API
-    final sendingData = {
-      "QmsMasterModel": {
-        "SectionId": secId,
-        "LineId": line,
-        "BuyerId": buyerPro.buyerStyle!.buyerId,
-        "Style": buyerPro.buyerStyle!.style,
-        "PO": buyerPro.buyerPo!.po,
-        "LunchId": 10,
-        "ItemId": buyerPro.buyerPo!.itemId,
-        "Status": 000,
-        "SizeId": 000,
-        "ColorId": 000,
-      },
-      "QmsDetailModel": [
-        {"Status": 000, "Quantity": 1, "OperationId": 000, "DefectId": 000},
-      ],
-    };
+      // Send data to API
+      final apiResponse = await apiService.postData('api/qms/SaveQmsData', sendingData);
+      if (apiResponse == null) {
+        return false;
+      }
 
-    // Send data to API
-    await apiService.postData('api/qms/SaveQmsData', sendingData);
+      // Prepare data for local storage
+      final localData = {
+        'count': sendData.toJson(),
+        'secId': secId,
+        'line': line,
+        'quality': from == true ? info!['operation'] : null,
+        'reasons': from == true ? info!['reasons'] : null,
+        'time': DateTime.now().toString(),
+      };
 
-    // Prepare data for local storage
-    final localData = {
-      'count': sendData.toJson(),
-      'secId': secId,
-      'line': line,
-      'quality': from == true ? info!['operation'] : null,
-      'reasons': from == true ? info!['reasons'] : null,
-      'time': DateTime.now().toString(),
-    };
+      // Save data locally
+      sendData.sent = false;
+      final box = Hive.box<SendDataModel>('sendDataBox');
+      await box.put('sendDataKey', sendData);
+      reportDataList.add(localData);
 
-    // Save data locally
-    sendData.sent = false;
-    final box = Hive.box<SendDataModel>('sendDataBox');
-    await box.put('sendDataKey', sendData);
-    reportDataList.add(localData);
+      return true;
+    } catch (e) {
+      debugPrint('Error in saveCountingDataLocally: $e');
+      return false;
+    }
   }
 
   Future<void> saveDataToFirebase(BuyerProvider buyerPro, {bool? from, required String status, List<DefectModels>? info}) async {
