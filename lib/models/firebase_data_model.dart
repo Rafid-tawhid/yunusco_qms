@@ -3,7 +3,6 @@ import 'package:nidle_qty/models/defect_models.dart';
 class FirebaseDataModel {
   FirebaseDataModel({
     String? employeeId,
-    String? poNumber,
     String? sectionId,
     String? lineId,
     String? checkTime,
@@ -17,7 +16,6 @@ class FirebaseDataModel {
     List<DefectModels>? defects,
   }) {
     _employeeId = employeeId;
-    _poNumber = poNumber;
     _sectionId = sectionId;
     _lineId = lineId;
     _checkTime = checkTime;
@@ -33,7 +31,7 @@ class FirebaseDataModel {
 
   FirebaseDataModel.fromJson(dynamic json) {
     _employeeId = json['employee_id'];
-    _poNumber = json['po_number'];
+
     _sectionId = json['section_id'];
     _lineId = json['line_id'];
     _checkTime = json['check_time'];
@@ -53,7 +51,7 @@ class FirebaseDataModel {
   }
 
   String? _employeeId;
-  String? _poNumber;
+
   String? _sectionId;
   String? _lineId;
   String? _checkTime;
@@ -68,7 +66,6 @@ class FirebaseDataModel {
 
   FirebaseDataModel copyWith({
     String? employeeId,
-    String? poNumber,
     String? sectionId,
     String? lineId,
     String? checkTime,
@@ -82,7 +79,6 @@ class FirebaseDataModel {
   }) =>
       FirebaseDataModel(
         employeeId: employeeId ?? _employeeId,
-        poNumber: poNumber ?? _poNumber,
         sectionId: sectionId ?? _sectionId,
         lineId: lineId ?? _lineId,
         checkTime: checkTime ?? _checkTime,
@@ -96,7 +92,7 @@ class FirebaseDataModel {
       );
 
   String? get employeeId => _employeeId;
-  String? get poNumber => _poNumber;
+
   String? get sectionId => _sectionId;
   String? get lineId => _lineId;
   String? get checkTime => _checkTime;
@@ -111,7 +107,6 @@ class FirebaseDataModel {
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
     map['employee_id'] = _employeeId;
-    map['po_number'] = _poNumber;
     map['section_id'] = _sectionId;
     map['line_id'] = _lineId;
     map['check_time'] = _checkTime;
