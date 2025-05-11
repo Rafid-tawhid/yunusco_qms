@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
+import 'package:nidle_qty/models/checked_enum.dart';
 import 'package:nidle_qty/models/color_model.dart';
 import 'package:nidle_qty/models/po_models.dart';
 import 'package:nidle_qty/models/size_model.dart';
@@ -242,6 +243,7 @@ class _QualityControlScreenState extends State<QualityControlScreen> with Widget
                                                                 var bp = context.read<BuyerProvider>();
                                                                 //set counting data locally
                                                                  pro.saveCountingDataLocally(bp);
+                                                                 pro.saveDataToFirebase(bp, status: CheckedStatus.pass);
                                                               }
                                                               : null,
                                                       child: Text('PASS(${pro.checked})', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)),

@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:nidle_qty/models/defect_models.dart';
 import 'package:nidle_qty/providers/buyer_provider.dart';
 import 'package:nidle_qty/providers/counting_provider.dart';
 import 'package:provider/provider.dart';
+
+import 'models/checked_enum.dart';
 
 class QualityCheckScreen extends StatefulWidget {
   final String form;
@@ -193,7 +196,7 @@ class _QualityCheckScreenState extends State<QualityCheckScreen> {
     );
   }
 
-  void _showSubmissionDialog(String form) {
+  Future<void> _showSubmissionDialog(String form) async {
     final currentReasons = garmentQualityData['operations']!.firstWhere((op) => op['id'] == selectedOperationId)['reasons'] as List;
     final selectedNames = currentReasons.where((reason) => (selectedReasons[selectedOperationId] ?? {}).contains(reason['id'])).map<String>((reason) => reason['name'] as String).join(', ');
 
@@ -201,7 +204,7 @@ class _QualityCheckScreenState extends State<QualityCheckScreen> {
     debugPrint('operation : ${currentReasons[0]['name']}');
     debugPrint('reasons : ${selectedNames}');
     var cp = context.read<CountingProvider>();
-    if (form == 'alter') {
+    if (form == CheckedStatus.alter) {
       cp.alterItem();
     } else {
       cp.rejectItem();
@@ -209,11 +212,21 @@ class _QualityCheckScreenState extends State<QualityCheckScreen> {
 
     var bp = context.read<BuyerProvider>();
     var pro = context.read<CountingProvider>();
+
+    await pro.saveDataToFirebase(bp, status: form,info: [
+      DefectModels(
+          defectId: currentReasons.indexOf('name'),
+          defectName: selectedNames,
+          operationName: currentReasons[0]['name']
+      )
+    ]);
+
     //set counting data locally
     pro.saveCountingDataLocally(bp,from: true,info: {
       'operation':currentReasons[0]['name'],
       'reasons':selectedNames
     });
+
     Navigator.pop(context, selectedReasons);
   }
 }

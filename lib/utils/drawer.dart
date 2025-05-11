@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:nidle_qty/data_history_screen.dart';
+import 'package:nidle_qty/quality_report_screen.dart';
 import 'package:nidle_qty/utils/dashboard_helpers.dart';
 
 import '../home_screen.dart';
@@ -82,9 +82,7 @@ class MyDrawer extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => DataHistoryScreen(
-
-                  ),
+                  builder: (context) => QualityReportScreen(),
                 ),
               );
             },

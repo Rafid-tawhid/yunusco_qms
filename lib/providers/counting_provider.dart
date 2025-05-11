@@ -1,12 +1,16 @@
 import 'dart:async';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
+import 'package:nidle_qty/models/checked_enum.dart';
 import 'package:nidle_qty/models/defect_models.dart';
 import 'package:nidle_qty/models/po_models.dart';
 import 'package:nidle_qty/providers/buyer_provider.dart';
 import 'package:nidle_qty/service_class/api_services.dart';
 
+import '../models/firebase_data_model.dart';
 import '../models/send_data_model.dart';
 import '../utils/dashboard_helpers.dart';
 
@@ -206,6 +210,63 @@ class CountingProvider with ChangeNotifier {
     await box.put('sendDataKey', sendData);
     reportDataList.add(data);
     debugPrint('Saved All Info: ${data}');
+  }
+
+
+  Future<void> saveDataToFirebase(
+      BuyerProvider buyerPro, {
+        bool? from,
+        required String status,
+        List<DefectModels>? info,
+      }) async {
+    try {
+      // 1. Get required data from local storage
+      final secId = await DashboardHelpers.getString('section');
+      final line = await DashboardHelpers.getString('line');
+
+      // 2. Prepare defects data if status is not 'pass'
+      List<DefectModels>? firebaseDefects;
+      if (status != CheckedStatus.pass && info != null) {
+        firebaseDefects = info.map((defect) => DefectModels(
+          defectId: defect.defectId,
+          defectName: defect.defectName,
+          operationId: defect.operationId,
+        )).toList();
+      }
+
+      // 3. Create the data model
+      final sendData = FirebaseDataModel(
+        employeeId: DashboardHelpers.userModel!.iDnum,
+        buyer: buyerPro.buyerInfo!.code.toString(),
+        style: buyerPro.buyerStyle!.style.toString(),
+        po: buyerPro.buyerPo!.po.toString(),
+        color: buyerPro.color.toString(),
+        size: buyerPro.size.toString(),
+        status: status,
+        sectionId: secId,
+        lineId: line,
+        defects: firebaseDefects,
+        checkTime: DateTime.now().toIso8601String(), // Add current timestamp
+      );
+
+      // 4. Get reference to Firestore
+      final firestore = FirebaseFirestore.instance;
+
+      // 5. Add document to QMS collection
+      await firestore.collection('qms').add(sendData.toJson())
+          .then((docRef) {
+        print('Document saved with ID: ${docRef.id}');
+        // Optional: Show success message
+
+      });
+
+    } catch (e) {
+      print('Error saving to Firebase: $e');
+      // Show error message to user
+     DashboardHelpers.showAlert(msg: 'Failed to save quality check: ${e.toString()}');
+      // Re-throw for further error handling if needed
+      throw e;
+    }
   }
 
 
