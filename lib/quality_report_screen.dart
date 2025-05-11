@@ -1,17 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-
-
-
-import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:intl/intl.dart';
-
-
-import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:intl/intl.dart';
-
+import 'package:nidle_qty/widgets/todays_count.dart';
 class QualityReportScreen extends StatefulWidget {
   const QualityReportScreen({super.key});
 
@@ -85,6 +75,7 @@ class _QualityReportScreenState extends State<QualityReportScreen> {
       ),
       body: Column(
         children: [
+          TodayQualitySummary(),
           _buildFilters(),
           const SizedBox(height: 8),
           Expanded(

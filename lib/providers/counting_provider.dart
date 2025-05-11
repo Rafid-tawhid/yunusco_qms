@@ -230,7 +230,7 @@ class CountingProvider with ChangeNotifier {
         firebaseDefects = info.map((defect) => DefectModels(
           defectId: defect.defectId,
           defectName: defect.defectName,
-          operationId: defect.operationId,
+           operationName: defect.operationName,
         )).toList();
       }
 
@@ -257,7 +257,7 @@ class CountingProvider with ChangeNotifier {
           .then((docRef) {
         print('Document saved with ID: ${docRef.id}');
         // Optional: Show success message
-
+       
       });
 
     } catch (e) {

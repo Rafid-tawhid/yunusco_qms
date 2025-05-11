@@ -8,6 +8,7 @@ import 'package:nidle_qty/models/size_model.dart';
 import 'package:nidle_qty/providers/buyer_provider.dart';
 import 'package:nidle_qty/providers/counting_provider.dart';
 import 'package:nidle_qty/purchase_order.dart';
+import 'package:nidle_qty/quality_report_screen.dart';
 import 'package:nidle_qty/service_class/api_services.dart';
 import 'package:nidle_qty/test/report_screen.dart';
 import 'package:nidle_qty/utils/dashboard_helpers.dart';
@@ -73,8 +74,9 @@ class _QualityControlScreenState extends State<QualityControlScreen> with Widget
         actions: [
 
           IconButton(onPressed: (){
-            var cp=context.read<CountingProvider>();
-            Navigator.push(context, MaterialPageRoute(builder: (context)=>ProductionReportScreen(productionData: cp.reportDataList,)));
+            Navigator.push(context, CupertinoPageRoute(builder: (context)=>QualityReportScreen()));
+            // var cp=context.read<CountingProvider>();
+            // Navigator.push(context, MaterialPageRoute(builder: (context)=>ProductionReportScreen(productionData: cp.reportDataList,)));
             
           }, icon: Icon(Icons.report_gmailerrorred)),
 
