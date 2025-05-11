@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:hive/hive.dart';
 import 'package:nidle_qty/models/checked_enum.dart';
 import 'package:nidle_qty/models/defect_models.dart';
@@ -173,14 +174,15 @@ class CountingProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  List<Map<String, dynamic>> reportDataList = [];
 
-  List<Map<String,dynamic>> reportDataList=[];
+  Future<void> saveCountingDataLocally(BuyerProvider buyerPro, {bool? from, Map<String, dynamic>? info, required String status}) async {
 
+    // Get section and line IDs
+    final secId = await DashboardHelpers.getString('selectedSectionId');
+    final line = await DashboardHelpers.getString('selectedLineId');
 
-
-  Future<void> saveCountingDataLocally(BuyerProvider buyerPro, {bool? from, Map<String,dynamic>? info,required String status}) async {
-    var secId=await DashboardHelpers.getString('selectedSectionId');
-    var line=await DashboardHelpers.getString('selectedLineId');
+    // Create data model
     final sendData = SendDataModel(
       idNum: DashboardHelpers.userModel!.iDnum ?? '',
       passed: checked.toString(),
@@ -191,48 +193,49 @@ class CountingProvider with ChangeNotifier {
       style: buyerPro.buyerStyle!.style.toString(),
       po: buyerPro.buyerPo!.po.toString(),
       color: buyerPro.color.toString(),
-      size: buyerPro.size.toString(),);
+      size: buyerPro.size.toString(),
+    );
 
-    //convert data to send server
-
-    var sending_data =  {
-      "QmsMasterModel": {"SectionId": secId, "LineId": line, "BuyerId":buyerPro.buyerStyle!.buyerId, "Style": buyerPro.buyerStyle!.style, "PO": buyerPro.buyerPo!.po, "LunchId": 10, "ItemId": buyerPro.buyerPo!.itemId, "Status": 000, "SizeId": 000, "ColorId": 000},
+    // Prepare data for API
+    final sendingData = {
+      "QmsMasterModel": {
+        "SectionId": secId,
+        "LineId": line,
+        "BuyerId": buyerPro.buyerStyle!.buyerId,
+        "Style": buyerPro.buyerStyle!.style,
+        "PO": buyerPro.buyerPo!.po,
+        "LunchId": 10,
+        "ItemId": buyerPro.buyerPo!.itemId,
+        "Status": 000,
+        "SizeId": 000,
+        "ColorId": 000,
+      },
       "QmsDetailModel": [
-       // {"Status": 12, "Quantity": 1, "OperationId": info==null?null:info['operationId']??null, "DefectId": info==null?null:info['defectId']??null},
         {"Status": 000, "Quantity": 1, "OperationId": 000, "DefectId": 000},
       ],
     };
 
-    apiService.postData('api/qms/SaveQmsData', sending_data);
+    // Send data to API
+    await apiService.postData('api/qms/SaveQmsData', sendingData);
 
-    //save data to sync
-
-    var data={
-      'count':sendData.toJson(),
-       'secId':secId,
-       'line': line,
-       'quality': from==true?info!['operation']:null,
-       'reasons': from==true?info!['reasons']:null,
-       'time':DateTime.now().toString()
+    // Prepare data for local storage
+    final localData = {
+      'count': sendData.toJson(),
+      'secId': secId,
+      'line': line,
+      'quality': from == true ? info!['operation'] : null,
+      'reasons': from == true ? info!['reasons'] : null,
+      'time': DateTime.now().toString(),
     };
 
-    //if data send successful than set true
-    sendData.sent=false;
+    // Save data locally
+    sendData.sent = false;
     final box = Hive.box<SendDataModel>('sendDataBox');
     await box.put('sendDataKey', sendData);
-    reportDataList.add(data);
-    //debugPrint('Saved All Info: ${data}');
-
-
+    reportDataList.add(localData);
   }
 
-
-  Future<void> saveDataToFirebase(
-      BuyerProvider buyerPro, {
-        bool? from,
-        required String status,
-        List<DefectModels>? info,
-      }) async {
+  Future<void> saveDataToFirebase(BuyerProvider buyerPro, {bool? from, required String status, List<DefectModels>? info}) async {
     try {
       // 1. Get required data from local storage
       final secId = await DashboardHelpers.getString('section');
@@ -241,11 +244,7 @@ class CountingProvider with ChangeNotifier {
       // 2. Prepare defects data if status is not 'pass'
       List<DefectModels>? firebaseDefects;
       if (status != CheckedStatus.pass && info != null) {
-        firebaseDefects = info.map((defect) => DefectModels(
-          defectId: defect.defectId,
-          defectName: defect.defectName,
-           operationName: defect.operationName,
-        )).toList();
+        firebaseDefects = info.map((defect) => DefectModels(defectId: defect.defectId, defectName: defect.defectName, operationName: defect.operationName)).toList();
       }
       //
       // 3. Create the data model
@@ -267,23 +266,18 @@ class CountingProvider with ChangeNotifier {
       final firestore = FirebaseFirestore.instance;
 
       // 5. Add document to QMS collection
-      await firestore.collection('qms').add(sendData.toJson())
-          .then((docRef) {
+      await firestore.collection('qms').add(sendData.toJson()).then((docRef) {
         print('Document saved with ID: ${docRef.id}');
         // Optional: Show success message
-
       });
-
     } catch (e) {
       print('Error saving to Firebase: $e');
       // Show error message to user
-     DashboardHelpers.showAlert(msg: 'Failed to save quality check: ${e.toString()}');
+      DashboardHelpers.showAlert(msg: 'Failed to save quality check: ${e.toString()}');
       // Re-throw for further error handling if needed
       throw e;
     }
   }
-
-
 
   Future<SendDataModel?> getCountingDataLocally() async {
     try {
