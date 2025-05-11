@@ -213,7 +213,7 @@ class CountingProvider with ChangeNotifier {
        'line': line,
        'quality': from==true?info!['operation']:null,
        'reasons': from==true?info!['reasons']:null,
-        'time':DateTime.now().toString()
+       'time':DateTime.now().toString()
     };
 
     //if data send successful than set true
