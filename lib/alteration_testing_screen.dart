@@ -213,19 +213,19 @@ class _QualityCheckScreenState extends State<QualityCheckScreen> {
     var bp = context.read<BuyerProvider>();
     var pro = context.read<CountingProvider>();
 
-    await pro.saveDataToFirebase(bp, status: form,info: [
-      DefectModels(
-          defectId: currentReasons.indexOf('name'),
-          defectName: selectedNames,
-          operationName: currentReasons[0]['name']
-      )
-    ]);
+    // await pro.saveDataToFirebase(bp, status: form,info: [
+    //   DefectModels(
+    //       defectId: currentReasons.indexOf('name'),
+    //       defectName: selectedNames,
+    //       operationName: currentReasons[0]['name']
+    //   )
+    // ]);
 
     //set counting data locally
     pro.saveCountingDataLocally(bp,from: true,info: {
-      'operation':currentReasons[0]['name'],
-      'reasons':selectedNames
-    });
+      'operationId':currentReasons[0]['name'],
+      'defectId':selectedNames
+    },status: form);
 
     Navigator.pop(context, selectedReasons);
   }

@@ -9,8 +9,6 @@ import 'package:nidle_qty/providers/buyer_provider.dart';
 import 'package:nidle_qty/providers/counting_provider.dart';
 import 'package:nidle_qty/purchase_order.dart';
 import 'package:nidle_qty/quality_report_screen.dart';
-import 'package:nidle_qty/service_class/api_services.dart';
-import 'package:nidle_qty/test/report_screen.dart';
 import 'package:nidle_qty/utils/dashboard_helpers.dart';
 import 'package:nidle_qty/widgets/alter_check.dart';
 import 'package:nidle_qty/widgets/reject_alert.dart';
@@ -244,8 +242,8 @@ class _QualityControlScreenState extends State<QualityControlScreen> with Widget
                                                                 //need a buyer provider obj
                                                                 var bp = context.read<BuyerProvider>();
                                                                 //set counting data locally
-                                                                 pro.saveCountingDataLocally(bp);
-                                                                 pro.saveDataToFirebase(bp, status: CheckedStatus.pass);
+                                                                 pro.saveCountingDataLocally(bp,status: CheckedStatus.pass);
+                                                               //  pro.saveDataToFirebase(bp, status: CheckedStatus.pass);
                                                               }
                                                               : null,
                                                       child: Text('PASS(${pro.checked})', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)),
@@ -270,7 +268,7 @@ class _QualityControlScreenState extends State<QualityControlScreen> with Widget
                                                                         context,
                                                                         onConfirm: () {
                                                                           //   Navigator.push(context, CupertinoPageRoute(builder: (context) => AlterationReasonScreen(form: 'Reject')));
-                                                                          Navigator.push(context, CupertinoPageRoute(builder: (context) => QualityCheckScreen(form: 'Reject')));
+                                                                          Navigator.push(context, CupertinoPageRoute(builder: (context) => QualityCheckScreen(form: CheckedStatus.reject)));
                                                                         },
                                                                       );
                                                                     }
@@ -297,7 +295,7 @@ class _QualityControlScreenState extends State<QualityControlScreen> with Widget
                                                                 _selectColor != null && _selectSize != null
                                                                     ? () {
                                                                       //  Navigator.push(context, CupertinoPageRoute(builder: (context) => AlterationReasonScreen(form: 'alter')));
-                                                                      Navigator.push(context, CupertinoPageRoute(builder: (context) => QualityCheckScreen(form: 'alter')));
+                                                                      Navigator.push(context, CupertinoPageRoute(builder: (context) => QualityCheckScreen(form: CheckedStatus.alter)));
                                                                     }
                                                                     : null,
                                                             child: Text(
@@ -342,29 +340,29 @@ class _QualityControlScreenState extends State<QualityControlScreen> with Widget
                             ],
                           ),
                           SizedBox(height: 40),
-                          SizedBox(
-                            height: 80,
-                            child: Consumer<CountingProvider>(
-                              builder:
-                                  (context, pro, _) => Padding(
-                                    padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16),
-                                    child: ElevatedButton(
-                                      style: ElevatedButton.styleFrom(backgroundColor: Colors.blue, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)), elevation: 4),
-                                      onPressed:
-                                          _selectColor != null && _selectSize != null
-                                              ? () {
-                                                var bp = context.read<BuyerProvider>();
-                                                pro.saveCountingDataLocally(bp);
-                                              }
-                                              : null,
-                                      child: Row(
-                                        mainAxisAlignment: MainAxisAlignment.center,
-                                        children: [Text('Save', textAlign: TextAlign.center, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white))],
-                                      ),
-                                    ),
-                                  ),
-                            ),
-                          ),
+                          // SizedBox(
+                          //   height: 80,
+                          //   child: Consumer<CountingProvider>(
+                          //     builder:
+                          //         (context, pro, _) => Padding(
+                          //           padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16),
+                          //           child: ElevatedButton(
+                          //             style: ElevatedButton.styleFrom(backgroundColor: Colors.blue, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)), elevation: 4),
+                          //             onPressed:
+                          //                 _selectColor != null && _selectSize != null
+                          //                     ? () {
+                          //                       var bp = context.read<BuyerProvider>();
+                          //                       pro.saveCountingDataLocally(bp);
+                          //                     }
+                          //                     : null,
+                          //             child: Row(
+                          //               mainAxisAlignment: MainAxisAlignment.center,
+                          //               children: [Text('Save', textAlign: TextAlign.center, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white))],
+                          //             ),
+                          //           ),
+                          //         ),
+                          //   ),
+                          // ),
                           SizedBox(height: 40),
                         ],
                       ),
@@ -473,7 +471,7 @@ class _QualityControlScreenState extends State<QualityControlScreen> with Widget
   void saveData() async {
     var cp = context.read<CountingProvider>();
     var bp = context.read<BuyerProvider>();
-    cp.saveCountingDataLocally(bp);
+    //cp.saveCountingDataLocally(bp);
   }
 
   void getLunchTime() async {

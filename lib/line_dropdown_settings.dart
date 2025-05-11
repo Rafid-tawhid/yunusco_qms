@@ -57,7 +57,7 @@ class _SearchDropdownScreenState extends State<SearchDropdownScreen> {
       DashboardHelpers.setString('selectedSection', selectedSection!.item!['SectionName']);
       DashboardHelpers.setString('selectedSectionId', selectedSection!.item!['SectionId'].toString());
       DashboardHelpers.setString('selectedLine', selectedLine!.item!['Name']);
-      DashboardHelpers.setString('selectedLineId', selectedLine!.item!['selectedLineId'].toString());
+      DashboardHelpers.setString('selectedLineId', selectedLine!.item!['LineId'].toString());
       DashboardHelpers.setString('section', selectedSection!.item!['SectionName']);
       DashboardHelpers.setString('line', selectedLine!.item!['Name']);
       //get Lunch time

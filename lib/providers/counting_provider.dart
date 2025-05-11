@@ -103,7 +103,6 @@ class CountingProvider with ChangeNotifier {
 
       if (result != null) {
         _lunchTime = result['Results'][0];
-
         isCurrentTimeInLunchRangeFixed(_lunchTime!); // Your existing check
       }
     } catch (e) {
@@ -179,7 +178,9 @@ class CountingProvider with ChangeNotifier {
 
 
 
-  Future<void> saveCountingDataLocally(BuyerProvider buyerPro, {bool? from, Map<String,dynamic>? info}) async {
+  Future<void> saveCountingDataLocally(BuyerProvider buyerPro, {bool? from, Map<String,dynamic>? info,required String status}) async {
+    var secId=await DashboardHelpers.getString('selectedSectionId');
+    var line=await DashboardHelpers.getString('selectedLineId');
     final sendData = SendDataModel(
       idNum: DashboardHelpers.userModel!.iDnum ?? '',
       passed: checked.toString(),
@@ -191,8 +192,18 @@ class CountingProvider with ChangeNotifier {
       po: buyerPro.buyerPo!.po.toString(),
       color: buyerPro.color.toString(),
       size: buyerPro.size.toString(),);
-    var secId=await DashboardHelpers.getString('section');
-    var line=await DashboardHelpers.getString('line');
+
+    //convert data to send server
+
+    var sending_data =  {
+      "QmsMasterModel": {"SectionId": secId, "LineId": line, "BuyerId":buyerPro.buyerStyle!.buyerId, "Style": buyerPro.buyerStyle!.style, "PO": buyerPro.buyerPo!.po, "LunchId": 10, "ItemId": buyerPro.buyerPo!.itemId, "Status": 000, "SizeId": 000, "ColorId": 000},
+      "QmsDetailModel": [
+        {"Status": 12, "Quantity": 1, "OperationId": info==null?null:info['operationId']??null, "DefectId": info==null?null:info['defectId']??null},
+      ],
+    };
+
+    apiService.postData('api/qms/SaveQmsData', sending_data);
+
     //save data to sync
 
     var data={
@@ -209,7 +220,9 @@ class CountingProvider with ChangeNotifier {
     final box = Hive.box<SendDataModel>('sendDataBox');
     await box.put('sendDataKey', sendData);
     reportDataList.add(data);
-    debugPrint('Saved All Info: ${data}');
+    //debugPrint('Saved All Info: ${data}');
+
+
   }
 
 
@@ -257,7 +270,7 @@ class CountingProvider with ChangeNotifier {
           .then((docRef) {
         print('Document saved with ID: ${docRef.id}');
         // Optional: Show success message
-       
+
       });
 
     } catch (e) {
@@ -316,7 +329,7 @@ class CountingProvider with ChangeNotifier {
 
     _periodicTimer = Timer.periodic(const Duration(seconds: 5), (timer) {
       debugPrint('Executing periodic task...');
-      saveCountingDataLocally(buyerPro);
+      //saveCountingDataLocally(buyerPro);
     });
   }
 
