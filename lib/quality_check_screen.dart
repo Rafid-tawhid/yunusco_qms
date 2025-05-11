@@ -267,8 +267,8 @@ class _QualityControlScreenState extends State<QualityControlScreen> with Widget
                                                                       showRejectionDialog(
                                                                         context,
                                                                         onConfirm: () {
-                                                                          //   Navigator.push(context, CupertinoPageRoute(builder: (context) => AlterationReasonScreen(form: 'Reject')));
-                                                                          Navigator.push(context, CupertinoPageRoute(builder: (context) => QualityCheckScreen(form: CheckedStatus.reject)));
+                                                                          Navigator.push(context, CupertinoPageRoute(builder: (context) => AlterationReasonScreen(form: CheckedStatus.reject)));
+                                                                         // Navigator.push(context, CupertinoPageRoute(builder: (context) => QualityCheckScreen(form: CheckedStatus.reject)));
                                                                         },
                                                                       );
                                                                     }
@@ -294,8 +294,8 @@ class _QualityControlScreenState extends State<QualityControlScreen> with Widget
                                                             onPressed:
                                                                 _selectColor != null && _selectSize != null
                                                                     ? () {
-                                                                      //  Navigator.push(context, CupertinoPageRoute(builder: (context) => AlterationReasonScreen(form: 'alter')));
-                                                                      Navigator.push(context, CupertinoPageRoute(builder: (context) => QualityCheckScreen(form: CheckedStatus.alter)));
+                                                                        Navigator.push(context, CupertinoPageRoute(builder: (context) => AlterationReasonScreen(form: 'alter')));
+                                                                     // Navigator.push(context, CupertinoPageRoute(builder: (context) => QualityCheckScreen(form: CheckedStatus.alter)));
                                                                     }
                                                                     : null,
                                                             child: Text(

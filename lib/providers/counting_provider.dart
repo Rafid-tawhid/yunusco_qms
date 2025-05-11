@@ -198,7 +198,8 @@ class CountingProvider with ChangeNotifier {
     var sending_data =  {
       "QmsMasterModel": {"SectionId": secId, "LineId": line, "BuyerId":buyerPro.buyerStyle!.buyerId, "Style": buyerPro.buyerStyle!.style, "PO": buyerPro.buyerPo!.po, "LunchId": 10, "ItemId": buyerPro.buyerPo!.itemId, "Status": 000, "SizeId": 000, "ColorId": 000},
       "QmsDetailModel": [
-        {"Status": 12, "Quantity": 1, "OperationId": info==null?null:info['operationId']??null, "DefectId": info==null?null:info['defectId']??null},
+       // {"Status": 12, "Quantity": 1, "OperationId": info==null?null:info['operationId']??null, "DefectId": info==null?null:info['defectId']??null},
+        {"Status": 000, "Quantity": 1, "OperationId": 000, "DefectId": 000},
       ],
     };
 

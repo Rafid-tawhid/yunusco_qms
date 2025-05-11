@@ -1,5 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:nidle_qty/models/checked_enum.dart';
+import 'package:nidle_qty/providers/buyer_provider.dart';
 import 'package:nidle_qty/providers/counting_provider.dart';
 import 'package:nidle_qty/widgets/operations_list.dart';
 import 'package:provider/provider.dart';
@@ -90,7 +92,12 @@ class _AlterationReasonScreenState extends State<AlterationReasonScreen> {
                     child: CheckboxListTile(
                       title: Text(reason.defectName??''),
                       value: selectedReasons.contains(reason.defectName),
-                      onChanged: (value) => _toggleReason(reason.defectName??''),
+                      onChanged: (value) {
+                        setState(() {
+                          selectedIndex=index;
+                        });
+                        _toggleReason(reason.defectName??'');
+                      },
                       secondary: const Icon(Icons.warning_amber_rounded),
                     ),
                   );
@@ -113,12 +120,21 @@ class _AlterationReasonScreenState extends State<AlterationReasonScreen> {
                 onPressed: () {
                   var cp=context.read<CountingProvider>();
 
-                  if(widget.form=='alter'){
+                  if(widget.form==CheckedStatus.alter){
                     cp.alterItem();
                   }
                   else {
                     cp.rejectItem();
                   }
+
+                  var bp = context.read<BuyerProvider>();
+                  var pro = context.read<CountingProvider>();
+
+                  //set counting data locally
+                  pro.saveCountingDataLocally(bp,from: true,info: {
+                    'operationId': pro.allDefectList[selectedIndex!].operationId,
+                    'defectId':pro.allDefectList[selectedIndex!].defectId
+                  },status: widget.form);
                   Navigator.pop(context, selectedReasons);
                 },
                 child: Text(
