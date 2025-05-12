@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:nidle_qty/providers/buyer_provider.dart';
 import 'package:nidle_qty/providers/counting_provider.dart';
+import 'package:nidle_qty/utils/constants.dart';
 import 'package:provider/provider.dart';
 
 import '../models/operation_model.dart';
@@ -20,79 +21,106 @@ class _OperationListState extends State<OperationList> {
 
   @override
   void initState() {
-    getOperations();
     super.initState();
+    getOperations();
+    // Select first item automatically when widget initializes
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (widget.items.isNotEmpty) {
+        setState(() => selectedIndex = 0);
+        final cp = context.read<CountingProvider>();
+        cp.getDefectListByOperationId(widget.items[0].operationId.toString());
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
       child: SizedBox(
-        height: 150, // 2 rows × 80px each (160/2)
+        height: 160, // Slightly taller for better touch targets
         child: GridView.builder(
           scrollDirection: Axis.horizontal,
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2, // 2 rows
-            mainAxisSpacing: 8,
-            crossAxisSpacing: 8,
-            childAspectRatio: .4, // Wider items for better text display
+            crossAxisCount: 2,
+            mainAxisSpacing: 10,
+            crossAxisSpacing: 10,
+            childAspectRatio: 0.5, // Better aspect ratio for text
           ),
           itemCount: widget.items.length,
           itemBuilder: (context, index) {
             final isSelected = selectedIndex == index;
-            return GestureDetector(
-              onTap: () {
-                setState(() {
-                  selectedIndex = isSelected ? null : index;
-                });
-                var cp=context.read<CountingProvider>();
-                cp.getDefectListByOperationId(widget.items[index].operationId.toString());
-              },
-              child: Container(
-                margin: const EdgeInsets.all(4),
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade100,
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(
-                    color: isSelected ? Colors.black : Colors.grey.shade300,
-                    width: isSelected ? 1.5 : 1,
-                  ),
+            final operation = widget.items[index];
+
+            return AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
+              curve: Curves.easeInOut,
+              margin: const EdgeInsets.all(4),
+              decoration: BoxDecoration(
+                color: isSelected ? Colors.orange[50] : Colors.grey[50],
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(
+                  color: isSelected ? Colors.orange : Colors.grey[300]!,
+                  width: isSelected ? 1 : 1,
                 ),
-                child: Stack(
-                  children: [
-                    Center(
-                      child: Padding(
-                        padding: const EdgeInsets.all(8),
-                        child: Text(
-                          widget.items[index].operationName??'',
-                          style:  TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.05),
+                    blurRadius: 4,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(10),
+                  onTap: () {
+                    setState(() => selectedIndex = index);
+                    final cp = context.read<CountingProvider>();
+                    cp.getDefectListByOperationId(operation.operationId.toString());
+                  },
+                  child: Stack(
+                    children: [
+                      Center(
+                        child: Padding(
+                          padding: const EdgeInsets.all(12),
+                          child: Text(
+                            operation.operationName ?? '',
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+                              color: isSelected ? Colors.orange[800] : Colors.grey[800],
+                            ),
+                            textAlign: TextAlign.center,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
                           ),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
-                    ),
-                    if (isSelected)
-                      Positioned(
-                        top: 4,
-                        left: 4,
-                        child: Container(
-                          padding: const EdgeInsets.all(2),
-                          decoration: const BoxDecoration(
-                            color: Colors.green,
-                            shape: BoxShape.circle,
-                          ),
-                          child: const Icon(
-                            Icons.check,
-                            size: 14,
-                            color: Colors.white,
+                      if (isSelected)
+                        Positioned(
+                          top: 2,
+                          right: 2,
+                          child: Container(
+                            padding: const EdgeInsets.all(2),
+                            decoration: BoxDecoration(
+                              color: Colors.orange,
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: Colors.white,
+                                width: 2,
+                              ),
+                            ),
+                            child: const Icon(
+                              Icons.check,
+                              size: 10,
+                              color: Colors.white,
+                            ),
                           ),
                         ),
-                      ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             );
@@ -102,10 +130,16 @@ class _OperationListState extends State<OperationList> {
     );
   }
 
-  void getOperations() async{
-    var cp=context.read<CountingProvider>();
-    var bp=context.read<BuyerProvider>();
-    cp.getAllOperations(buyerPo: bp.buyerPo!);
+  void getOperations() async {
+    final cp = context.read<CountingProvider>();
+    final bp = context.read<BuyerProvider>();
+    await cp.getAllOperations(buyerPo: bp.buyerPo!);
+
+    // Ensure first item remains selected after data loads
+    if (widget.items.isNotEmpty && selectedIndex == null) {
+      setState(() => selectedIndex = 0);
+      cp.getDefectListByOperationId(widget.items[0].operationId.toString());
+    }
   }
 }
 

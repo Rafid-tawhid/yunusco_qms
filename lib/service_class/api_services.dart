@@ -298,4 +298,8 @@ class ApiService {
       return null;
     }
   }
+
+  void sendTesting(Map<String, dynamic> localData) {
+    debugPrint('Trying to save data in database');
+  }
 }

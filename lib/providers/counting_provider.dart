@@ -63,7 +63,7 @@ class CountingProvider with ChangeNotifier {
 
   List<OperationModel> get allOperations => _allOperations;
 
-  void getAllOperations({required PoModels buyerPo}) async {
+  Future<void> getAllOperations({required PoModels buyerPo}) async {
     var result = await apiService.getData('api/qms/GetOperations/${buyerPo.itemId}');
     if (result != null) {
       _allOperations.clear();
@@ -179,10 +179,13 @@ class CountingProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  List<Map<String, dynamic>> reportDataList = [];
+  List<Map<String, dynamic>> get reportDataList=>_reportDataList ;
+  List<Map<String, dynamic>> _reportDataList = [];
+
 
   Future<bool> saveCountingDataLocally(BuyerProvider buyerPro, {bool? from, Map<String, dynamic>? info, required String status}) async {
     debugPrint('THIS REQUEST IS FOR NO ${status}');
+
     try {
       // Get section and line IDs
       final secId = await DashboardHelpers.getString('selectedSectionId');
@@ -217,9 +220,13 @@ class CountingProvider with ChangeNotifier {
           "ColorId": buyerPro.color!.colorId,
         },
         "QmsDetailModel": [
-          {"Status": status, "Quantity": 1,
+          {"Status": status,
+            "Quantity": 1,
             "OperationId": '${checkForPassOrAlterCheck(status) ? 0 : info!['operationId']}',
-            "DefectId": '${checkForPassOrAlterCheck(status) ? 0 : info!['defectId']}'},
+            "DefectId": '${checkForPassOrAlterCheck(status) ? 0 : info!['defectId']}',
+            "SizeId": buyerPro.size!.sizeId,
+            "ColorId": buyerPro.color!.colorId,
+          }
         ],
       };
 
@@ -235,7 +242,7 @@ class CountingProvider with ChangeNotifier {
 
       // Prepare data for local storage
       final localData = {
-        'count': sendData.toJson(),
+        'count': sendingData,
         'secId': secId,
         'line': line,
         'quality': from == true ? info!['operation'] : null,
@@ -247,7 +254,9 @@ class CountingProvider with ChangeNotifier {
       sendData.sent = false;
       final box = Hive.box<SendDataModel>('sendDataBox');
       await box.put('sendDataKey', sendData);
-      reportDataList.add(localData);
+
+
+      savarMainDataLocallyWithoutInternet(localData);
 
       return true;
     } catch (e) {
@@ -256,49 +265,8 @@ class CountingProvider with ChangeNotifier {
     }
   }
 
-  Future<void> saveDataToFirebase(BuyerProvider buyerPro, {bool? from, required String status, List<DefectModels>? info}) async {
-    try {
-      // 1. Get required data from local storage
-      final secId = await DashboardHelpers.getString('section');
-      final line = await DashboardHelpers.getString('line');
 
-      // 2. Prepare defects data if status is not 'pass'
-      List<DefectModels>? firebaseDefects;
-      if (status != CheckedStatus.pass && info != null) {
-        firebaseDefects = info.map((defect) => DefectModels(defectId: defect.defectId, defectName: defect.defectName, operationId: defect.operationId)).toList();
-      }
-      //
-      // 3. Create the data model
-      final sendData = FirebaseDataModel(
-        employeeId: DashboardHelpers.userModel!.iDnum,
-        buyer: buyerPro.buyerInfo!.code.toString(),
-        style: buyerPro.buyerStyle!.style.toString(),
-        po: buyerPro.buyerPo!.po.toString(),
-        color: buyerPro.color.toString(),
-        size: buyerPro.size.toString(),
-        status: status,
-        sectionId: secId,
-        lineId: line,
-        defects: firebaseDefects,
-        checkTime: DateTime.now().toIso8601String(), // Add current timestamp
-      );
 
-      // 4. Get reference to Firestore
-      final firestore = FirebaseFirestore.instance;
-
-      // 5. Add document to QMS collection
-      await firestore.collection('qms').add(sendData.toJson()).then((docRef) {
-        print('Document saved with ID: ${docRef.id}');
-        // Optional: Show success message
-      });
-    } catch (e) {
-      print('Error saving to Firebase: $e');
-      // Show error message to user
-      DashboardHelpers.showAlert(msg: 'Failed to save quality check: ${e.toString()}');
-      // Re-throw for further error handling if needed
-      throw e;
-    }
-  }
 
   Future<SendDataModel?> getCountingDataLocally() async {
     try {
@@ -362,7 +330,20 @@ class CountingProvider with ChangeNotifier {
 
   bool checkForPassOrAlterCheck(String status) {
     //return true if check and return false if alter check
-    return status==CheckedStatus.pass||status==CheckedStatus.alter_check;
+    return status == CheckedStatus.pass || status == CheckedStatus.alter_check;
+  }
+
+  void savarMainDataLocallyWithoutInternet(Map<String, dynamic> localData) {
+    if(localData.length>10){
+
+      //send to save data in server
+      if(providewr)
+      apiService.sendTesting(localData);
+    }
+    else {
+      _reportDataList.add(localData);
+    }
+
   }
 
   // bool isBuyerInfoSame({
