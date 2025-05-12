@@ -186,8 +186,8 @@ class BuyerProvider extends ChangeNotifier {
   BuyerModel? _buyerInfo;
   BuyerStyleModel? _buyerStyle;
   PoModels? _buyerPo;
-  String? _color;
-  String? _size;
+  ColorModel? _color;
+  SizeModel? _size;
 
   // Getters
   BuyerModel? get buyerInfo => _buyerInfo;
@@ -196,11 +196,11 @@ class BuyerProvider extends ChangeNotifier {
 
   PoModels? get buyerPo => _buyerPo;
 
-  String? get color => _color;
+  ColorModel? get color => _color;
 
-  String? get size => _size;
+  SizeModel? get size => _size;
 
-  Future<void> setBuyersStylePoInfo({BuyerModel? buyerInfo, BuyerStyleModel? buyerStyle, PoModels? buyerPO, String? color, String? size}) async {
+  Future<void> setBuyersStylePoInfo({BuyerModel? buyerInfo, BuyerStyleModel? buyerStyle, PoModels? buyerPO, ColorModel? color, SizeModel? size}) async {
     // Update only the provided values
     if (buyerInfo != null) _buyerInfo = buyerInfo;
     if (buyerStyle != null) _buyerStyle = buyerStyle;
@@ -214,8 +214,8 @@ class BuyerProvider extends ChangeNotifier {
   Buyer Info: ${_buyerInfo?.name.toString()}
   Buyer Style: ${_buyerStyle?.style.toString()}
   Buyer PO: ${_buyerPo?.po.toString()}
-  Color: $_color
-  Size: $_size
+  Color: ${_color==null?null:_color!.toJson()}
+  Size: ${_size==null?null:_size!.toJson()}
   ===========================
   ''');
 

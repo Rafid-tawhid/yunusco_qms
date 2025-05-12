@@ -4,8 +4,10 @@ import 'package:nidle_qty/providers/buyer_provider.dart';
 import 'package:nidle_qty/providers/counting_provider.dart';
 import 'package:provider/provider.dart';
 
+import '../models/operation_model.dart';
+
 class OperationList extends StatefulWidget {
-  final List<Map<String, dynamic>> items;
+  final List<OperationModel> items;
 
   const OperationList({super.key, required this.items});
 
@@ -45,7 +47,7 @@ class _OperationListState extends State<OperationList> {
                   selectedIndex = isSelected ? null : index;
                 });
                 var cp=context.read<CountingProvider>();
-                cp.getDefectListByOperationId(widget.items[index]['OperationId'].toString());
+                cp.getDefectListByOperationId(widget.items[index].operationId.toString());
               },
               child: Container(
                 margin: const EdgeInsets.all(4),
@@ -63,7 +65,7 @@ class _OperationListState extends State<OperationList> {
                       child: Padding(
                         padding: const EdgeInsets.all(8),
                         child: Text(
-                          widget.items[index]['OperationName'],
+                          widget.items[index].operationName??'',
                           style:  TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w500,

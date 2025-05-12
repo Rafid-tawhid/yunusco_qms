@@ -109,7 +109,7 @@ class _QualityControlScreenState extends State<QualityControlScreen> with Widget
                 ccp.isLoadingLunchTime
                     ? CircularProgressIndicator()
                     : ccp.isLunchTime
-                    ? Center(child: Text('Your Lunch time ${DashboardHelpers.formatExactLunchTime(ccp.lunchTime!['lunchStartTime'], ccp.lunchTime!['lunchEndTime'])}', textAlign: TextAlign.center))
+                    ? Center(child: Text('Your Lunch time ${DashboardHelpers.formatExactLunchTime(ccp.lunchTime!.lunchStartTime??'', ccp.lunchTime!.lunchEndTime??'')}', textAlign: TextAlign.center))
                     : SingleChildScrollView(
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
@@ -182,12 +182,12 @@ class _QualityControlScreenState extends State<QualityControlScreen> with Widget
                                                               _selectColor = value;
                                                             });
                                                             //update color
-                                                            pro.setBuyersStylePoInfo(color: _selectColor!.color);
+                                                            pro.setBuyersStylePoInfo(color: _selectColor);
                                                             setState(() {
                                                               _selectColor = value;
                                                             });
                                                             //update color
-                                                            pro.setBuyersStylePoInfo(color: _selectColor!.color);
+                                                            pro.setBuyersStylePoInfo(color: _selectColor);
                                                             //check if it is similar to previous selection than count will update
                                                             if (_selectColor != null && _selectSize != null) {
                                                               //check if previous data
@@ -207,7 +207,7 @@ class _QualityControlScreenState extends State<QualityControlScreen> with Widget
                                                             setState(() {
                                                               _selectSize = value;
                                                             });
-                                                            pro.setBuyersStylePoInfo(size: _selectSize!.sIze);
+                                                            pro.setBuyersStylePoInfo(size: _selectSize);
                                                             //check if it is similar to previous selection than count will update
                                                             if (_selectColor != null && _selectSize != null) {
                                                               //check if previous data
@@ -411,7 +411,7 @@ class _QualityControlScreenState extends State<QualityControlScreen> with Widget
             hint: Text(hint, style: TextStyle(color: Colors.grey.shade600)),
             items:
                 items.map((SizeModel value) {
-                  return DropdownMenuItem<SizeModel>(value: value, child: Text(value.sIze ?? ''));
+                  return DropdownMenuItem<SizeModel>(value: value, child: Text(value.size ?? ''));
                 }).toList(),
             onChanged: (val) {
               onChanged(val); // Call the parent's callback
@@ -425,9 +425,21 @@ class _QualityControlScreenState extends State<QualityControlScreen> with Widget
   _alter_checked() {
     showAlterCheckDialog(
       context,
-      onConfirm: () {
+      onConfirm: () async {
         var cp = context.read<CountingProvider>();
-        cp.checkedItemFromAlter();
+        var bp = context.read<BuyerProvider>();
+
+        //set counting data locally
+        var checked = await cp.saveCountingDataLocally(
+          bp,
+          status: CheckedStatus.alter_check,
+        );
+        if (checked) {
+          cp.checkedItemFromAlter();
+        }
+
+
+
       },
     );
   }

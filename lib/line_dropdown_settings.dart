@@ -237,7 +237,7 @@ class _SearchDropdownScreenState extends State<SearchDropdownScreen> {
                                   : _buildSelectionRow(
                                     Icons.emoji_food_beverage_sharp,
                                     'Lunch:',
-                                    DashboardHelpers.formatExactLunchTime(pro.lunchTime!['LunchStartTime'], pro.lunchTime!['LunchEndTime']),
+                                    DashboardHelpers.formatExactLunchTime(pro.lunchTime!.lunchStartTime??'', pro.lunchTime!.lunchEndTime??''),
                                   ),
                     ),
                     const SizedBox(height: 12),

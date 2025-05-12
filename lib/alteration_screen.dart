@@ -79,6 +79,7 @@ class _AlterationReasonScreenState extends State<AlterationReasonScreen> {
                             setState(() {
                               selectedIndex = index;
                             });
+                            debugPrint('DefectModels ${reason.toJson()}');
                             _toggleReason(reason.defectName ?? '');
                           },
                           secondary: const Icon(Icons.warning_amber_rounded),
@@ -103,16 +104,15 @@ class _AlterationReasonScreenState extends State<AlterationReasonScreen> {
                   var checked = await cp.saveCountingDataLocally(
                     bp,
                     from: true,
-                    info: {'operationId': cp.allDefectList[selectedIndex!].operationId, 'defectId': cp.allDefectList[selectedIndex!].defectId},
-                    status: widget.form,
+                    info: {'operationId': cp.allDefectList[selectedIndex??0].operationId, 'defectId': cp.allDefectList[selectedIndex??0].defectId},
+                    status: getStatus(widget.form),
                   );
 
-                  if (widget.form == CheckedStatus.alter&&checked) {
+                  if (getStatus(widget.form) == CheckedStatus.alter && checked) {
                     cp.alterItem();
                   } else {
                     cp.rejectItem();
                   }
-
 
                   Navigator.pop(context, selectedReasons);
                 },
@@ -128,5 +128,14 @@ class _AlterationReasonScreenState extends State<AlterationReasonScreen> {
   void getFirstDefectReason() async {
     var cp = context.read<CountingProvider>();
     cp.getDefectListByOperationId('1');
+  }
+
+  getStatus(String form) {
+    if(form=='alter'){
+      return '2';
+    }
+    else {
+      return '4';
+    }
   }
 }

@@ -12,6 +12,8 @@ import 'package:nidle_qty/providers/buyer_provider.dart';
 import 'package:nidle_qty/service_class/api_services.dart';
 
 import '../models/firebase_data_model.dart';
+import '../models/lunch_time_model.dart';
+import '../models/operation_model.dart';
 import '../models/send_data_model.dart';
 import '../utils/dashboard_helpers.dart';
 
@@ -57,16 +59,16 @@ class CountingProvider with ChangeNotifier {
     debugPrint('send_data : $send_data');
   }
 
-  List<Map<String, dynamic>> _allOperations = [];
+  List<OperationModel> _allOperations = [];
 
-  List<Map<String, dynamic>> get allOperations => _allOperations;
+  List<OperationModel> get allOperations => _allOperations;
 
   void getAllOperations({required PoModels buyerPo}) async {
     var result = await apiService.getData('api/qms/GetOperations/${buyerPo.itemId}');
     if (result != null) {
       _allOperations.clear();
       for (var i in result['Results']) {
-        _allOperations.add(i);
+        _allOperations.add(OperationModel.fromJson(i));
       }
     }
     notifyListeners();
@@ -89,22 +91,22 @@ class CountingProvider with ChangeNotifier {
   }
 
   bool _isLoadingLunchTime = false;
-  Map<String, dynamic>? _lunchTime;
+  LunchTimeModel? _lunchTime;
 
   bool get isLoadingLunchTime => _isLoadingLunchTime;
 
-  Map<String, dynamic>? get lunchTime => _lunchTime;
+  LunchTimeModel? get lunchTime => _lunchTime;
 
   Future<void> getLunchTimeBySectionId(String secId) async {
     _isLoadingLunchTime = true;
     notifyListeners();
 
     try {
-      final result = await apiService.getData('api/qms/GetLunchTime/10');
+      final result = await apiService.getData('api/qms/GetLunchTime/$secId');
 
       if (result != null) {
-        _lunchTime = result['Results'][0];
-        isCurrentTimeInLunchRangeFixed(_lunchTime!); // Your existing check
+        _lunchTime = LunchTimeModel.fromJson(result['Results'][0]);
+        isCurrentTimeInLunchRangeFixed(_lunchTime); // Your existing check
       }
     } catch (e) {
       debugPrint('Error fetching lunch time: $e');
@@ -135,11 +137,14 @@ class CountingProvider with ChangeNotifier {
     }
   }
 
-  bool isCurrentTimeInLunchRangeFixed(Map<String, dynamic> lunchTimeData) {
+  bool isCurrentTimeInLunchRangeFixed(LunchTimeModel? lunchTimeData) {
+    if (lunchTime == null) {
+      return false;
+    }
     try {
       // Parse the time strings (ignoring the date part)
-      final startTimeStr = lunchTimeData['lunchStartTime'].toString().split(' ')[1];
-      final endTimeStr = lunchTimeData['lunchEndTime'].toString().split(' ')[1];
+      final startTimeStr = lunchTimeData!.lunchStartTime.toString().split(' ')[1];
+      final endTimeStr = lunchTimeData.lunchEndTime.toString().split(' ')[1];
 
       debugPrint('startTimeStr $startTimeStr');
       debugPrint('endTimeStr $endTimeStr');
@@ -176,12 +181,8 @@ class CountingProvider with ChangeNotifier {
 
   List<Map<String, dynamic>> reportDataList = [];
 
-  Future<bool> saveCountingDataLocally(
-      BuyerProvider buyerPro, {
-        bool? from,
-        Map<String, dynamic>? info,
-        required String status,
-      }) async {
+  Future<bool> saveCountingDataLocally(BuyerProvider buyerPro, {bool? from, Map<String, dynamic>? info, required String status}) async {
+    debugPrint('THIS REQUEST IS FOR NO ${status}');
     try {
       // Get section and line IDs
       final secId = await DashboardHelpers.getString('selectedSectionId');
@@ -209,16 +210,22 @@ class CountingProvider with ChangeNotifier {
           "BuyerId": buyerPro.buyerStyle!.buyerId,
           "Style": buyerPro.buyerStyle!.style,
           "PO": buyerPro.buyerPo!.po,
-          "LunchId": 10,
+          "LunchId": _lunchTime == null ? null : _lunchTime!.lunchTimeId,
           "ItemId": buyerPro.buyerPo!.itemId,
-          "Status": 000,
-          "SizeId": 000,
-          "ColorId": 000,
+          "Status": status,
+          "SizeId": buyerPro.size!.sizeId,
+          "ColorId": buyerPro.color!.colorId,
         },
         "QmsDetailModel": [
-          {"Status": 000, "Quantity": 1, "OperationId": 000, "DefectId": 000},
+          {"Status": status, "Quantity": 1,
+            "OperationId": '${checkForPassOrAlterCheck(status) ? 0 : info!['operationId']}',
+            "DefectId": '${checkForPassOrAlterCheck(status) ? 0 : info!['defectId']}'},
         ],
       };
+
+      if (info != null) {
+        debugPrint('Coming from alter or reject.. :: operation Id : ${info['operationId']} and defect ID : ${info['defectId']}');
+      }
 
       // Send data to API
       final apiResponse = await apiService.postData('api/qms/SaveQmsData', sendingData);
@@ -258,7 +265,7 @@ class CountingProvider with ChangeNotifier {
       // 2. Prepare defects data if status is not 'pass'
       List<DefectModels>? firebaseDefects;
       if (status != CheckedStatus.pass && info != null) {
-        firebaseDefects = info.map((defect) => DefectModels(defectId: defect.defectId, defectName: defect.defectName, operationName: defect.operationName)).toList();
+        firebaseDefects = info.map((defect) => DefectModels(defectId: defect.defectId, defectName: defect.defectName, operationId: defect.operationId)).toList();
       }
       //
       // 3. Create the data model
@@ -351,6 +358,11 @@ class CountingProvider with ChangeNotifier {
   void dispose() {
     _periodicTimer?.cancel();
     super.dispose();
+  }
+
+  bool checkForPassOrAlterCheck(String status) {
+    //return true if check and return false if alter check
+    return status==CheckedStatus.pass||status==CheckedStatus.alter_check;
   }
 
   // bool isBuyerInfoSame({
