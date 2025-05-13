@@ -299,7 +299,8 @@ class ApiService {
     }
   }
 
-  void sendTesting(Map<String, dynamic> localData) {
+  Future<bool> sendTesting(Map<String, dynamic> localData) async{
     debugPrint('Trying to save data in database');
+    return true;
   }
 }

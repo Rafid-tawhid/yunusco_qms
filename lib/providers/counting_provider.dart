@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:hive/hive.dart';
+import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:nidle_qty/models/checked_enum.dart';
 import 'package:nidle_qty/models/defect_models.dart';
 import 'package:nidle_qty/models/po_models.dart';
@@ -240,23 +241,21 @@ class CountingProvider with ChangeNotifier {
         return false;
       }
 
-      // Prepare data for local storage
-      final localData = {
-        'count': sendingData,
-        'secId': secId,
-        'line': line,
-        'quality': from == true ? info!['operation'] : null,
-        'reasons': from == true ? info!['reasons'] : null,
-        'time': DateTime.now().toString(),
-      };
-
       // Save data locally
       sendData.sent = false;
       final box = Hive.box<SendDataModel>('sendDataBox');
       await box.put('sendDataKey', sendData);
 
-
-      savarMainDataLocallyWithoutInternet(localData);
+      // Prepare data for local storage
+      // final localData = {
+      //   'count': sendingData,
+      //   'secId': secId,
+      //   'line': line,
+      //   'quality': from == true ? info!['operation'] : null,
+      //   'reasons': from == true ? info!['reasons'] : null,
+      //   'time': DateTime.now().toString(),
+      // };
+     // savarMainDataLocallyWithoutInternet(localData);
 
       return true;
     } catch (e) {
@@ -333,17 +332,33 @@ class CountingProvider with ChangeNotifier {
     return status == CheckedStatus.pass || status == CheckedStatus.alter_check;
   }
 
-  void savarMainDataLocallyWithoutInternet(Map<String, dynamic> localData) {
-    if(localData.length>10){
-
+  Future<void> savarMainDataLocallyWithoutInternet(Map<String, dynamic> localData) async {
+    if(_reportDataList.length>10){
+      final bool isConnected = await InternetConnectionChecker.instance.hasConnection;
       //send to save data in server
-      if(providewr)
-      apiService.sendTesting(localData);
+      if(isConnected){
+        var send = await apiService.sendTesting(localData);
+        if(send){
+          debugPrint('Data is cleared');
+          _reportDataList.clear();
+          notifyListeners();
+        }
+        else {
+          debugPrint('FROM THIS 1');
+          _reportDataList.add(localData);
+        }
+      }
+      else {
+        debugPrint('FROM THIS 2');
+        _reportDataList.add(localData);
+      }
     }
     else {
+      debugPrint('FROM THIS 3');
       _reportDataList.add(localData);
     }
 
+    debugPrint('_reportDataList ${_reportDataList.length}');
   }
 
   // bool isBuyerInfoSame({

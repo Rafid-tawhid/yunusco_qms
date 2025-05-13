@@ -18,7 +18,7 @@ class NetworkProvider with ChangeNotifier {
   List<ConnectivityResult> _connectionStatus = [ConnectivityResult.none];
   final Connectivity _connectivity = Connectivity();
   late StreamSubscription<List<ConnectivityResult>> _connectivitySubscription;
-  bool _wasConnected = true;
+  bool wasConnected = true;
   bool _isDialogShowing = false;
 
   List<ConnectivityResult> get connectionStatus => _connectionStatus;
@@ -46,13 +46,13 @@ class NetworkProvider with ChangeNotifier {
 
     final currentlyConnected = isConnected;
 
-    if (_wasConnected && !currentlyConnected) {
+    if (wasConnected && !currentlyConnected) {
       _showNoInternetAlert();
-    } else if (!_wasConnected && currentlyConnected) {
+    } else if (!wasConnected && currentlyConnected) {
       _hideNoInternetAlert();
     }
 
-    _wasConnected = currentlyConnected;
+    wasConnected = currentlyConnected;
   }
 
   void _showNoInternetAlert() {
