@@ -1,36 +1,52 @@
 class OperationModel {
   OperationModel({
-      num? itemId, 
       num? operationId, 
+      String? styleNo, 
+      num? itemId, 
+      num? operationDetailsId, 
       String? operationName,}){
-    _itemId = itemId;
     _operationId = operationId;
+    _styleNo = styleNo;
+    _itemId = itemId;
+    _operationDetailsId = operationDetailsId;
     _operationName = operationName;
 }
 
   OperationModel.fromJson(dynamic json) {
-    _itemId = json['ItemId'];
     _operationId = json['OperationId'];
+    _styleNo = json['StyleNo'];
+    _itemId = json['ItemId'];
+    _operationDetailsId = json['OperationDetailsId'];
     _operationName = json['OperationName'];
   }
-  num? _itemId;
   num? _operationId;
+  String? _styleNo;
+  num? _itemId;
+  num? _operationDetailsId;
   String? _operationName;
-OperationModel copyWith({  num? itemId,
-  num? operationId,
+OperationModel copyWith({  num? operationId,
+  String? styleNo,
+  num? itemId,
+  num? operationDetailsId,
   String? operationName,
-}) => OperationModel(  itemId: itemId ?? _itemId,
-  operationId: operationId ?? _operationId,
+}) => OperationModel(  operationId: operationId ?? _operationId,
+  styleNo: styleNo ?? _styleNo,
+  itemId: itemId ?? _itemId,
+  operationDetailsId: operationDetailsId ?? _operationDetailsId,
   operationName: operationName ?? _operationName,
 );
-  num? get itemId => _itemId;
   num? get operationId => _operationId;
+  String? get styleNo => _styleNo;
+  num? get itemId => _itemId;
+  num? get operationDetailsId => _operationDetailsId;
   String? get operationName => _operationName;
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
-    map['ItemId'] = _itemId;
     map['OperationId'] = _operationId;
+    map['StyleNo'] = _styleNo;
+    map['ItemId'] = _itemId;
+    map['OperationDetailsId'] = _operationDetailsId;
     map['OperationName'] = _operationName;
     return map;
   }

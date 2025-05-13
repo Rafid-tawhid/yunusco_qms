@@ -17,7 +17,6 @@ class AlterationReasonScreen extends StatefulWidget {
 class _AlterationReasonScreenState extends State<AlterationReasonScreen> {
   final List<String> selectedReasons = [];
   int? selectedIndex;
-  int? selectedNumber;
 
   @override
   void initState() {
@@ -79,22 +78,6 @@ class _AlterationReasonScreenState extends State<AlterationReasonScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text('Select Reasons:', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.grey[800])),
-                Container(
-                  width: 60,
-                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(8), border: Border.all(color: Colors.grey[300]!)),
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                  child: DropdownButtonFormField<int>(
-                    decoration: const InputDecoration(border: InputBorder.none, contentPadding: EdgeInsets.zero),
-                    isExpanded: true,
-                    value: selectedNumber,
-                    hint: const Text('(0)', style: TextStyle(color: Colors.grey)),
-                    icon: Icon(Icons.arrow_drop_down, color: myColors.primaryColor),
-                    items: List.generate(21, (i) => DropdownMenuItem(value: i, child: Text('$i', style: const TextStyle(fontSize: 14)))),
-                    onChanged: (value) {
-                      setState(() => selectedNumber = value);
-                    },
-                  ),
-                ),
               ],
             ),
           ),
@@ -167,7 +150,7 @@ class _AlterationReasonScreenState extends State<AlterationReasonScreen> {
                   var checked = await cp.saveCountingDataLocally(
                     bp,
                     from: true,
-                    info: {'operationId': cp.allDefectList[selectedIndex ?? 0].operationId, 'defectId': cp.allDefectList[selectedIndex ?? 0].defectId},
+                    info: {'operationId': cp.operation!.operationId, 'defectId': cp.allDefectList[selectedIndex ?? 0].defectId},
                     status: getStatus(widget.form),
                   );
 
@@ -198,3 +181,7 @@ class _AlterationReasonScreenState extends State<AlterationReasonScreen> {
     return form == 'alter' ? '2' : '4';
   }
 }
+
+
+
+//

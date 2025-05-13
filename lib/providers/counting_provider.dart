@@ -65,11 +65,12 @@ class CountingProvider with ChangeNotifier {
   List<OperationModel> get allOperations => _allOperations;
 
   Future<void> getAllOperations({required PoModels buyerPo}) async {
-    var result = await apiService.getData('api/qms/GetOperations/${buyerPo.itemId}');
+   // var result = await apiService.getData('api/qms/GetOperations/${buyerPo.itemId}');
+    var result = await apiService.getData('api/qms/GetOperations/5PK MF MINI FASH- 1217406');
     if (result != null) {
-      _allOperations.clear();
+     _allOperations.clear();
       for (var i in result['Results']) {
-        _allOperations.add(OperationModel.fromJson(i));
+       _allOperations.add(OperationModel.fromJson(i));
       }
     }
     notifyListeners();
@@ -79,12 +80,13 @@ class CountingProvider with ChangeNotifier {
 
   List<DefectModels> get allDefectList => _allDefectList;
 
+
   void getDefectListByOperationId(String id) async {
-    var result = await apiService.getData('api/qms/GetDefects/$id');
+    var result = await apiService.getData('api/qms/GetDefects');
     if (result != null) {
-      _allDefectList.clear();
+     _allDefectList.clear();
       for (var i in result['Results']) {
-        _allDefectList.add(DefectModels.fromJson(i));
+       _allDefectList.add(DefectModels.fromJson(i));
       }
     }
     debugPrint('_allDefectList ${_allDefectList.length}');
@@ -188,6 +190,7 @@ class CountingProvider with ChangeNotifier {
     debugPrint('THIS REQUEST IS FOR NO ${status}');
 
     try {
+      EasyLoading.show(maskType: EasyLoadingMaskType.black);
       // Get section and line IDs
       final secId = await DashboardHelpers.getString('selectedSectionId');
       final line = await DashboardHelpers.getString('selectedLineId');
@@ -261,6 +264,9 @@ class CountingProvider with ChangeNotifier {
     } catch (e) {
       debugPrint('Error in saveCountingDataLocally: $e');
       return false;
+    }
+    finally{
+      EasyLoading.dismiss();
     }
   }
 
@@ -361,26 +367,49 @@ class CountingProvider with ChangeNotifier {
     debugPrint('_reportDataList ${_reportDataList.length}');
   }
 
-  // bool isBuyerInfoSame({
-  //   required String code,
-  //   required String style,
-  //   required String po,
-  //   required String color,
-  //   required String size,
-  // }) {
-  //   final box = Hive.box<BuyerInfoModel>('buyerInfoBox');
-  //   final savedInfo = box.get('buyerInfo');
-  //
-  //   if (savedInfo == null) return false;
-  //   debugPrint('Previously SavedInfo ${savedInfo.toJson()}');
-  //   debugPrint(
-  //     'item to compare = code: ${code}, style: ${style}, po: ${po},color: ${color}, size:${size} )}',
-  //   );
-  //
-  //   return savedInfo.code == code &&
-  //       savedInfo.style == style &&
-  //       savedInfo.po == po &&
-  //       savedInfo.color == color &&
-  //       savedInfo.size == size;
-  // }
+  OperationModel? operation;
+  void selectedOperation(OperationModel data) {
+    operation=data;
+    notifyListeners();
+  }
+
+  List<Map<String, dynamic>> finalOperationDefectList = [];
+
+  void setDefectReasons(List<String> selectedReasons) {
+    // Check if an operation with this ID already exists
+    final existingIndex = finalOperationDefectList.indexWhere(
+          (item) => item["id"] == operation!.operationId,
+    );
+
+    if (existingIndex >= 0) {
+      // Operation exists - update its defects
+      final existingDefects = finalOperationDefectList[existingIndex]["defects"] as List<String>;
+
+      // Add new defects that aren't already present (avoid duplicates)
+      for (final reason in selectedReasons) {
+        if (!existingDefects.contains(reason)) {
+          existingDefects.add(reason);
+        }
+      }
+
+      // Update the entry
+      finalOperationDefectList[existingIndex] = {
+        "id": operation!.operationId,
+        "operation": operation!.operationName,
+        "defects": existingDefects,
+      };
+    } else {
+      // Operation doesn't exist - add new entry
+      finalOperationDefectList.add({
+        "id": operation!.operationId,
+        "operation": operation!.operationName,
+        "defects": selectedReasons,
+      });
+    }
+
+    debugPrint('finalOperationDefectList $finalOperationDefectList');
+  }
+
+
+
 }

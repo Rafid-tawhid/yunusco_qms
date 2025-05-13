@@ -78,7 +78,8 @@ class _OperationListState extends State<OperationList> {
                   onTap: () {
                     setState(() => selectedIndex = index);
                     final cp = context.read<CountingProvider>();
-                    cp.getDefectListByOperationId(operation.operationId.toString());
+                    cp.selectedOperation(operation);
+                 //   cp.getDefectListByOperationId(operation.operationId.toString());
                   },
                   child: Stack(
                     children: [
