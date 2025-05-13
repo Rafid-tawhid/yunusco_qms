@@ -150,8 +150,11 @@ class _AlterationReasonScreenState extends State<AlterationReasonScreen> {
                   var checked = await cp.saveCountingDataLocally(
                     bp,
                     from: true,
-                    info: {'operationId': cp.operation!.operationId, 'defectId': cp.allDefectList[selectedIndex ?? 0].defectId},
-                    status: getStatus(widget.form),
+                    info: {
+                          'operationId': cp.operation!.operationId,
+                          'defectId': cp.allDefectList[selectedIndex ?? 0].defectId,
+                          'operationDetailsId': cp.operation!.operationDetailsId,},
+                          status: getStatus(widget.form),
                   );
 
                   if (getStatus(widget.form) == '2' && checked) {

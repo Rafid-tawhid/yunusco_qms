@@ -209,29 +209,47 @@ class CountingProvider with ChangeNotifier {
         size: buyerPro.size.toString(),
       );
 
-      // Prepare data for API
-      final sendingData = {
-        "QmsMasterModel": {
-          "SectionId": secId,
-          "LineId": line,
-          "BuyerId": buyerPro.buyerStyle!.buyerId,
-          "Style": buyerPro.buyerStyle!.style,
-          "PO": buyerPro.buyerPo!.po,
-          "LunchId": _lunchTime == null ? null : _lunchTime!.lunchTimeId,
-          "ItemId": buyerPro.buyerPo!.itemId,
-          "Status": status,
-          "SizeId": buyerPro.size!.sizeId,
-          "ColorId": buyerPro.color!.colorId,
-        },
-        "QmsDetailModel": [
-          {"Status": status,
-            "Quantity": 1,
-            "OperationId": '${checkForPassOrAlterCheck(status) ? 0 : info!['operationId']}',
-            "DefectId": '${checkForPassOrAlterCheck(status) ? 0 : info!['defectId']}',
-            "SizeId": buyerPro.size!.sizeId,
-            "ColorId": buyerPro.color!.colorId,
-          }
-        ],
+      //todo Prepare data for API
+      // final sendingData = {
+      //   "QmsMasterModel": {
+      //     "SectionId": secId,
+      //     "LineId": line,
+      //     "BuyerId": buyerPro.buyerStyle!.buyerId,
+      //     "Style": buyerPro.buyerStyle!.style,
+      //     "PO": buyerPro.buyerPo!.po,
+      //     "LunchId": _lunchTime == null ? null : _lunchTime!.lunchTimeId,
+      //     "ItemId": buyerPro.buyerPo!.itemId,
+      //     "Status": status,
+      //     "SizeId": buyerPro.size!.sizeId,
+      //     "ColorId": buyerPro.color!.colorId,
+      //   },
+      //   "QmsDetailModel": [
+      //     {"Status": status,
+      //       "Quantity": 1,
+      //       "OperationId": '${checkForPassOrAlterCheck(status) ? 0 : info!['operationId']}',
+      //       "DefectId": '${checkForPassOrAlterCheck(status) ? 0 : info!['defectId']}',
+      //       "SizeId": buyerPro.size!.sizeId,
+      //       "ColorId": buyerPro.color!.colorId,
+      //     }
+      //   ],
+      // };
+
+
+      var sendingData={
+        "SectionId": secId,
+        "LineId": line,
+        "BuyerId": buyerPro.buyerStyle!.buyerId,
+        "Style": buyerPro.buyerStyle!.style,
+        "Po": buyerPro.buyerPo!.po,
+        "LunchId": _lunchTime == null ? null : _lunchTime!.lunchTimeId,
+        "ItemId": buyerPro.buyerPo!.itemId,
+        "Status": status,
+        "ColorId": buyerPro.color!.colorId,
+        "SizeId": buyerPro.size!.sizeId,
+        "OperationDetailsId": '${checkForPassOrAlterCheck(status) ? 0 : info!['operationDetailsId']}',
+        "OperationId": '${checkForPassOrAlterCheck(status) ? 0 : info!['operationId']}',
+        "DefectId": '${checkForPassOrAlterCheck(status) ? 0 : info!['defectId']}',
+        "Quantity": 1
       };
 
       if (info != null) {
@@ -239,7 +257,7 @@ class CountingProvider with ChangeNotifier {
       }
 
       // Send data to API
-      final apiResponse = await apiService.postData('api/qms/SaveQmsData', sendingData);
+      final apiResponse = await apiService.postData('api/qms/SaveQms', sendingData);
       if (apiResponse == null) {
         return false;
       }
