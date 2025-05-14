@@ -40,7 +40,7 @@ class _AlterationReasonScreenState extends State<AlterationReasonScreen> {
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
         iconTheme: IconThemeData(color: Colors.white),
-        title: const Text('Select Alteration Reasons', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
+        title: const Text('Select Reasons', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
         centerTitle: true,
         elevation: 0,
         flexibleSpace: Container(decoration: BoxDecoration(gradient: LinearGradient(colors: [myColors.primaryColor, Colors.purple], begin: Alignment.topLeft, end: Alignment.bottomRight))),
@@ -170,7 +170,9 @@ class _AlterationReasonScreenState extends State<AlterationReasonScreen> {
 
   void getFirstDefectReason() async {
     var cp = context.read<CountingProvider>();
-    cp.getDefectListByOperationId('1');
+    if (cp.allDefectList.isEmpty) {
+      cp.getDefectListByOperationId('1');
+    }
   }
 
   String getStatus(String form) {
