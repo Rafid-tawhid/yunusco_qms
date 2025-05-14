@@ -1,25 +1,16 @@
 import 'dart:async';
-
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:nidle_qty/utils/dashboard_helpers.dart';
-
-
-import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-
+import 'package:fluttertoast/fluttertoast.dart';
 import '../main.dart';
-import '../widgets/network_alert.dart';
 
 class NetworkProvider with ChangeNotifier {
   List<ConnectivityResult> _connectionStatus = [ConnectivityResult.none];
   final Connectivity _connectivity = Connectivity();
   late StreamSubscription<List<ConnectivityResult>> _connectivitySubscription;
   bool wasConnected = true;
-  bool _isDialogShowing = false;
+  Timer? _toastTimer;
 
   List<ConnectivityResult> get connectionStatus => _connectionStatus;
   bool get isConnected => _connectionStatus.any((status) => status != ConnectivityResult.none);
@@ -47,35 +38,47 @@ class NetworkProvider with ChangeNotifier {
     final currentlyConnected = isConnected;
 
     if (wasConnected && !currentlyConnected) {
-      _showNoInternetAlert();
+      // Internet lost - start showing periodic toasts
+      _startPeriodicToasts();
     } else if (!wasConnected && currentlyConnected) {
-      _hideNoInternetAlert();
+      // Internet restored - show immediate toast and cancel timer
+      _showToast("Network connection restored", Colors.green);
+      _cancelPeriodicToasts();
     }
 
     wasConnected = currentlyConnected;
   }
 
-  void _showNoInternetAlert() {
-    if (_isDialogShowing) return;
+  void _startPeriodicToasts() {
+    // Show first toast immediately
+    _showToast("No internet connection", Colors.red);
 
-    _isDialogShowing = true;
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      DashboardHelpers.showCustomAnimatedDialog(
-        context: navigatorKey.currentContext!,
-        height: 300,
-        dismiss: false,
-        child: const NoInternetDialog(),
-      );
+    // Then repeat every minute
+    _toastTimer = Timer.periodic(const Duration(minutes: 1), (timer) {
+      _showToast("Still no internet connection", Colors.red);
     });
   }
 
-  void _hideNoInternetAlert() {
-    _isDialogShowing = false;
-    Navigator.of(navigatorKey.currentContext!).pop();
+  void _cancelPeriodicToasts() {
+    _toastTimer?.cancel();
+    _toastTimer = null;
   }
 
+  void _showToast(String message, Color backgroundColor) {
+    Fluttertoast.showToast(
+      msg: message,
+      toastLength: Toast.LENGTH_LONG,
+      gravity: ToastGravity.BOTTOM,
+      backgroundColor: backgroundColor,
+      textColor: Colors.white,
+      fontSize: 16.0,
+    );
+  }
+
+  @override
   void dispose() {
     _connectivitySubscription.cancel();
+    _cancelPeriodicToasts();
+    super.dispose();
   }
 }
