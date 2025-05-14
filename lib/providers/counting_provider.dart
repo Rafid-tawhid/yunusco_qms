@@ -288,8 +288,6 @@ class CountingProvider with ChangeNotifier {
     debugPrint('finalOperationDefectList $finalOperationDefectList');
   }
 
-
-
   List<Map<String, dynamic>> get reportDataList=>_reportDataList ;
   List<Map<String, dynamic>> _reportDataList = [];
 
@@ -361,7 +359,6 @@ class CountingProvider with ChangeNotifier {
     );
     final box = Hive.box<SendDataModel>('sendDataBox');
     await box.put('sendDataKey', sendData);
-
   }
 
 

@@ -482,8 +482,7 @@ class _QualityControlScreenState extends State<QualityControlScreen> with Widget
 
   void saveData() async {
     var cp = context.read<CountingProvider>();
-    var bp = context.read<BuyerProvider>();
-    //cp.saveCountingDataLocally(bp);
+    cp.saveFullDataPeriodically();
   }
 
   void getLunchTime() async {
