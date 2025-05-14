@@ -89,6 +89,7 @@ class _QualityControlScreenState extends State<QualityControlScreen> with Widget
                   icon: bp.lock ? Icon(Icons.lock) : Icon(Icons.lock_open),
                 ),
           ),
+
           // IconButton(
           //   icon: const Icon(Icons.bar_chart),
           //   onPressed: () {
