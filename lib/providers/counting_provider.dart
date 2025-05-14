@@ -227,7 +227,7 @@ class CountingProvider with ChangeNotifier {
 
     debugPrint('Starting periodic task with 5-second interval');
 
-    _periodicTimer = Timer.periodic(const Duration(seconds: 120), (timer) {
+    _periodicTimer = Timer.periodic(const Duration(seconds: 20), (timer) {
       debugPrint('Executing periodic task...');
       saveFullDataPeriodically();
     });
@@ -328,7 +328,7 @@ class CountingProvider with ChangeNotifier {
       "BuyerId": bp.buyerStyle!.buyerId,
       "Style": bp.buyerStyle!.style,
       "Po": bp.buyerPo!.po,
-      "LunchId": _lunchTime == null ? null : _lunchTime!.lunchTimeId,
+      "LunchId": _lunchTime == null ? 0 : _lunchTime!.lunchTimeId,
       "ItemId": bp.buyerPo!.itemId,
       "Status": status,
       "ColorId": bp.color!.colorId,
@@ -336,7 +336,8 @@ class CountingProvider with ChangeNotifier {
       "OperationDetailsId": '${checkForPassOrAlterCheck(status) ? 0 : info!['operationDetailsId']}',
       "OperationId": '${checkForPassOrAlterCheck(status) ? 0 : info!['operationId']}',
       "DefectId": '${checkForPassOrAlterCheck(status) ? 0 : info!['defectId']}',
-      "Quantity": 1
+      "Quantity": 1,
+      "CreatedDate": DashboardHelpers.convertDateTime(DateTime.now().toString(),pattern: 'yyyy-MM-ddTHH:mm:ss')
     };
     if (info != null) {
       debugPrint('Coming from alter or reject.. :: operation Id : ${info['operationId']} and defect ID : ${info['defectId']}');
