@@ -72,20 +72,15 @@ class _AlterationReasonScreenState extends State<AlterationReasonScreen> {
           // Reason Selection Header
           Container(
             margin: const EdgeInsets.symmetric(horizontal: 16),
-            padding: const EdgeInsets.symmetric(horizontal: 16,),
+            padding: const EdgeInsets.symmetric(horizontal: 16),
             decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(12)),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text('Select Reasons:', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.grey[800])),
-              ],
-            ),
+            child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Text('Select Reasons:', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.grey[800]))]),
           ),
 
           // Reasons List
           Expanded(
             child: Container(
-              margin: const EdgeInsets.only(left: 16,right: 16,top: 8),
+              margin: const EdgeInsets.only(left: 16, right: 16, top: 8),
               decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(12), boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 6, offset: Offset(0, 2))]),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(12),
@@ -143,28 +138,26 @@ class _AlterationReasonScreenState extends State<AlterationReasonScreen> {
                   elevation: 3,
                   shadowColor: Colors.orange.withOpacity(0.5),
                 ),
-                onPressed: selectedIndex==null||selectedReasons.isEmpty?null: () async {
-                  var cp = context.read<CountingProvider>();
-                  var bp = context.read<BuyerProvider>();
+                onPressed:
+                    selectedIndex == null || selectedReasons.isEmpty
+                        ? null
+                        : () async {
+                          var cp = context.read<CountingProvider>();
+                          var bp = context.read<BuyerProvider>();
+                          if (getStatus(widget.form) == '2') {
+                            cp.alterItem();
+                          } else {
+                            cp.rejectItem();
+                          }
 
-                  var checked = await cp.saveCountingDataLocally(
-                    bp,
-                    from: true,
-                    info: {
-                          'operationId': cp.operation!.operationId,
-                          'defectId': cp.allDefectList[selectedIndex ?? 0].defectId,
-                          'operationDetailsId': cp.operation!.operationDetailsId,},
-                          status: getStatus(widget.form),
-                  );
+                          cp.addDataToLocalList(
+                            bp,
+                            info: {'operationId': cp.operation!.operationId, 'defectId': cp.allDefectList[selectedIndex ?? 0].defectId, 'operationDetailsId': cp.operation!.operationDetailsId},
+                            status: getStatus(widget.form),
+                          );
 
-                  if (getStatus(widget.form) == '2' && checked) {
-                    cp.alterItem();
-                  } else {
-                    cp.rejectItem();
-                  }
-
-                  Navigator.pop(context, selectedReasons);
-                },
+                          Navigator.pop(context, selectedReasons);
+                        },
                 child: const Text('CONFIRM', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white, letterSpacing: 0.5)),
               ),
             ),
@@ -184,7 +177,5 @@ class _AlterationReasonScreenState extends State<AlterationReasonScreen> {
     return form == 'alter' ? '2' : '4';
   }
 }
-
-
 
 //

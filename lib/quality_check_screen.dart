@@ -44,7 +44,7 @@ class _QualityControlScreenState extends State<QualityControlScreen> with Widget
       WidgetsBinding.instance.addObserver(this);
       getLunchTime();
       getPreviousCount();
-      //startSchedulerCallToSaveData();
+      startSchedulerCallToSaveData();
     });
   }
 
@@ -71,13 +71,14 @@ class _QualityControlScreenState extends State<QualityControlScreen> with Widget
         title: const Text('Quality Check'),
         centerTitle: true,
         actions: [
-
-          IconButton(onPressed: (){
-            Navigator.push(context, CupertinoPageRoute(builder: (context)=>QualityReportScreen()));
-            // var cp=context.read<CountingProvider>();
-            // Navigator.push(context, MaterialPageRoute(builder: (context)=>ProductionReportScreen(productionData: cp.reportDataList,)));
-            
-          }, icon: Icon(Icons.report_gmailerrorred)),
+          IconButton(
+            onPressed: () {
+              Navigator.push(context, CupertinoPageRoute(builder: (context) => QualityReportScreen()));
+              // var cp=context.read<CountingProvider>();
+              // Navigator.push(context, MaterialPageRoute(builder: (context)=>ProductionReportScreen(productionData: cp.reportDataList,)));
+            },
+            icon: Icon(Icons.report_gmailerrorred),
+          ),
 
           Consumer<BuyerProvider>(
             builder:
@@ -110,7 +111,9 @@ class _QualityControlScreenState extends State<QualityControlScreen> with Widget
                 ccp.isLoadingLunchTime
                     ? CircularProgressIndicator()
                     : ccp.isLunchTime
-                    ? Center(child: Text('Your Lunch time ${DashboardHelpers.formatExactLunchTime(ccp.lunchTime!.lunchStartTime??'', ccp.lunchTime!.lunchEndTime??'')}', textAlign: TextAlign.center))
+                    ? Center(
+                      child: Text('Your Lunch time ${DashboardHelpers.formatExactLunchTime(ccp.lunchTime!.lunchStartTime ?? '', ccp.lunchTime!.lunchEndTime ?? '')}', textAlign: TextAlign.center),
+                    )
                     : SingleChildScrollView(
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
@@ -239,15 +242,16 @@ class _QualityControlScreenState extends State<QualityControlScreen> with Widget
                                                           _selectColor != null && _selectSize != null
                                                               ? () async {
                                                                 // increment
-
-                                                                //need a buyer provider obj
+                                                                pro.checkedItem();
                                                                 var bp = context.read<BuyerProvider>();
-                                                                //set counting data locally
-                                                                var checked=await pro.saveCountingDataLocally(bp,status: CheckedStatus.pass);
-                                                                if(checked){
-                                                                  pro.checkedItem();
-                                                                }
-                                                               //  pro.saveDataToFirebase(bp, status: CheckedStatus.pass);
+                                                                pro.addDataToLocalList(bp, status: CheckedStatus.pass);
+                                                                //need a buyer provider obj
+                                                                // var bp = context.read<BuyerProvider>();
+                                                                // //set counting data locally
+                                                                // var checked=await pro.saveCountingDataLocally(bp,status: CheckedStatus.pass);
+                                                                // if(checked){
+                                                                //   pro.checkedItem();
+                                                                // }
                                                               }
                                                               : null,
                                                       child: Text('PASS(${pro.checked})', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)),
@@ -272,7 +276,7 @@ class _QualityControlScreenState extends State<QualityControlScreen> with Widget
                                                                         context,
                                                                         onConfirm: () {
                                                                           Navigator.push(context, CupertinoPageRoute(builder: (context) => AlterationReasonScreen(form: CheckedStatus.reject)));
-                                                                         // Navigator.push(context, CupertinoPageRoute(builder: (context) => QualityCheckScreen(form: CheckedStatus.reject)));
+                                                                          // Navigator.push(context, CupertinoPageRoute(builder: (context) => QualityCheckScreen(form: CheckedStatus.reject)));
                                                                         },
                                                                       );
                                                                     }
@@ -298,8 +302,8 @@ class _QualityControlScreenState extends State<QualityControlScreen> with Widget
                                                             onPressed:
                                                                 _selectColor != null && _selectSize != null
                                                                     ? () {
-                                                                        Navigator.push(context, CupertinoPageRoute(builder: (context) => AlterationReasonScreen(form: 'alter')));
-                                                                     // Navigator.push(context, CupertinoPageRoute(builder: (context) => QualityCheckScreen(form: CheckedStatus.alter)));
+                                                                      Navigator.push(context, CupertinoPageRoute(builder: (context) => AlterationReasonScreen(form: 'alter')));
+                                                                      // Navigator.push(context, CupertinoPageRoute(builder: (context) => QualityCheckScreen(form: CheckedStatus.alter)));
                                                                     }
                                                                     : null,
                                                             child: Text(
@@ -430,17 +434,9 @@ class _QualityControlScreenState extends State<QualityControlScreen> with Widget
         var cp = context.read<CountingProvider>();
         var bp = context.read<BuyerProvider>();
 
-        //set counting data locally
-        var checked = await cp.saveCountingDataLocally(
-          bp,
-          status: CheckedStatus.alter_check,
-        );
-        if (checked) {
-          cp.checkedItemFromAlter();
-        }
-
-
-
+        cp.checkedItemFromAlter();
+        //save counting data locally
+        await cp.addDataToLocalList(bp, status: CheckedStatus.alter_check);
       },
     );
   }
@@ -498,4 +494,3 @@ class _QualityControlScreenState extends State<QualityControlScreen> with Widget
     }
   }
 }
-

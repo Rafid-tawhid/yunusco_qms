@@ -214,8 +214,8 @@ class BuyerProvider extends ChangeNotifier {
   Buyer Info: ${_buyerInfo?.name.toString()}
   Buyer Style: ${_buyerStyle?.style.toString()}
   Buyer PO: ${_buyerPo?.po.toString()}
-  Color: ${_color==null?null:_color!.toJson()}
-  Size: ${_size==null?null:_size!.toJson()}
+  Color: ${_color == null ? null : _color!.toJson()}
+  Size: ${_size == null ? null : _size!.toJson()}
   ===========================
   ''');
 

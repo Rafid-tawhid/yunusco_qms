@@ -64,7 +64,7 @@
 //                   ],
 //                 ),
 //                 const SizedBox(height: 12),
-//                 Consumer<CountingProvider>(builder: (context, pro, _) => OperationList(items: pro.operationList)),
+//                 Consumer<CountingProvider>(builder: (context, pro, _) => OperationList(items: pro.testOperationList)),
 //               ],
 //             ),
 //           ),
@@ -95,9 +95,9 @@
 //                     padding: const EdgeInsets.symmetric(vertical: 4.0),
 //                     child: ListView.builder(
 //                       padding: EdgeInsets.zero,
-//                       itemCount: pro.defectList.length,
+//                       itemCount: pro.testDefectList.length,
 //                       itemBuilder: (context, index) {
-//                         final reason = pro.defectList[index];
+//                         final reason = pro.testDefectList[index];
 //                         return Container(
 //                           decoration: BoxDecoration(border: Border(bottom: BorderSide(color: Colors.grey[200]!, width: 1))),
 //                           child: Card(

@@ -72,6 +72,8 @@ class CountingProvider with ChangeNotifier {
       for (var i in result['Results']) {
        _allOperations.add(OperationModel.fromJson(i));
       }
+     //selected first
+     selectedOperation(allOperations.first);
     }
     notifyListeners();
   }
@@ -182,115 +184,6 @@ class CountingProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  List<Map<String, dynamic>> get reportDataList=>_reportDataList ;
-  List<Map<String, dynamic>> _reportDataList = [];
-
-
-  Future<bool> saveCountingDataLocally(BuyerProvider buyerPro, {bool? from, Map<String, dynamic>? info, required String status}) async {
-    debugPrint('THIS REQUEST IS FOR NO ${status}');
-
-    try {
-      EasyLoading.show(maskType: EasyLoadingMaskType.black);
-      // Get section and line IDs
-      final secId = await DashboardHelpers.getString('selectedSectionId');
-      final line = await DashboardHelpers.getString('selectedLineId');
-
-      // Create data model
-      final sendData = SendDataModel(
-        idNum: DashboardHelpers.userModel!.iDnum ?? '',
-        passed: checked.toString(),
-        reject: reject.toString(),
-        alter: alter.toString(),
-        alt_check: alter_check.toString(),
-        buyer: buyerPro.buyerInfo!.code.toString(),
-        style: buyerPro.buyerStyle!.style.toString(),
-        po: buyerPro.buyerPo!.po.toString(),
-        color: buyerPro.color.toString(),
-        size: buyerPro.size.toString(),
-      );
-
-      //todo Prepare data for API
-      // final sendingData = {
-      //   "QmsMasterModel": {
-      //     "SectionId": secId,
-      //     "LineId": line,
-      //     "BuyerId": buyerPro.buyerStyle!.buyerId,
-      //     "Style": buyerPro.buyerStyle!.style,
-      //     "PO": buyerPro.buyerPo!.po,
-      //     "LunchId": _lunchTime == null ? null : _lunchTime!.lunchTimeId,
-      //     "ItemId": buyerPro.buyerPo!.itemId,
-      //     "Status": status,
-      //     "SizeId": buyerPro.size!.sizeId,
-      //     "ColorId": buyerPro.color!.colorId,
-      //   },
-      //   "QmsDetailModel": [
-      //     {"Status": status,
-      //       "Quantity": 1,
-      //       "OperationId": '${checkForPassOrAlterCheck(status) ? 0 : info!['operationId']}',
-      //       "DefectId": '${checkForPassOrAlterCheck(status) ? 0 : info!['defectId']}',
-      //       "SizeId": buyerPro.size!.sizeId,
-      //       "ColorId": buyerPro.color!.colorId,
-      //     }
-      //   ],
-      // };
-
-
-      var sendingData={
-        "SectionId": secId,
-        "LineId": line,
-        "BuyerId": buyerPro.buyerStyle!.buyerId,
-        "Style": buyerPro.buyerStyle!.style,
-        "Po": buyerPro.buyerPo!.po,
-        "LunchId": _lunchTime == null ? null : _lunchTime!.lunchTimeId,
-        "ItemId": buyerPro.buyerPo!.itemId,
-        "Status": status,
-        "ColorId": buyerPro.color!.colorId,
-        "SizeId": buyerPro.size!.sizeId,
-        "OperationDetailsId": '${checkForPassOrAlterCheck(status) ? 0 : info!['operationDetailsId']}',
-        "OperationId": '${checkForPassOrAlterCheck(status) ? 0 : info!['operationId']}',
-        "DefectId": '${checkForPassOrAlterCheck(status) ? 0 : info!['defectId']}',
-        "Quantity": 1
-      };
-
-      if (info != null) {
-        debugPrint('Coming from alter or reject.. :: operation Id : ${info['operationId']} and defect ID : ${info['defectId']}');
-      }
-
-      // Send data to API
-      final apiResponse = await apiService.postData('api/qms/SaveQms', sendingData);
-      if (apiResponse == null) {
-        return false;
-      }
-
-      // Save data locally
-      sendData.sent = false;
-      final box = Hive.box<SendDataModel>('sendDataBox');
-      await box.put('sendDataKey', sendData);
-
-      // Prepare data for local storage
-      // final localData = {
-      //   'count': sendingData,
-      //   'secId': secId,
-      //   'line': line,
-      //   'quality': from == true ? info!['operation'] : null,
-      //   'reasons': from == true ? info!['reasons'] : null,
-      //   'time': DateTime.now().toString(),
-      // };
-     // savarMainDataLocallyWithoutInternet(localData);
-
-      return true;
-    } catch (e) {
-      debugPrint('Error in saveCountingDataLocally: $e');
-      return false;
-    }
-    finally{
-      EasyLoading.dismiss();
-    }
-  }
-
-
-
-
   Future<SendDataModel?> getCountingDataLocally() async {
     try {
       final box = Hive.box<SendDataModel>('sendDataBox');
@@ -334,15 +227,11 @@ class CountingProvider with ChangeNotifier {
 
     debugPrint('Starting periodic task with 5-second interval');
 
-    _periodicTimer = Timer.periodic(const Duration(seconds: 5), (timer) {
+    _periodicTimer = Timer.periodic(const Duration(seconds: 120), (timer) {
       debugPrint('Executing periodic task...');
-      //saveCountingDataLocally(buyerPro);
+      saveFullDataPeriodically();
     });
   }
-
-  // Usage example:
-  // To start: startPeriodicTask(myBuyerProvider);
-  // To stop: stopPeriodicTask();
 
   // Don't forget to cancel in dispose
   @override
@@ -354,35 +243,6 @@ class CountingProvider with ChangeNotifier {
   bool checkForPassOrAlterCheck(String status) {
     //return true if check and return false if alter check
     return status == CheckedStatus.pass || status == CheckedStatus.alter_check;
-  }
-
-  Future<void> savarMainDataLocallyWithoutInternet(Map<String, dynamic> localData) async {
-    if(_reportDataList.length>10){
-      final bool isConnected = await InternetConnectionChecker.instance.hasConnection;
-      //send to save data in server
-      if(isConnected){
-        var send = await apiService.sendTesting(localData);
-        if(send){
-          debugPrint('Data is cleared');
-          _reportDataList.clear();
-          notifyListeners();
-        }
-        else {
-          debugPrint('FROM THIS 1');
-          _reportDataList.add(localData);
-        }
-      }
-      else {
-        debugPrint('FROM THIS 2');
-        _reportDataList.add(localData);
-      }
-    }
-    else {
-      debugPrint('FROM THIS 3');
-      _reportDataList.add(localData);
-    }
-
-    debugPrint('_reportDataList ${_reportDataList.length}');
   }
 
   OperationModel? operation;
@@ -428,6 +288,81 @@ class CountingProvider with ChangeNotifier {
     debugPrint('finalOperationDefectList $finalOperationDefectList');
   }
 
+
+
+  List<Map<String, dynamic>> get reportDataList=>_reportDataList ;
+  List<Map<String, dynamic>> _reportDataList = [];
+
+  Future<void> saveFullDataPeriodically() async {
+    if(_reportDataList.length>1){
+      final bool isConnected = await InternetConnectionChecker.instance.hasConnection;
+      //send to save data in server
+      if(isConnected){
+        final apiResponse = await apiService.postData('api/qms/SaveQms', reportDataList);
+
+        if(apiResponse!=null){
+          debugPrint('Data is cleared');
+          _reportDataList.clear();
+          notifyListeners();
+        }
+        else {
+          debugPrint('FROM THIS DATA NOT SEND 1');
+        }
+      }
+      else {
+        debugPrint('FROM THIS FROM THIS DATA NOT SEND 2');
+
+      }
+    }
+    else {
+      debugPrint('FROM THIS FROM THIS DATA NOT SEND 3');
+    }
+
+    debugPrint('_reportDataList ${_reportDataList.length}');
+  }
+
+  Future<void> addDataToLocalList(BuyerProvider bp, {required String status,dynamic info}) async{
+    final secId = await DashboardHelpers.getString('selectedSectionId');
+    final line = await DashboardHelpers.getString('selectedLineId');
+    var sendingData={
+      "SectionId": secId,
+      "LineId": line,
+      "BuyerId": bp.buyerStyle!.buyerId,
+      "Style": bp.buyerStyle!.style,
+      "Po": bp.buyerPo!.po,
+      "LunchId": _lunchTime == null ? null : _lunchTime!.lunchTimeId,
+      "ItemId": bp.buyerPo!.itemId,
+      "Status": status,
+      "ColorId": bp.color!.colorId,
+      "SizeId": bp.size!.sizeId,
+      "OperationDetailsId": '${checkForPassOrAlterCheck(status) ? 0 : info!['operationDetailsId']}',
+      "OperationId": '${checkForPassOrAlterCheck(status) ? 0 : info!['operationId']}',
+      "DefectId": '${checkForPassOrAlterCheck(status) ? 0 : info!['defectId']}',
+      "Quantity": 1
+    };
+    if (info != null) {
+      debugPrint('Coming from alter or reject.. :: operation Id : ${info['operationId']} and defect ID : ${info['defectId']}');
+    }
+    _reportDataList.add(sendingData);
+    debugPrint('_reportDataList local saved list : ${_reportDataList.length}');
+
+    //SAVE COUNTER DATA TO LOCAL DATABASE
+    final sendData = SendDataModel(
+      idNum: DashboardHelpers.userModel!.iDnum ?? '',
+      passed: checked.toString(),
+      reject: reject.toString(),
+      alter: alter.toString(),
+      alt_check: alter_check.toString(),
+      buyer: bp.buyerInfo!.code.toString(),
+      style: bp.buyerStyle!.style.toString(),
+      po: bp.buyerPo!.po.toString(),
+      color: bp.color.toString(),
+      size: bp.size.toString(),
+    );
+    final box = Hive.box<SendDataModel>('sendDataBox');
+    await box.put('sendDataKey', sendData);
+
+  }
 
 
 }
