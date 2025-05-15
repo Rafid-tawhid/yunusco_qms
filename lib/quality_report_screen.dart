@@ -58,9 +58,16 @@ class ProductionReportScreen extends StatelessWidget {
 
   // Get status summary totals
   Map<int, int> _getStatusSummary(List<LocalSendDataModel> data) {
-    final summary = {1: 0, 2: 0, 3: 0, 4: 0};
+    final summary = {1: 0, 2: 0, 4: 0}; // Removed status 3 from summary
     for (var item in data) {
-      summary[int.parse(item.status.toString())] = summary[int.parse(item.status.toString())]! + 1;
+      final status = int.parse(item.status.toString());
+      if (status == 1 || status == 3) {
+        summary[1] = summary[1]! + 1; // Combine status 1 and 3 as Pass
+      } else if (status == 2) {
+        summary[2] = summary[2]! + 1;
+      } else if (status == 4) {
+        summary[4] = summary[4]! + 1;
+      }
     }
     return summary;
   }
@@ -69,20 +76,25 @@ class ProductionReportScreen extends StatelessWidget {
   List<CartesianSeries> _prepareChartData(Map<String, Map<int, int>> hourlyData) {
     final hours = hourlyData.keys.toList()..sort();
     const statusColors = {
-      1: Colors.green,
+      1: Colors.green, // Now includes status 3 counts
       2: Colors.orange,
-      3: Colors.blue,
       4: Colors.red,
     };
 
     return [
-      for (final status in [1, 2, 3, 4])
+      for (final status in [1, 2, 4]) // Removed status 3 from chart
         StackedColumnSeries<HourlyData, String>(
-          dataSource: hours.map((hour) => HourlyData(
-            hour: hour,
-            count: hourlyData[hour]![status]!,
-            status: status,
-          )).toList(),
+          dataSource: hours.map((hour) {
+            int count = hourlyData[hour]![status]!;
+            if (status == 1) {
+              count += hourlyData[hour]![3]!; // Add status 3 counts to status 1
+            }
+            return HourlyData(
+              hour: hour,
+              count: count,
+              status: status,
+            );
+          }).toList(),
           xValueMapper: (HourlyData data, _) => data.hour,
           yValueMapper: (HourlyData data, _) => data.count,
           name: _getStatusName(status),
@@ -239,20 +251,19 @@ class ProductionReportScreen extends StatelessWidget {
               child: DataTable(
                 columns: const [
                   DataColumn(label: Text('Hour')),
-                  DataColumn(label: Text('Pass'), numeric: true),
+                  DataColumn(label: Text('Pass (1+3)'), numeric: true),
                   DataColumn(label: Text('Alter'), numeric: true),
-                  DataColumn(label: Text('Alter Check'), numeric: true),
                   DataColumn(label: Text('Reject'), numeric: true),
                   DataColumn(label: Text('Total'), numeric: true),
                 ],
                 rows: hours.map((hour) {
                   final data = hourlyData[hour]!;
+                  final passTotal = data[1]! + data[3]!; // Combined pass count
                   final total = data.values.reduce((a, b) => a + b);
                   return DataRow(cells: [
                     DataCell(Text(hour)),
-                    DataCell(Text(data[1].toString())),
+                    DataCell(Text(passTotal.toString())),
                     DataCell(Text(data[2].toString())),
-                    DataCell(Text(data[3].toString())),
                     DataCell(Text(data[4].toString())),
                     DataCell(Text(total.toString())),
                   ]);
