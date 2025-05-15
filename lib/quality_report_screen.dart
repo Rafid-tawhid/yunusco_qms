@@ -1,276 +1,274 @@
 import 'package:flutter/material.dart';
+import 'package:nidle_qty/providers/counting_provider.dart';
+import 'package:provider/provider.dart';
+import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:intl/intl.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:nidle_qty/widgets/todays_count.dart';
-class QualityReportScreen extends StatefulWidget {
-  const QualityReportScreen({super.key});
 
-  @override
-  _QualityReportScreenState createState() => _QualityReportScreenState();
-}
+class ProductionReportScreen extends StatelessWidget {
 
-class _QualityReportScreenState extends State<QualityReportScreen> {
-  DateTime _selectedDate = DateTime.now();
-  String _selectedSection = 'All';
-  List<String> _sections = ['All'];
-
-  @override
-  void initState() {
-    super.initState();
-    _loadSections();
-  }
-
-  Future<void> _loadSections() async {
-    try {
-      final snapshot = await FirebaseFirestore.instance
-          .collection('qms')
-          .get();
-
-      // Extract unique section IDs - ensure this matches your Firestore field name
-      final sections = snapshot.docs
-          .map((doc) => doc['section_id'] as String?) // Change to your actual field name
-          .where((section) => section != null)
-          .toSet()
-          .toList();
-
-      setState(() {
-        _sections = ['All', ...sections.cast<String>()];
-      });
-    } catch (e) {
-      debugPrint('Error loading sections: $e');
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Failed to load sections: ${e.toString()}'))
-        );
-      }
-    }
-  }
-
-  Future<void> _selectDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: _selectedDate,
-      firstDate: DateTime(2023),
-      lastDate: DateTime.now(),
-    );
-    if (picked != null && picked != _selectedDate && mounted) {
-      setState(() {
-        _selectedDate = picked;
-      });
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
+    var cp=context.read<CountingProvider>();
+
+    final hourlyData = _processHourlyData(cp.testingreportDataList);
+    final statusSummary = _getStatusSummary(cp.testingreportDataList);
+    final chartData = _prepareChartData(hourlyData);
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('Quality Inspection Report'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.calendar_today),
-            onPressed: () => _selectDate(context),
-          ),
-        ],
+        title: const Text('Daily Production Report'),
+        centerTitle: true,
       ),
-      body: Column(
-        children: [
-          TodayQualitySummary(),
-          _buildFilters(),
-          const SizedBox(height: 8),
-          Expanded(
-            child: _buildReportData(),
-          ),
-        ],
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            _buildSummaryCards(statusSummary),
+            const SizedBox(height: 24),
+            _buildHourlyChart(chartData),
+            const SizedBox(height: 24),
+            _buildHourlyTable(hourlyData),
+          ],
+        ),
       ),
     );
   }
 
-  Widget _buildFilters() {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Row(
-        children: [
-          Text(
-            DateFormat('MMMM d, yyyy').format(_selectedDate),
-            style: const TextStyle(fontSize: 16),
-          ),
-          const SizedBox(width: 16),
-          DropdownButton<String>(
-            value: _selectedSection,
-            items: _sections.map((section) {
-              return DropdownMenuItem<String>(
-                value: section,
-                child: Text(section),
-              );
-            }).toList(),
-            onChanged: (value) {
-              if (mounted) {
-                setState(() {
-                  _selectedSection = value!;
-                });
-              }
-            },
-          ),
-        ],
-      ),
-    );
+  // Process data into hourly counts
+  Map<String, Map<int, int>> _processHourlyData(List<Map<String, dynamic>> data) {
+    final hourlyCounts = <String, Map<int, int>>{};
+
+    for (var item in data) {
+      final createdDate = DateTime.parse(item['CreatedDate']);
+      final hour = DateFormat('HH:00').format(createdDate);
+      final status = int.parse(item['Status']);
+
+      hourlyCounts.putIfAbsent(hour, () => {1: 0, 2: 0, 3: 0, 4: 0});
+      hourlyCounts[hour]![status] = hourlyCounts[hour]![status]! + 1;
+    }
+
+    return hourlyCounts;
   }
 
-  Widget _buildReportData() {
-    return StreamBuilder<QuerySnapshot>(
-      stream: FirebaseFirestore.instance
-          .collection('qms')
-          .where('check_time', isGreaterThan: _selectedDate.startOfDay.toIso8601String())
-          .where('check_time', isLessThan: _selectedDate.endOfDay.toIso8601String())
-          .snapshots(),
-      builder: (context, snapshot) {
-        if (snapshot.hasError) {
-          return Center(child: Text('Error: ${snapshot.error}'));
-        }
+  // Get status summary totals
+  Map<int, int> _getStatusSummary(List<Map<String, dynamic>> data) {
+    final summary = {1: 0, 2: 0, 3: 0, 4: 0};
+    for (var item in data) {
+      summary[int.parse(item['Status'].toString())] = summary[int.parse(item['Status'].toString())]! + 1;
+    }
+    return summary;
+  }
 
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
-        }
+  // Prepare data for stacked column chart
+  List<CartesianSeries> _prepareChartData(Map<String, Map<int, int>> hourlyData) {
+    final hours = hourlyData.keys.toList()..sort();
+    const statusColors = {
+      1: Colors.green,
+      2: Colors.orange,
+      3: Colors.blue,
+      4: Colors.red,
+    };
 
-        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-          return const Center(
-            child: Text(
-              'No quality checks found for selected date',
-              style: TextStyle(fontSize: 16),
-            ),
-          );
-        }
+    return [
+      for (final status in [1, 2, 3, 4])
+        StackedColumnSeries<HourlyData, String>(
+          dataSource: hours.map((hour) => HourlyData(
+            hour: hour,
+            count: hourlyData[hour]![status]!,
+            status: status,
+          )).toList(),
+          xValueMapper: (HourlyData data, _) => data.hour,
+          yValueMapper: (HourlyData data, _) => data.count,
+          name: _getStatusName(status),
+          color: statusColors[status],
+          dataLabelSettings: const DataLabelSettings(isVisible: true),
+        ),
+    ];
+  }
 
-        final data = snapshot.data!.docs;
-        debugPrint('Fetched ${data.length} documents');
+  // String _getStatusName(int status) {
+  //   switch (status) {
+  //     case 1: return 'Pass';
+  //     case 2: return 'Alter';
+  //     case 3: return 'Alter Check';
+  //     case 4: return 'Reject';
+  //     default: return 'Unknown';
+  //   }
+  // }
 
-        // Group data by hour
-        final hourlyData = <String, Map<String, int>>{};
-        for (var doc in data) {
-          try {
-            final checkData = doc.data() as Map<String, dynamic>;
-            debugPrint('Processing document: ${doc.id} - $checkData');
+  // Build summary cards
+  Widget _buildSummaryCards(Map<int, int> summary) {
+    const statusColors = {
+      1: Colors.green,
+      2: Colors.orange,
+      4: Colors.red,
+    };
 
-            final sectionId = checkData['section_id'] as String? ?? '';
-            final checkTime = checkData['check_time'] as String?;
-            final status = checkData['status'] as String?;
+    // Filter out status 3 (Alter Check) and calculate total pass + alter
+    final filteredSummary = summary..remove(3);
+    final totalPassAlter = (summary[1] ?? 0) + (summary[2] ?? 0);
 
-            if (checkTime == null || status == null) {
-              debugPrint('Skipping document with missing fields');
-              continue;
-            }
+    return Row(
 
-            // Filter by selected section
-            if (_selectedSection != 'All' && sectionId != _selectedSection) {
-              continue;
-            }
+      children: [
+        // Status cards (excluding Alter Check)
+        ...filteredSummary.entries.map((entry) {
+          return Expanded(
 
-            final hourKey = DateFormat('H:00').format(DateTime.parse(checkTime));
-
-            hourlyData.putIfAbsent(hourKey, () => {
-              'pass': 0,
-              'reject': 0,
-              'alter': 0,
-              'total': 0,
-            });
-
-            if (status.toLowerCase() == 'pass') {
-              hourlyData[hourKey]!['pass'] = hourlyData[hourKey]!['pass']! + 1;
-            } else if (status.toLowerCase() == 'reject') {
-              hourlyData[hourKey]!['reject'] = hourlyData[hourKey]!['reject']! + 1;
-            } else if (status.toLowerCase() == 'alter') {
-              hourlyData[hourKey]!['alter'] = hourlyData[hourKey]!['alter']! + 1;
-            }
-
-            hourlyData[hourKey]!['total'] = hourlyData[hourKey]!['total']! + 1;
-          } catch (e) {
-            debugPrint('Error processing document ${doc.id}: $e');
-          }
-        }
-
-        if (hourlyData.isEmpty) {
-          return const Center(
-            child: Text(
-              'No matching records found for selected filters',
-              style: TextStyle(fontSize: 16),
-            ),
-          );
-        }
-
-        // Sort hours chronologically
-        final sortedHours = hourlyData.keys.toList()
-          ..sort((a, b) => a.compareTo(b));
-
-        return ListView.builder(
-          itemCount: sortedHours.length,
-          itemBuilder: (context, index) {
-            final hour = sortedHours[index];
-            final stats = hourlyData[hour]!;
-            final passRate = stats['total']! > 0
-                ? (stats['pass']! / stats['total']! * 100).toStringAsFixed(1)
-                : '0.0';
-
-            return Card(
-              margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            child: Card(
+              color: Colors.white,
               elevation: 2,
               child: Padding(
-                padding: const EdgeInsets.all(12),
+                padding: const EdgeInsets.all(16),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      '$hour - ${(int.parse(hour.split(':')[0]) + 1)}:00',
-                      style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                          fontSize: 16,
+                      _getStatusName(entry.key),
+                      style: TextStyle(
+                        color: statusColors[entry.key],
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
                     const SizedBox(height: 8),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        _buildStatItem('Passed', stats['pass']!, Colors.green),
-                        _buildStatItem('Rejected', stats['reject']!, Colors.red),
-                        _buildStatItem('Altered', stats['alter']!, Colors.orange),
-                        _buildStatItem('Pass Rate', '$passRate%', Colors.blue),
-                      ],
+                    Text(
+                      entry.value.toString(),
+                      style: const TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ],
                 ),
               ),
-            );
-          },
-        );
-      },
-    );
-  }
+            ),
+          );
+        }).toList(),
 
-  Widget _buildStatItem(String label, dynamic value, Color color) {
-    return Column(
-      children: [
-        Text(
-          label,
-          style: TextStyle(
-            color: Colors.grey[600],
-            fontSize: 12,
-          ),
-        ),
-        const SizedBox(height: 4),
-        Text(
-          value.toString(),
-          style: TextStyle(
-            color: color,
-            fontWeight: FontWeight.bold,
-            fontSize: 16,
+        // Pass+Alter total card
+        SizedBox(
+          width: 100,
+          child: Card(
+            color: Colors.white,
+            elevation: 2,
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text(
+                    'Total',
+                    style: TextStyle(
+                      color: Colors.purple,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    totalPassAlter.toString(),
+                    style: const TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.purple,
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
         ),
       ],
     );
   }
+
+  String _getStatusName(int status) {
+    switch (status) {
+      case 1: return 'Pass';
+      case 2: return 'Alter';
+      case 4: return 'Reject';
+      default: return '';
+    }
+  }
+
+  // Build Syncfusion stacked column chart
+  Widget _buildHourlyChart(List<CartesianSeries> series) {
+    return SizedBox(
+      height: 350,
+      child: SfCartesianChart(
+        primaryXAxis: CategoryAxis(
+          labelRotation: -45,
+        ),
+        primaryYAxis: NumericAxis(
+          title: AxisTitle(text: 'Quantity'),
+        ),
+        series: series,
+        legend: Legend(
+          isVisible: true,
+          position: LegendPosition.bottom,
+        ),
+        tooltipBehavior: TooltipBehavior(enable: true),
+      ),
+    );
+  }
+
+  // Build hourly data table
+  Widget _buildHourlyTable(Map<String, Map<int, int>> hourlyData) {
+    final hours = hourlyData.keys.toList()..sort();
+
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            const Text(
+              'Hourly Production Details',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 16),
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: DataTable(
+                columns: const [
+                  DataColumn(label: Text('Hour')),
+                  DataColumn(label: Text('Pass'), numeric: true),
+                  DataColumn(label: Text('Alter'), numeric: true),
+                  DataColumn(label: Text('Alter Check'), numeric: true),
+                  DataColumn(label: Text('Reject'), numeric: true),
+                  DataColumn(label: Text('Total'), numeric: true),
+                ],
+                rows: hours.map((hour) {
+                  final data = hourlyData[hour]!;
+                  final total = data.values.reduce((a, b) => a + b);
+                  return DataRow(cells: [
+                    DataCell(Text(hour)),
+                    DataCell(Text(data[1].toString())),
+                    DataCell(Text(data[2].toString())),
+                    DataCell(Text(data[3].toString())),
+                    DataCell(Text(data[4].toString())),
+                    DataCell(Text(total.toString())),
+                  ]);
+                }).toList(),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }
 
-extension DateTimeExtension on DateTime {
-  DateTime get startOfDay => DateTime(year, month, day);
-  DateTime get endOfDay => DateTime(year, month, day, 23, 59, 59, 999);
+class HourlyData {
+  final String hour;
+  final int count;
+  final int status;
+
+  HourlyData({
+    required this.hour,
+    required this.count,
+    required this.status,
+  });
 }

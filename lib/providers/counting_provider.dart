@@ -46,7 +46,7 @@ class CountingProvider with ChangeNotifier {
   }
 
   Future<void> checkedItemFromAlter() async {
-    alter = alter - 1;
+    // alter = alter - 1;
     checked = checked + 1;
     alter_check = alter_check + 1;
     notifyListeners();
@@ -292,13 +292,15 @@ class CountingProvider with ChangeNotifier {
   List<Map<String, dynamic>> get reportDataList=>_reportDataList ;
   List<Map<String, dynamic>> _reportDataList = [];
 
+  List<Map<String, dynamic>> get testingreportDataList=>_testingreportDataList ;
+  List<Map<String, dynamic>> _testingreportDataList = [];
+
   Future<void> saveFullDataPeriodically() async {
     if(_reportDataList.length>1){
       final bool isConnected = await InternetConnectionChecker.instance.hasConnection;
       //send to save data in server
       if(isConnected){
         final apiResponse = await apiService.postData('api/qms/SaveQms', reportDataList);
-
         if(apiResponse!=null){
           debugPrint('Data is cleared');
           _reportDataList.clear();
@@ -346,6 +348,9 @@ class CountingProvider with ChangeNotifier {
     _reportDataList.add(sendingData);
     debugPrint('_reportDataList local saved list : ${_reportDataList.length}');
 
+    //add to testing list
+    _testingreportDataList.add(sendingData);
+
     //SAVE COUNTER DATA TO LOCAL DATABASE
     final sendData = SendDataModel(
       idNum: DashboardHelpers.userModel!.iDnum ?? '',
@@ -361,6 +366,7 @@ class CountingProvider with ChangeNotifier {
     );
     final box = Hive.box<SendDataModel>('sendDataBox');
     await box.put('sendDataKey', sendData);
+    notifyListeners();
   }
 
 

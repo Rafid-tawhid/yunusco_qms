@@ -79,7 +79,7 @@ class _QualityControlScreenState extends State<QualityControlScreen> with Widget
         actions: [
           IconButton(
             onPressed: () {
-              Navigator.push(context, CupertinoPageRoute(builder: (context) => QualityReportScreen()));
+              Navigator.push(context, CupertinoPageRoute(builder: (context) => ProductionReportScreen()));
               // var cp=context.read<CountingProvider>();
               // Navigator.push(context, MaterialPageRoute(builder: (context)=>ProductionReportScreen(productionData: cp.reportDataList,)));
             },
