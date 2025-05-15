@@ -65,8 +65,9 @@ class CountingProvider with ChangeNotifier {
   List<OperationModel> get allOperations => _allOperations;
 
   Future<void> getAllOperations({required PoModels buyerPo}) async {
+    //5PK MF MINI FASH- 1217406
    // var result = await apiService.getData('api/qms/GetOperations/${buyerPo.itemId}');
-    var result = await apiService.getData('api/qms/GetOperations/5PK MF MINI FASH- 1217406');
+    var result = await apiService.getData('api/qms/GetOperations/${buyerPo.style}');
     if (result != null) {
      _allOperations.clear();
       for (var i in result['Results']) {
@@ -313,7 +314,7 @@ class CountingProvider with ChangeNotifier {
       }
     }
     else {
-      debugPrint('FROM THIS FROM THIS DATA NOT SEND 3');
+      debugPrint('FROM THIS NO DATA ADDED 3');
     }
 
     debugPrint('_reportDataList ${_reportDataList.length}');

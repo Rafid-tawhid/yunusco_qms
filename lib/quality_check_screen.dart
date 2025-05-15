@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
+import 'package:nidle_qty/login_screen.dart';
 import 'package:nidle_qty/models/checked_enum.dart';
 import 'package:nidle_qty/models/color_model.dart';
 import 'package:nidle_qty/models/po_models.dart';
@@ -48,9 +49,12 @@ class _QualityControlScreenState extends State<QualityControlScreen> with Widget
     });
   }
 
+
+
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+    endSchedularSaveData();
     super.dispose();
   }
 
@@ -59,7 +63,9 @@ class _QualityControlScreenState extends State<QualityControlScreen> with Widget
     if (state == AppLifecycleState.paused) {
       // App is going to background (minimized/switched away)
       saveData();
-      endSchedularSaveData();
+    }
+    if (state == AppLifecycleState.resumed) {
+      onAppOpened(); // Called every time the app is entered from anywhere
     }
   }
 
@@ -492,5 +498,12 @@ class _QualityControlScreenState extends State<QualityControlScreen> with Widget
       var cp = context.read<CountingProvider>();
       cp.getLunchTimeBySectionId(secId);
     }
+  }
+
+  void onAppOpened() async{
+   var newDay=  await DashboardHelpers.clearDataIfNewDay();
+   if(newDay){
+     Navigator.push(context, CupertinoPageRoute(builder: (context)=>LoginScreen()));
+   }
   }
 }

@@ -762,7 +762,7 @@ class DashboardHelpers {
     prefs.setString("user", jsonEncode(user.toJson()));
   }
 
-  static Future<void> clearDataIfNewDay() async {
+  static Future<bool> clearDataIfNewDay() async {
     final prefs = await SharedPreferences.getInstance();
     final lastClearDate = prefs.getString('lastClearDate');
 
@@ -776,8 +776,10 @@ class DashboardHelpers {
       // Save today's date
       await prefs.setString('lastClearDate', today);
       debugPrint('Data cleared at ${now.toIso8601String()}');
+      return true; // New day - data cleared
     } else {
       debugPrint('Data already cleared today');
+      return false; // Not a new day
     }
   }
 
