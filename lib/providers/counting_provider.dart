@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
@@ -8,14 +9,15 @@ import 'package:hive/hive.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:nidle_qty/models/checked_enum.dart';
 import 'package:nidle_qty/models/defect_models.dart';
+import 'package:nidle_qty/models/local_send_data_model.dart';
 import 'package:nidle_qty/models/po_models.dart';
 import 'package:nidle_qty/providers/buyer_provider.dart';
 import 'package:nidle_qty/service_class/api_services.dart';
 
-import '../models/firebase_data_model.dart';
 import '../models/lunch_time_model.dart';
 import '../models/operation_model.dart';
 import '../models/send_data_model.dart';
+import '../service_class/hive_service_class.dart';
 import '../utils/dashboard_helpers.dart';
 
 class CountingProvider with ChangeNotifier {
@@ -292,8 +294,9 @@ class CountingProvider with ChangeNotifier {
   List<Map<String, dynamic>> get reportDataList=>_reportDataList ;
   List<Map<String, dynamic>> _reportDataList = [];
 
-  List<Map<String, dynamic>> get testingreportDataList=>_testingreportDataList ;
-  List<Map<String, dynamic>> _testingreportDataList = [];
+  List<LocalSendDataModel> get testingreportDataList=>_testingreportDataList ;
+  List<LocalSendDataModel> _testingreportDataList = [];
+
 
   Future<void> saveFullDataPeriodically() async {
     if(_reportDataList.length>1){
@@ -349,7 +352,9 @@ class CountingProvider with ChangeNotifier {
     debugPrint('_reportDataList local saved list : ${_reportDataList.length}');
 
     //add to testing list
-    _testingreportDataList.add(sendingData);
+
+    //save local data for testing
+    await HiveLocalSendDataService.saveLocalSendData(LocalSendDataModel.fromJson(sendingData));
 
     //SAVE COUNTER DATA TO LOCAL DATABASE
     final sendData = SendDataModel(
@@ -366,6 +371,21 @@ class CountingProvider with ChangeNotifier {
     );
     final box = Hive.box<SendDataModel>('sendDataBox');
     await box.put('sendDataKey', sendData);
+    notifyListeners();
+  }
+
+  void setTestingReportData(List<LocalSendDataModel>? data) {
+    // Get the entire list
+    List<LocalSendDataModel>? dataList = HiveLocalSendDataService.getLocalSendDataList();
+    _testingreportDataList.clear();
+    if (dataList != null && dataList.isNotEmpty) {
+      _testingreportDataList.addAll(dataList);
+     debugPrint('_testingreportDataList ${_testingreportDataList.length}');
+    } else {
+      print("No data found in Hive.");
+    }
+
+
     notifyListeners();
   }
 

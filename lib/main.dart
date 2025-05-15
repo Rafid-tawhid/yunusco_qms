@@ -8,11 +8,13 @@ import 'package:hive_flutter/adapters.dart';
 import 'package:nidle_qty/providers/buyer_provider.dart';
 import 'package:nidle_qty/providers/counting_provider.dart';
 import 'package:nidle_qty/providers/network_provider.dart';
+import 'package:nidle_qty/service_class/hive_service_class.dart';
 import 'package:nidle_qty/utils/dashboard_helpers.dart';
 import 'package:nidle_qty/widgets/launcher_screen.dart';
 import 'package:nidle_qty/widgets/network_alert.dart';
 import 'package:provider/provider.dart';
 import 'login_screen.dart';
+import 'models/local_send_data_model.dart';
 import 'models/send_data_model.dart';
 
 
@@ -24,9 +26,19 @@ void main() async{
     await Firebase.initializeApp();  WidgetsFlutterBinding.ensureInitialized();
     await Firebase.initializeApp();
   }
-  await Hive.initFlutter();
-  Hive.registerAdapter(SendDataModelAdapter());
-  await Hive.openBox<SendDataModel>('sendDataBox');
+  try {
+    await Hive.initFlutter();
+    Hive.registerAdapter(SendDataModelAdapter());
+    await Hive.openBox<SendDataModel>('sendDataBox');
+    await HiveLocalSendDataService.init();
+  } catch (e) {
+    print('Error initializing Hive: $e');
+    await Hive.deleteBoxFromDisk('localSendDataBox');
+    await Hive.openBox('localSendDataBox');
+  }
+
+
+
   await DashboardHelpers.clearDataIfNewDay();
 
 

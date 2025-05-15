@@ -1,16 +1,35 @@
 import 'package:flutter/material.dart';
 import 'package:nidle_qty/providers/counting_provider.dart';
+import 'package:nidle_qty/service_class/hive_service_class.dart';
 import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:intl/intl.dart';
 
-class ProductionReportScreen extends StatelessWidget {
+import 'models/local_send_data_model.dart';
+
+class ProductionReportScreen extends StatefulWidget {
 
 
   @override
-  Widget build(BuildContext context) {
-    var cp=context.read<CountingProvider>();
+  State<ProductionReportScreen> createState() => _ProductionReportScreenState();
+}
 
+class _ProductionReportScreenState extends State<ProductionReportScreen> {
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    WidgetsBinding.instance.addPostFrameCallback((v){
+      var cp=context.read<CountingProvider>();
+      var data= HiveLocalSendDataService.getLocalSendDataList();
+      cp.setTestingReportData(data);
+    });
+    super.initState();
+  }
+  @override
+  Widget build(BuildContext context) {
+
+    var cp=context.read<CountingProvider>();
     final hourlyData = _processHourlyData(cp.testingreportDataList);
     final statusSummary = _getStatusSummary(cp.testingreportDataList);
     final chartData = _prepareChartData(hourlyData);
@@ -38,13 +57,13 @@ class ProductionReportScreen extends StatelessWidget {
   }
 
   // Process data into hourly counts
-  Map<String, Map<int, int>> _processHourlyData(List<Map<String, dynamic>> data) {
+  Map<String, Map<int, int>> _processHourlyData(List<LocalSendDataModel> data) {
     final hourlyCounts = <String, Map<int, int>>{};
 
     for (var item in data) {
-      final createdDate = DateTime.parse(item['CreatedDate']);
+      final createdDate = DateTime.parse(item.createdDate!);
       final hour = DateFormat('HH:00').format(createdDate);
-      final status = int.parse(item['Status']);
+      final status = int.parse(item.status??'0');
 
       hourlyCounts.putIfAbsent(hour, () => {1: 0, 2: 0, 3: 0, 4: 0});
       hourlyCounts[hour]![status] = hourlyCounts[hour]![status]! + 1;
@@ -54,10 +73,10 @@ class ProductionReportScreen extends StatelessWidget {
   }
 
   // Get status summary totals
-  Map<int, int> _getStatusSummary(List<Map<String, dynamic>> data) {
+  Map<int, int> _getStatusSummary(List<LocalSendDataModel> data) {
     final summary = {1: 0, 2: 0, 3: 0, 4: 0};
     for (var item in data) {
-      summary[int.parse(item['Status'].toString())] = summary[int.parse(item['Status'].toString())]! + 1;
+      summary[int.parse(item.status.toString())] = summary[int.parse(item.status.toString())]! + 1;
     }
     return summary;
   }
@@ -90,16 +109,6 @@ class ProductionReportScreen extends StatelessWidget {
   }
 
   // String _getStatusName(int status) {
-  //   switch (status) {
-  //     case 1: return 'Pass';
-  //     case 2: return 'Alter';
-  //     case 3: return 'Alter Check';
-  //     case 4: return 'Reject';
-  //     default: return 'Unknown';
-  //   }
-  // }
-
-  // Build summary cards
   Widget _buildSummaryCards(Map<int, int> summary) {
     const statusColors = {
       1: Colors.green,
@@ -219,6 +228,8 @@ class ProductionReportScreen extends StatelessWidget {
     final hours = hourlyData.keys.toList()..sort();
 
     return Card(
+      color: Colors.white,
+      elevation: 4,
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(

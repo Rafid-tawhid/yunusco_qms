@@ -10,6 +10,7 @@ import 'package:nidle_qty/providers/buyer_provider.dart';
 import 'package:nidle_qty/providers/counting_provider.dart';
 import 'package:nidle_qty/purchase_order.dart';
 import 'package:nidle_qty/quality_report_screen.dart';
+import 'package:nidle_qty/service_class/hive_service_class.dart';
 import 'package:nidle_qty/test/testing.dart';
 import 'package:nidle_qty/utils/dashboard_helpers.dart';
 import 'package:nidle_qty/widgets/alter_check.dart';

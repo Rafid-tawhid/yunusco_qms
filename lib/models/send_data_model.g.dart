@@ -9,7 +9,7 @@ part of 'send_data_model.dart';
 class SendDataModelAdapter extends TypeAdapter<SendDataModel> {
   @override
   final int typeId = 1;
-//
+
   @override
   SendDataModel read(BinaryReader reader) {
     final numOfFields = reader.readByte();
@@ -27,13 +27,14 @@ class SendDataModelAdapter extends TypeAdapter<SendDataModel> {
       color: fields[7] as String,
       size: fields[8] as String,
       alt_check: fields[9] as String,
+      sent: fields[10] as bool,
     );
   }
 
   @override
   void write(BinaryWriter writer, SendDataModel obj) {
     writer
-      ..writeByte(10)
+      ..writeByte(11)
       ..writeByte(0)
       ..write(obj.idNum)
       ..writeByte(1)
@@ -53,7 +54,9 @@ class SendDataModelAdapter extends TypeAdapter<SendDataModel> {
       ..writeByte(8)
       ..write(obj.size)
       ..writeByte(9)
-      ..write(obj.alt_check);
+      ..write(obj.alt_check)
+      ..writeByte(10)
+      ..write(obj.sent);
   }
 
   @override
