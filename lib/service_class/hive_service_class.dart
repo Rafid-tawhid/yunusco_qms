@@ -1,5 +1,6 @@
 import 'package:hive_flutter/hive_flutter.dart';
 import '../models/local_send_data_model.dart';
+import '../models/send_data_model.dart';
 
 
 class HiveLocalSendDataService {
@@ -8,6 +9,8 @@ class HiveLocalSendDataService {
 
   static Future<void> init() async {
     await Hive.initFlutter();
+    Hive.registerAdapter(SendDataModelAdapter());
+    await Hive.openBox<SendDataModel>('sendDataBox');
     Hive.registerAdapter(LocalSendDataModelAdapter());
     await Hive.openBox(_boxName);
   }
@@ -35,5 +38,6 @@ class HiveLocalSendDataService {
   static Future<void> clearLocalSendData() async {
     final box = Hive.box(_boxName);
     await box.delete(_listKey);
+    await box.clear();
   }
 }

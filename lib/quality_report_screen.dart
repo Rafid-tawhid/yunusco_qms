@@ -7,25 +7,9 @@ import 'package:intl/intl.dart';
 
 import 'models/local_send_data_model.dart';
 
-class ProductionReportScreen extends StatefulWidget {
+class ProductionReportScreen extends StatelessWidget {
 
 
-  @override
-  State<ProductionReportScreen> createState() => _ProductionReportScreenState();
-}
-
-class _ProductionReportScreenState extends State<ProductionReportScreen> {
-
-  @override
-  void initState() {
-    // TODO: implement initState
-    WidgetsBinding.instance.addPostFrameCallback((v){
-      var cp=context.read<CountingProvider>();
-      var data= HiveLocalSendDataService.getLocalSendDataList();
-      cp.setTestingReportData(data);
-    });
-    super.initState();
-  }
   @override
   Widget build(BuildContext context) {
 
@@ -109,6 +93,16 @@ class _ProductionReportScreenState extends State<ProductionReportScreen> {
   }
 
   // String _getStatusName(int status) {
+  //   switch (status) {
+  //     case 1: return 'Pass';
+  //     case 2: return 'Alter';
+  //     case 3: return 'Alter Check';
+  //     case 4: return 'Reject';
+  //     default: return 'Unknown';
+  //   }
+  // }
+
+  // Build summary cards
   Widget _buildSummaryCards(Map<int, int> summary) {
     const statusColors = {
       1: Colors.green,

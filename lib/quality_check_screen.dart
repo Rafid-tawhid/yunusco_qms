@@ -66,7 +66,7 @@ class _QualityControlScreenState extends State<QualityControlScreen> with Widget
       saveData();
     }
     if (state == AppLifecycleState.resumed) {
-      onAppOpened(); // Called every time the app is entered from anywhere
+      //onAppOpened(); // Called every time the app is entered from anywhere
     }
   }
 
@@ -80,6 +80,8 @@ class _QualityControlScreenState extends State<QualityControlScreen> with Widget
         actions: [
           IconButton(
             onPressed: () {
+              var cp=context.read<CountingProvider>();
+              cp.getReportData();
               Navigator.push(context, CupertinoPageRoute(builder: (context) => ProductionReportScreen()));
               // var cp=context.read<CountingProvider>();
               // Navigator.push(context, MaterialPageRoute(builder: (context)=>ProductionReportScreen(productionData: cp.reportDataList,)));

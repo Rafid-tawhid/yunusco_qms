@@ -380,14 +380,17 @@ class CountingProvider with ChangeNotifier {
     _testingreportDataList.clear();
     if (dataList != null && dataList.isNotEmpty) {
       _testingreportDataList.addAll(dataList);
-     debugPrint('_testingreportDataList ${_testingreportDataList.length}');
+     debugPrint('Previously saved report data : ${_testingreportDataList.length}');
     } else {
       print("No data found in Hive.");
     }
-
-
     notifyListeners();
   }
 
-
+  getReportData(){
+    var reportData= HiveLocalSendDataService.getLocalSendDataList();
+    if(reportData!=null){
+      setTestingReportData(reportData);
+    }
+  }
 }

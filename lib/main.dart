@@ -17,19 +17,16 @@ import 'login_screen.dart';
 import 'models/local_send_data_model.dart';
 import 'models/send_data_model.dart';
 
-
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
-void main() async{
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  if(Platform.isAndroid){
-    await Firebase.initializeApp();  WidgetsFlutterBinding.ensureInitialized();
+  if (Platform.isAndroid) {
+    await Firebase.initializeApp();
+    WidgetsFlutterBinding.ensureInitialized();
     await Firebase.initializeApp();
   }
   try {
-    await Hive.initFlutter();
-    Hive.registerAdapter(SendDataModelAdapter());
-    await Hive.openBox<SendDataModel>('sendDataBox');
     await HiveLocalSendDataService.init();
   } catch (e) {
     print('Error initializing Hive: $e');
@@ -37,18 +34,14 @@ void main() async{
     await Hive.openBox('localSendDataBox');
   }
 
-
-
   await DashboardHelpers.clearDataIfNewDay();
 
-
-  runApp(MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_)=>BuyerProvider()),
-        ChangeNotifierProvider(create: (_)=>CountingProvider()),
-        ChangeNotifierProvider(create: (_)=>NetworkProvider()),
-      ],
-      child: MyApp()));
+  runApp(
+    MultiProvider(
+      providers: [ChangeNotifierProvider(create: (_) => BuyerProvider()), ChangeNotifierProvider(create: (_) => CountingProvider()), ChangeNotifierProvider(create: (_) => NetworkProvider())],
+      child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -58,9 +51,7 @@ class MyApp extends StatelessWidget {
       title: 'Yunusco QMS',
       navigatorKey: navigatorKey,
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-      ),
+      theme: ThemeData(colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple)),
       builder: (context, child) {
         print('App: MaterialApp builder called');
 
@@ -76,5 +67,3 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-
-

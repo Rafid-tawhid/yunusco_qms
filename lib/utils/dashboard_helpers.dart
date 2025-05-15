@@ -8,6 +8,7 @@ import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:nidle_qty/login_screen.dart';
+import 'package:nidle_qty/service_class/hive_service_class.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/send_data_model.dart';
@@ -773,6 +774,7 @@ class DashboardHelpers {
       // It's a new day — clear Hive box
       final box = Hive.box<SendDataModel>('sendDataBox');
       await box.clear();
+      HiveLocalSendDataService.clearLocalSendData();
       // Save today's date
       await prefs.setString('lastClearDate', today);
       debugPrint('Data cleared at ${now.toIso8601String()}');
