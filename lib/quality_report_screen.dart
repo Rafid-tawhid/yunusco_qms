@@ -251,7 +251,7 @@ class ProductionReportScreen extends StatelessWidget {
               child: DataTable(
                 columns: const [
                   DataColumn(label: Text('Hour')),
-                  DataColumn(label: Text('Pass (1+3)'), numeric: true),
+                  DataColumn(label: Text('Pass'), numeric: true),
                   DataColumn(label: Text('Alter'), numeric: true),
                   DataColumn(label: Text('Reject'), numeric: true),
                   DataColumn(label: Text('Total'), numeric: true),
