@@ -7,7 +7,7 @@ import 'package:nidle_qty/utils/dashboard_helpers.dart';
 import 'package:nidle_qty/widgets/text_from_field.dart';
 import 'package:provider/provider.dart';
 
-import 'buyer_list.dart';
+import 'buyer_list_screen.dart';
 import 'home_screen.dart';
 import 'line_dropdown_settings.dart';
 

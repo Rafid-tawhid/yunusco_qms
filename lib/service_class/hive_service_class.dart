@@ -39,5 +39,9 @@ class HiveLocalSendDataService {
     final box = Hive.box(_boxName);
     await box.delete(_listKey);
     await box.clear();
+
+    //
+    final box2 = Hive.box<SendDataModel>('sendDataBox');
+    await box.clear();
   }
 }

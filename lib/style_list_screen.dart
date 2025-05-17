@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:nidle_qty/providers/buyer_provider.dart';
-import 'package:nidle_qty/purchase_order.dart';
+import 'package:nidle_qty/purchase_order_list.dart';
 import 'package:nidle_qty/utils/constants.dart';
 import 'package:nidle_qty/utils/dashboard_helpers.dart';
 import 'package:provider/provider.dart';
@@ -56,9 +56,8 @@ class _StyleSelectionScreenState extends State<StyleSelectionScreen> {
       if (bp.poListByStyle.isEmpty) {
         DashboardHelpers.showAlert(msg: 'No Order Found.');
       } else {
-
         //save style to check in counting screen if it is unique or not
-        DashboardHelpers.setString('tempPo', data.style??'');
+       // DashboardHelpers.setString('tempPo', data.style ?? '');
 
         Navigator.push(context, MaterialPageRoute(builder: (context) => PurchaseOrderSelectionScreen()));
       }

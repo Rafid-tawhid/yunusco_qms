@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:nidle_qty/utils/drawer.dart';
 import 'package:nidle_qty/providers/buyer_provider.dart';
-import 'package:nidle_qty/purchase_order.dart';
+import 'package:nidle_qty/purchase_order_list.dart';
 import 'package:nidle_qty/quality_check_screen.dart';
 import 'package:nidle_qty/utils/dashboard_helpers.dart';
 import 'package:nidle_qty/widgets/select_purchase_order.dart';

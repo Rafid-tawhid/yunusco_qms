@@ -36,25 +36,27 @@ class _PurchaseOrderSelectionScreenState extends State<PurchaseOrderSelectionScr
       return;
     }
 
-    final buyerProvider = context.read<BuyerProvider>();
-    final countingProvider = context.read<CountingProvider>();
-    final box = Hive.box<SendDataModel>('sendDataBox');
-    final sendData = box.get('sendDataKey');
-    final previousStyle=await DashboardHelpers.getString('tempPo');
 
+    final countingProvider = context.read<CountingProvider>();
+    final buyerProvider = context.read<BuyerProvider>();
+    // final box = Hive.box<SendDataModel>('sendDataBox');
+    // final sendData = box.get('sendDataKey');
+    // final previousStyle=await DashboardHelpers.getString('tempPo');
+
+    //ALWAYS GET LOCALLY SAVED DATA
+    countingProvider.getCountingDataLocally();
     // Handle different PO scenarios
-    if (sendData != null && sendData.style == previousStyle) {
-      debugPrint('PURCHASE ORDER PREVIOUS VALUE SELECTED VALUE SAME');
-      countingProvider.getCountingDataLocally(); // Load cached data for next page
-    } else if (sendData != null && sendData.style != previousStyle) {
-      debugPrint('PURCHASE ORDER New PO selected - Resetting counts ${sendData.po}');
-      countingProvider.resetAllCount(); // Reset counts for a new PO
-    }
+    // if (sendData != null && sendData.style == previousStyle) {
+    //   debugPrint('PURCHASE ORDER PREVIOUS VALUE SELECTED VALUE SAME');
+    //   countingProvider.getCountingDataLocally(); // Load cached data for counting page
+    // } else if (sendData != null && sendData.style != previousStyle) {
+    //   debugPrint('NEW STYLE SELECTED- Resetting counts ${sendData.po}');
+    //   countingProvider.resetAllCount(); // Reset counts for a new PO
+    // }
 
     try {
       // Show loading indicator
       EasyLoading.show(maskType: EasyLoadingMaskType.black);
-
       // Update the selected PO and fetch data
       buyerProvider.setBuyersStylePoInfo(buyerPO: _selectedOrder);
       await Future.wait([buyerProvider.getColor(_selectedOrder!.po), buyerProvider.getSize(_selectedOrder!.po)]);

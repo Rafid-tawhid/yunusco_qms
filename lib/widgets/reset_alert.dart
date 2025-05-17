@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 
 import '../models/send_data_model.dart';
 import '../providers/buyer_provider.dart';
+import '../service_class/hive_service_class.dart';
 
 Future<void> showResetConfirmationDialog(BuildContext context, BuyerProvider buyerPro) async {
   return showDialog<void>(
@@ -50,6 +51,7 @@ Future<void> _performFullReset(BuyerProvider buyerPro,CountingProvider counterPr
     // 1. Clear Hive data
     final box = Hive.box<SendDataModel>('sendDataBox');
     await box.clear();
+    HiveLocalSendDataService.clearLocalSendData();
     buyerPro.clearStyleAndPoList();
     // counterPro.resetAllCount();
     debugPrint('All data has been reset successfully');

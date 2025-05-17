@@ -772,8 +772,7 @@ class DashboardHelpers {
 
     if (lastClearDate != today) {
       // It's a new day — clear Hive box
-      final box = Hive.box<SendDataModel>('sendDataBox');
-      await box.clear();
+
       HiveLocalSendDataService.clearLocalSendData();
       // Save today's date
       await prefs.setString('lastClearDate', today);
