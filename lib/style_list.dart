@@ -56,6 +56,10 @@ class _StyleSelectionScreenState extends State<StyleSelectionScreen> {
       if (bp.poListByStyle.isEmpty) {
         DashboardHelpers.showAlert(msg: 'No Order Found.');
       } else {
+
+        //save style to check in counting screen if it is unique or not
+        DashboardHelpers.setString('tempPo', data.style??'');
+
         Navigator.push(context, MaterialPageRoute(builder: (context) => PurchaseOrderSelectionScreen()));
       }
     }
@@ -75,7 +79,7 @@ class _StyleSelectionScreenState extends State<StyleSelectionScreen> {
                   style: TextStyle(color: Colors.black),
                   onChanged: filterStyles,
                 )
-                : Text('Select Garment Style',style: AppConstants.customTextStyle(18, Colors.black, FontWeight.w500),),
+                : Text('Select Garment Style', style: AppConstants.customTextStyle(18, Colors.black, FontWeight.w500)),
         centerTitle: true,
         elevation: 0,
         actions: [

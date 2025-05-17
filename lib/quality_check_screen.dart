@@ -476,6 +476,9 @@ class _QualityControlScreenState extends State<QualityControlScreen> with Widget
   Future<void> getPreviousCount() async {
     _section = await DashboardHelpers.getString('selectedSection');
     _line = await DashboardHelpers.getString('selectedLine');
+    //
+    //if style is different from previous the count will be zero
+
     setState(() {});
   }
 

@@ -40,12 +40,13 @@ class _PurchaseOrderSelectionScreenState extends State<PurchaseOrderSelectionScr
     final countingProvider = context.read<CountingProvider>();
     final box = Hive.box<SendDataModel>('sendDataBox');
     final sendData = box.get('sendDataKey');
+    final previousStyle=await DashboardHelpers.getString('tempPo');
 
     // Handle different PO scenarios
-    if (sendData != null && sendData.po == _selectedOrder!.po) {
+    if (sendData != null && sendData.style == previousStyle) {
       debugPrint('PURCHASE ORDER PREVIOUS VALUE SELECTED VALUE SAME');
       countingProvider.getCountingDataLocally(); // Load cached data for next page
-    } else if (sendData != null && sendData.po != _selectedOrder!.po) {
+    } else if (sendData != null && sendData.style != previousStyle) {
       debugPrint('PURCHASE ORDER New PO selected - Resetting counts ${sendData.po}');
       countingProvider.resetAllCount(); // Reset counts for a new PO
     }
