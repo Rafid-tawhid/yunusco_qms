@@ -89,7 +89,8 @@ class _BuyerListScreenState extends State<BuyerListScreen> {
                                 EasyLoading.dismiss();
                                 bp.setLoadingStyle(false);
                                 //clear style and po and set code
-                                bp.clearStyleAndPoList();
+                                bp.
+                                clearStyleAndPoList();
                                 bp.setBuyersStylePoInfo(buyerInfo: buyer);
                                 //navigate to login if fails api
                                 if (res == false) {

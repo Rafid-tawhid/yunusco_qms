@@ -239,33 +239,50 @@ class _QualityControlScreenState extends State<QualityControlScreen> with Widget
                                           builder:
                                               (context, pro, _) => Column(
                                                 children: [
-                                                  SizedBox(
-                                                    width: double.infinity,
-                                                    height: 280,
-                                                    child: ElevatedButton(
-                                                      style: ElevatedButton.styleFrom(
-                                                        backgroundColor: Colors.green,
-                                                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                                                        elevation: 4,
+                                                  Stack(
+                                                    children: [
+                                                      SizedBox(
+                                                        width: double.infinity,
+                                                        height: 320,
+                                                        child: ElevatedButton(
+                                                          style: ElevatedButton.styleFrom(
+                                                            backgroundColor: Colors.green,
+                                                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                                                            elevation: 4,
+                                                          ),
+                                                          onPressed:
+                                                              _selectColor != null && _selectSize != null
+                                                                  ? () async {
+                                                                    // increment
+                                                                    pro.checkedItem();
+                                                                    var bp = context.read<BuyerProvider>();
+                                                                    pro.addDataToLocalList(bp, status: CheckedStatus.pass);
+                                                                    //need a buyer provider obj
+                                                                    // var bp = context.read<BuyerProvider>();
+                                                                    // //set counting data locally
+                                                                    // var checked=await pro.saveCountingDataLocally(bp,status: CheckedStatus.pass);
+                                                                    // if(checked){
+                                                                    //   pro.checkedItem();
+                                                                    // }
+                                                                  }
+                                                                  : null,
+                                                          child: Text('PASS(${pro.checked})', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)),
+                                                        ),
                                                       ),
-                                                      onPressed:
-                                                          _selectColor != null && _selectSize != null
-                                                              ? () async {
-                                                                // increment
-                                                                pro.checkedItem();
-                                                                var bp = context.read<BuyerProvider>();
-                                                                pro.addDataToLocalList(bp, status: CheckedStatus.pass);
-                                                                //need a buyer provider obj
-                                                                // var bp = context.read<BuyerProvider>();
-                                                                // //set counting data locally
-                                                                // var checked=await pro.saveCountingDataLocally(bp,status: CheckedStatus.pass);
-                                                                // if(checked){
-                                                                //   pro.checkedItem();
-                                                                // }
-                                                              }
-                                                              : null,
-                                                      child: Text('PASS(${pro.checked})', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)),
-                                                    ),
+                                                      Positioned(
+                                                        bottom: 8,
+                                                        right: 8,
+                                                        child: Consumer<CountingProvider>(
+                                                          builder: (context,pp,_)=>Row(
+                                                            mainAxisSize: MainAxisSize.min,
+                                                            children: [
+                                                              Text(pp.reportDataList.length.toString(),style: TextStyle(color: Colors.white),),
+                                                              Icon(Icons.history,color: Colors.white,)
+                                                            ],
+                                                          ),
+                                                        ),
+                                                      )
+                                                    ],
                                                   ),
                                                   const SizedBox(height: 20),
                                                   Row(
