@@ -299,7 +299,7 @@ class CountingProvider with ChangeNotifier {
 
 
   Future<void> saveFullDataPeriodically() async {
-    if(_reportDataList.length>1){
+    if(_reportDataList.length>0){
       final bool isConnected = await InternetConnectionChecker.instance.hasConnection;
       //send to save data in server
       if(isConnected){
@@ -315,7 +315,6 @@ class CountingProvider with ChangeNotifier {
       }
       else {
         debugPrint('FROM THIS FROM THIS DATA NOT SEND 2');
-
       }
     }
     else {
