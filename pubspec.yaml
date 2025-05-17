@@ -58,6 +58,7 @@ dependencies:
   connectivity_plus: ^6.1.4
   cloud_firestore: ^5.6.7
   internet_connection_checker: ^3.0.1
+  flutter_riverpod: ^2.6.1
 
 
 

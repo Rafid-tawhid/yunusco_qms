@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -38,7 +37,10 @@ void main() async {
 
   runApp(
     MultiProvider(
-      providers: [ChangeNotifierProvider(create: (_) => BuyerProvider()), ChangeNotifierProvider(create: (_) => CountingProvider()), ChangeNotifierProvider(create: (_) => NetworkProvider())],
+      providers: [
+        ChangeNotifierProvider(create: (_) => BuyerProvider()),
+        ChangeNotifierProvider(create: (_) => CountingProvider()),
+        ChangeNotifierProvider(create: (_) => NetworkProvider())],
       child: MyApp(),
     ),
   );
@@ -49,9 +51,9 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Yunusco QMS',
+      theme: ThemeData(useMaterial3: true),
       navigatorKey: navigatorKey,
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple)),
       builder: (context, child) {
         print('App: MaterialApp builder called');
 
