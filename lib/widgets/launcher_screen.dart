@@ -59,7 +59,7 @@ class _LauncherScreenState extends State<LauncherScreen>
         var section=await DashboardHelpers.getString('section');
         var line=await DashboardHelpers.getString('selectedLine');
         if(section==''&&line==''){
-          debugPrint('This is calling');
+          debugPrint('This is calling section ${section} and ${line}');
           Navigator.pushReplacement(context, CupertinoPageRoute(builder: (context)=>SearchDropdownScreen()));
         }
         else{

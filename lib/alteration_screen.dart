@@ -152,7 +152,7 @@ class _AlterationReasonScreenState extends State<AlterationReasonScreen> {
 
                           cp.addDataToLocalList(
                             bp,
-                            info: {'operationId': cp.operation!.operationId, 'defectId': cp.allDefectList[selectedIndex ?? 0].defectId, 'operationDetailsId': cp.operation!.operationDetailsId},
+                            info: {'operationId':cp.operation==null?0: cp.operation!.operationId, 'defectId': cp.allDefectList[selectedIndex ?? 0].defectId, 'operationDetailsId':cp.operation==null?0: cp.operation!.operationDetailsId},
                             status: getStatus(widget.form),
                           );
 

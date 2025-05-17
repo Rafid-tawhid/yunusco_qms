@@ -76,7 +76,10 @@ class CountingProvider with ChangeNotifier {
        _allOperations.add(OperationModel.fromJson(i));
       }
      //selected first
-     selectedOperation(allOperations.first);
+     if(allOperations.isNotEmpty){
+       selectedOperation(allOperations.first);
+     }
+
     }
     notifyListeners();
   }
