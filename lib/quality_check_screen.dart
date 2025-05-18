@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:hive/hive.dart';
 import 'package:nidle_qty/login_screen.dart';
 import 'package:nidle_qty/models/checked_enum.dart';
@@ -12,10 +13,15 @@ import 'package:nidle_qty/purchase_order_list.dart';
 import 'package:nidle_qty/quality_report_screen.dart';
 import 'package:nidle_qty/service_class/hive_service_class.dart';
 import 'package:nidle_qty/test/testing.dart';
+import 'package:nidle_qty/utils/constants.dart';
 import 'package:nidle_qty/utils/dashboard_helpers.dart';
 import 'package:nidle_qty/widgets/alter_check.dart';
+import 'package:nidle_qty/widgets/icon_button.dart';
+import 'package:nidle_qty/widgets/operation_list.dart';
+import 'package:nidle_qty/widgets/production_chart.dart';
 import 'package:nidle_qty/widgets/reject_alert.dart';
 import 'package:nidle_qty/widgets/reset_alert.dart';
+import 'package:nidle_qty/widgets/saking_button.dart';
 import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
@@ -44,18 +50,18 @@ class _QualityControlScreenState extends State<QualityControlScreen> with Widget
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       WidgetsBinding.instance.addObserver(this);
+      SystemChrome.setPreferredOrientations([DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight]);
       getLunchTime();
       getPreviousCount();
       startSchedulerCallToSaveData();
     });
   }
 
-
-
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     endSchedularSaveData();
+    SystemChrome.setPreferredOrientations(DeviceOrientation.values);
     super.dispose();
   }
 
@@ -72,124 +78,52 @@ class _QualityControlScreenState extends State<QualityControlScreen> with Widget
 
   @override
   Widget build(BuildContext context) {
+    // Sample data for last 7 days
+    final timeData = [45.0, 60.0, 75.0, 50.0, 65.0];
+
     return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        title: const Text('Quality Check'),
-        centerTitle: true,
-        actions: [
-          IconButton(
-            onPressed: () {
-              var cp=context.read<CountingProvider>();
-              cp.getReportData();
-              Navigator.push(context, CupertinoPageRoute(builder: (context) => ProductionReportScreen()));
-              // var cp=context.read<CountingProvider>();
-              // Navigator.push(context, MaterialPageRoute(builder: (context)=>ProductionReportScreen(productionData: cp.reportDataList,)));
-            },
-            icon: Icon(Icons.report_gmailerrorred),
-          ),
+      backgroundColor: myColors.blackMain,
 
-          Consumer<BuyerProvider>(
-            builder:
-                (context, bp, _) => IconButton(
-                  onPressed: () {
-                    bp.lockUnlockSizeColor();
-                  },
-                  icon: bp.lock ? Icon(Icons.lock) : Icon(Icons.lock_open),
-                ),
-          ),
-
-          // IconButton(
-          //   icon: const Icon(Icons.bar_chart),
-          //   onPressed: () {
-          //     if (MediaQuery.of(context).size.width > 600) {
-          //       setState(() {
-          //         showChartTab = !showChartTab;
-          //       });
-          //     } else {
-          //       setState(() {
-          //         showChart = !showChart;
-          //       });
-          //     }
-          //   },
-          // ),
-        ],
-      ),
-      body: Consumer<CountingProvider>(
-        builder:
-            (context, ccp, _) =>
-                ccp.isLoadingLunchTime
-                    ? CircularProgressIndicator()
-                    : ccp.isLunchTime
-                    ? Center(
-                      child: Text('Your Lunch time ${DashboardHelpers.formatExactLunchTime(ccp.lunchTime!.lunchStartTime ?? '', ccp.lunchTime!.lunchEndTime ?? '')}', textAlign: TextAlign.center),
-                    )
-                    : SingleChildScrollView(
-                      child: Column(
+      body: SafeArea(
+        child: Consumer<CountingProvider>(
+          builder: (context, ccp, _) =>
+                  ccp.isLoadingLunchTime
+                      ? CircularProgressIndicator()
+                      : ccp.isLunchTime
+                      ? Center(
+                        child: Text('Your Lunch time ${DashboardHelpers.formatExactLunchTime(ccp.lunchTime!.lunchStartTime ?? '', ccp.lunchTime!.lunchEndTime ?? '')}', textAlign: TextAlign.center),
+                      )
+                      : Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Consumer<BuyerProvider>(
-                            builder: (context, provider, _) {
-                              return Padding(
-                                padding: const EdgeInsets.only(left: 16.0, right: 16, top: 8),
-                                child: Card(
-                                  color: Colors.white,
-                                  child: Padding(
-                                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                                    child: Row(
-                                      children: [
-                                        Expanded(
-                                          flex: 2,
-                                          child: Column(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            children: [
-                                              _buildInfoRow('Buyer', provider.buyerInfo!.name),
-                                              _buildInfoRow('Style', '${provider.buyerStyle!.style}'),
-                                              _buildInfoRow('PO', provider.buyerPo!.po),
-                                            ],
-                                          ),
-                                        ),
-                                        Expanded(flex: 1, child: Column(children: [_buildInfoRow('Sec:', _section), _buildInfoRow('Line', _line)])),
-                                        // IconButton(
-                                        //   onPressed: () {
-                                        //     showResetConfirmationDialog(context, provider);
-                                        //   },
-                                        //   icon: Icon(Icons.lock_reset, size: 24),
-                                        // ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              );
-                            },
-                          ),
+                          HeaderCountingInfo(section: _section, line: _line),
                           Row(
                             children: [
                               Expanded(
-                                flex: 2,
                                 child: Padding(
                                   padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16),
-                                  child: Center(
-                                    child: Column(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      children: [
-                                        Consumer<BuyerProvider>(
-                                          builder:
-                                              (context, pro, _) => InkWell(
-                                                onTap: () {
-                                                  if (pro.lock) {
-                                                    DashboardHelpers.showAlert(msg: 'Please unlock to Select');
-                                                  }
-                                                },
+                                  child: Consumer<BuyerProvider>(
+                                    builder:
+                                        (context, pro, _) => InkWell(
+                                          onTap: () {
+                                            if (pro.lock) {
+                                              DashboardHelpers.showAlert(msg: 'Please unlock to Select');
+                                            }
+                                          },
+                                          child: Row(
+                                            children: [
+                                              Expanded(
+                                                flex: 5,
                                                 child: AbsorbPointer(
                                                   absorbing: pro.lock,
                                                   child: Row(
                                                     children: [
                                                       // Category Dropdown
-                                                      _buildColorDropdown(
+                                                      _buildCustomDropdown(
                                                         value: _selectColor,
                                                         items: pro.colorList,
                                                         hint: 'Select Color',
+                                                        itemText: (color) => color.color ?? 'Unspecified',
                                                         onChanged: (value) {
                                                           if (value != null) {
                                                             setState(() {
@@ -197,35 +131,24 @@ class _QualityControlScreenState extends State<QualityControlScreen> with Widget
                                                             });
                                                             //update color
                                                             pro.setBuyersStylePoInfo(color: _selectColor);
-                                                            setState(() {
-                                                              _selectColor = value;
-                                                            });
-                                                            //update color
-                                                            pro.setBuyersStylePoInfo(color: _selectColor);
-                                                            //check if it is similar to previous selection than count will update
-                                                            if (_selectColor != null && _selectSize != null) {
-                                                              //check if previous data
-                                                            }
                                                           }
                                                         },
                                                       ),
 
                                                       const SizedBox(width: 8),
                                                       // Size Dropdown
-                                                      _buildSizeDropdown(
+                                                      _buildCustomDropdown(
                                                         value: _selectSize,
                                                         items: pro.sizeList,
-                                                        hint: 'Size',
+                                                        itemText: (size) => size.size ?? 'Unspecified',
+                                                        hint: 'Select Size',
                                                         onChanged: (value) {
                                                           if (value != null) {
                                                             setState(() {
                                                               _selectSize = value;
                                                             });
                                                             pro.setBuyersStylePoInfo(size: _selectSize);
-                                                            //check if it is similar to previous selection than count will update
-                                                            if (_selectColor != null && _selectSize != null) {
-                                                              //check if previous data
-                                                            }
+
                                                           }
                                                         },
                                                       ),
@@ -233,221 +156,314 @@ class _QualityControlScreenState extends State<QualityControlScreen> with Widget
                                                   ),
                                                 ),
                                               ),
-                                        ),
-                                        SizedBox(height: 32),
-                                        Consumer<CountingProvider>(
-                                          builder:
-                                              (context, pro, _) => Column(
-                                                children: [
-                                                  Stack(
-                                                    children: [
-                                                      SizedBox(
-                                                        width: double.infinity,
-                                                        height: 320,
-                                                        child: ElevatedButton(
-                                                          style: ElevatedButton.styleFrom(
-                                                            backgroundColor: Colors.green,
-                                                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                                                            elevation: 4,
+                                              Expanded(
+                                                flex: 2,
+                                                child: Row(
+                                                  mainAxisAlignment: MainAxisAlignment.end,
+                                                  children: [
+                                                    RectangleIconButton(
+                                                      icon: Icons.save_alt,
+                                                      onPressed: () {
+                                                        saveData();
+                                                      },
+                                                      backgroundColor: myColors.blackSecond,
+                                                      iconColor: Colors.white,
+                                                      borderRadius: 6.0,
+                                                      elevation: 4.0,
+                                                      padding: const EdgeInsets.all(12),
+                                                    ),
+                                                    SizedBox(width: 8),
+                                                    RectangleIconButton(
+                                                      icon: Icons.add_chart_outlined,
+                                                      onPressed: () {
+                                                        var cp = context.read<CountingProvider>();
+                                                        cp.getReportData();
+                                                        Navigator.push(context, CupertinoPageRoute(builder: (context) => ProductionReportScreen()));
+                                                      },
+                                                      backgroundColor: myColors.blackSecond,
+                                                      iconColor: Colors.white,
+                                                      borderRadius: 6.0,
+                                                      elevation: 4.0,
+                                                      padding: const EdgeInsets.all(12),
+                                                    ),
+                                                    SizedBox(width: 8),
+                                                    Consumer<BuyerProvider>(
+                                                      builder:
+                                                          (context, pro, _) => RectangleIconButton(
+                                                            icon: pro.lock ? Icons.lock : Icons.lock_open,
+                                                            onPressed: () {
+                                                              pro.lockUnlockSizeColor();
+                                                            },
+                                                            backgroundColor: myColors.blackSecond,
+                                                            iconColor: Colors.white,
+                                                            borderRadius: 6.0,
+                                                            elevation: 4.0,
+                                                            padding: const EdgeInsets.all(12),
                                                           ),
-                                                          onPressed:
-                                                              _selectColor != null && _selectSize != null
-                                                                  ? () async {
-                                                                    // increment
-                                                                    pro.checkedItem();
-                                                                    var bp = context.read<BuyerProvider>();
-                                                                    pro.addDataToLocalList(bp, status: CheckedStatus.pass);
-                                                                    //need a buyer provider obj
-                                                                    // var bp = context.read<BuyerProvider>();
-                                                                    // //set counting data locally
-                                                                    // var checked=await pro.saveCountingDataLocally(bp,status: CheckedStatus.pass);
-                                                                    // if(checked){
-                                                                    //   pro.checkedItem();
-                                                                    // }
-                                                                  }
-                                                                  : null,
-                                                          child: Text('PASS(${pro.checked})', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)),
-                                                        ),
-                                                      ),
-                                                      Positioned(
-                                                        bottom: 8,
-                                                        right: 8,
-                                                        child: Consumer<CountingProvider>(
-                                                          builder: (context,pp,_)=>Row(
-                                                            mainAxisSize: MainAxisSize.min,
-                                                            children: [
-                                                              Text(pp.reportDataList.length.toString(),style: TextStyle(color: Colors.white),),
-                                                              Icon(Icons.history,color: Colors.white,)
-                                                            ],
-                                                          ),
-                                                        ),
-                                                      )
-                                                    ],
-                                                  ),
-                                                  const SizedBox(height: 20),
-                                                  Row(
-                                                    children: [
-                                                      Expanded(
-                                                        child: SizedBox(
-                                                          height: 160,
-                                                          child: ElevatedButton(
-                                                            style: ElevatedButton.styleFrom(
-                                                              backgroundColor: Colors.red,
-                                                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                                                              elevation: 4,
-                                                            ),
-                                                            onPressed:
-                                                                _selectColor != null && _selectSize != null
-                                                                    ? () {
-                                                                      showRejectionDialog(
-                                                                        context,
-                                                                        onConfirm: () {
-                                                                          Navigator.push(context, CupertinoPageRoute(builder: (context) => AlterationReasonScreen(form: CheckedStatus.reject)));
-                                                                          // Navigator.push(context, CupertinoPageRoute(builder: (context) => QualityCheckScreen(form: CheckedStatus.reject)));
-                                                                        },
-                                                                      );
-                                                                    }
-                                                                    : null,
-                                                            child: Text(
-                                                              'REJECT (${pro.reject})',
-                                                              textAlign: TextAlign.center,
-                                                              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
-                                                            ),
-                                                          ),
-                                                        ),
-                                                      ),
-                                                      const SizedBox(width: 16),
-                                                      Expanded(
-                                                        child: SizedBox(
-                                                          height: 160,
-                                                          child: ElevatedButton(
-                                                            style: ElevatedButton.styleFrom(
-                                                              backgroundColor: Colors.orange,
-                                                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                                                              elevation: 4,
-                                                            ),
-                                                            onPressed:
-                                                                _selectColor != null && _selectSize != null
-                                                                    ? () {
-                                                                      Navigator.push(context, CupertinoPageRoute(builder: (context) => AlterationReasonScreen(form: 'alter')));
-                                                                      // Navigator.push(context, CupertinoPageRoute(builder: (context) => QualityCheckScreen(form: CheckedStatus.alter)));
-                                                                    }
-                                                                    : null,
-                                                            child: Text(
-                                                              'ALTER (${pro.alter})',
-                                                              textAlign: TextAlign.center,
-                                                              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
-                                                            ),
-                                                          ),
-                                                        ),
-                                                      ),
-                                                      const SizedBox(width: 16),
-                                                      Expanded(
-                                                        child: SizedBox(
-                                                          height: 160,
-                                                          child: ElevatedButton(
-                                                            style: ElevatedButton.styleFrom(
-                                                              backgroundColor: Colors.green.shade800,
-                                                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                                                              elevation: 4,
-                                                            ),
-                                                            onPressed: _selectColor != null && _selectSize != null ? _alter_checked : null,
-                                                            child: Text(
-                                                              'ALTER CHECK (${pro.alter_check})',
-                                                              textAlign: TextAlign.center,
-                                                              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
-                                                            ),
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                  SizedBox(height: 60),
-                                                  //saveCountingDataLocally
-                                                ],
+                                                    ),
+                                                  ],
+                                                ),
                                               ),
+                                            ],
+                                          ),
                                         ),
-                                      ],
-                                    ),
                                   ),
                                 ),
                               ),
                             ],
                           ),
-                          SizedBox(height: 40),
-                          // SizedBox(
-                          //   height: 80,
-                          //   child: Consumer<CountingProvider>(
-                          //     builder:
-                          //         (context, pro, _) => Padding(
-                          //           padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16),
-                          //           child: ElevatedButton(
-                          //             style: ElevatedButton.styleFrom(backgroundColor: Colors.blue, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)), elevation: 4),
-                          //             onPressed:
-                          //                 _selectColor != null && _selectSize != null
-                          //                     ? () {
-                          //                       var bp = context.read<BuyerProvider>();
-                          //                       pro.saveCountingDataLocally(bp);
-                          //                     }
-                          //                     : null,
-                          //             child: Row(
-                          //               mainAxisAlignment: MainAxisAlignment.center,
-                          //               children: [Text('Save', textAlign: TextAlign.center, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white))],
-                          //             ),
-                          //           ),
-                          //         ),
-                          //   ),
-                          // ),
-                          SizedBox(height: 40),
+                          SizedBox(height: 20),
+                          Expanded(
+                            child: Consumer<CountingProvider>(
+                              builder:
+                                  (context, pro, _) => Row(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Expanded(
+                                        flex:5,
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                                          child: Column(
+                                            children: [
+                                              Expanded(
+                                                child: Stack(
+                                                  children: [
+                                                    SizedBox.expand( // Use SizedBox.expand to fill all available space
+                                                      child: ElevatedButton(
+                                                        style: ElevatedButton.styleFrom(
+                                                          backgroundColor: Colors.green,
+                                                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                                                          elevation: 4,
+                                                        ),
+                                                        onPressed: _selectColor != null && _selectSize != null
+                                                            ? () async {
+                                                          pro.checkedItem();
+                                                          var bp = context.read<BuyerProvider>();
+                                                          pro.addDataToLocalList(bp, status: CheckedStatus.pass);
+                                                        }
+                                                            : null,
+                                                        child: Row(
+                                                          mainAxisSize: MainAxisSize.min,
+                                                          children: [
+                                                            Padding(
+                                                              padding: const EdgeInsets.all(8.0),
+                                                              child: Icon(Icons.check_circle,color: Colors.white,size: 54,),
+                                                            ),
+                                                            Text(
+                                                              'PASS(${pro.checked})',
+                                                              style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: Colors.white),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    Positioned(
+                                                      bottom: 8,
+                                                      right: 8,
+                                                      child: Consumer<CountingProvider>(
+                                                        builder: (context, pp, _) => Row(
+                                                          mainAxisSize: MainAxisSize.min,
+                                                          children: [
+                                                            Text(pp.reportDataList.length.toString(), style: TextStyle(color: Colors.white,fontSize: 18,fontWeight: FontWeight.bold)),
+                                                            Icon(Icons.history, color: Colors.white,size: 24,),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                              const SizedBox(height: 20),
+                                              Row(
+                                                children: [
+                                                  Expanded(
+                                                    child: SizedBox(
+                                                      height: MediaQuery.sizeOf(context).height/5,
+                                                      child: ElevatedButton(
+                                                        style: ElevatedButton.styleFrom(backgroundColor: Colors.red, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)), elevation: 4),
+                                                        onPressed:
+                                                            _selectColor != null && _selectSize != null
+                                                                ? () {
+                                                                  showRejectionDialog(
+                                                                    context,
+                                                                    onConfirm: () {
+                                                                      Navigator.push(context, CupertinoPageRoute(builder: (context) => AlterationReasonScreen(form: CheckedStatus.reject)));
+                                                                      // Navigator.push(context, CupertinoPageRoute(builder: (context) => QualityCheckScreen(form: CheckedStatus.reject)));
+                                                                    },
+                                                                  );
+                                                                }
+                                                                : null,
+                                                        child: Row(
+                                                          mainAxisSize: MainAxisSize.min,
+                                                          children: [
+                                                            Padding(
+                                                              padding: const EdgeInsets.all(4.0),
+                                                              child: Icon(Icons.close_outlined,color: Colors.white,size: 40,),
+                                                            ),
+                                                            Text(
+                                                              'REJECT(${pro.reject})',
+                                                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
+                                                            ),
+                                                          ],
+                                                        )
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  const SizedBox(width: 16),
+                                                  Expanded(
+                                                    child: SizedBox(
+                                                      height: MediaQuery.sizeOf(context).height/5,
+                                                      child: ElevatedButton(
+                                                        style: ElevatedButton.styleFrom(backgroundColor: Colors.orange, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)), elevation: 4),
+                                                        onPressed:
+                                                            _selectColor != null && _selectSize != null
+                                                                ? () {
+                                                                  Navigator.push(context, CupertinoPageRoute(builder: (context) => AlterationReasonScreen(form: 'alter')));
+                                                                  // Navigator.push(context, CupertinoPageRoute(builder: (context) => QualityCheckScreen(form: CheckedStatus.alter)));
+                                                                }
+                                                                : null,
+                                                        child: Row(
+                                                          mainAxisSize: MainAxisSize.min,
+                                                          children: [
+                                                            Padding(
+                                                              padding: const EdgeInsets.all(4.0),
+                                                              child: Icon(Icons.change_circle_outlined,color: Colors.white,size: 40,),
+                                                            ),
+                                                            Text(
+                                                              'ALTER(${pro.alter})',
+                                                              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+                                                            ),
+                                                          ],
+                                                        )
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  const SizedBox(width: 16),
+                                                  Expanded(
+                                                    child: SizedBox(
+                                                      height: MediaQuery.sizeOf(context).height/5,
+                                                      child: ElevatedButton(
+                                                        style: ElevatedButton.styleFrom(
+                                                          backgroundColor: Colors.green.shade800,
+                                                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                                                          elevation: 4,
+                                                        ),
+                                                        onPressed: _selectColor != null && _selectSize != null ? _alter_checked : null,
+                                                        child: Row(
+                                                          mainAxisSize: MainAxisSize.min,
+                                                          children: [
+                                                            Padding(
+                                                              padding: const EdgeInsets.all(2.0),
+                                                              child: Icon(Icons.recycling_outlined,color: Colors.white,size: 40,),
+                                                            ),
+                                                            FittedBox(
+                                                              child: Text(
+                                                                'ALTER CHECK(${pro.alter_check})',
+                                                                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                              SizedBox(height: 40),
+                                              //saveCountingDataLocally
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                      Expanded(
+                                        flex: 2,
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                                          child: SingleChildScrollView(
+                                            child: Column(
+                                              children: [
+                                                Consumer<CountingProvider>(
+                                                  builder:
+                                                      (context, cp, _) => Container(
+                                                        width: double.infinity,
+                                                        alignment: Alignment.center,
+                                                        padding: EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+                                                        decoration: BoxDecoration(color: myColors.blackSecond,borderRadius: BorderRadius.circular(8)),
+                                                        child: Text('${cp.checked} | ${cp.alter} | ${cp.alter_check} | ${cp.reject}',style: customTextStyle(20, Colors.white, FontWeight.bold),),
+                                                      ),
+                                                ),
+                                                SizedBox(height: 12,),
+                                                Container(
+                                                  width: double.infinity,
+                                                  decoration: BoxDecoration(
+                                                    color: myColors.blackSecond,
+                                                    borderRadius: BorderRadius.circular(8)
+                                                  ),
+                                                  child: DualLineChart(
+                                                    primaryValues: [45, 60, 75, 50, 65], // First production line values
+                                                    secondaryValues: [35, 50, 85, 40, 75], // Second production line values
+                                                    primaryColor: Colors.orange,
+                                                    secondaryColor: Colors.blue,
+                                                    labels: ['8', '10', '12', '14', '16'], // Day labels
+                                                  ),
+                                                ),
+                                                OperationsListWidget(operations: operations),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                            ),
+                          ),
+                          SizedBox(height: 20),
                         ],
                       ),
-                    ),
-      ),
-    );
-  }
-
-  Widget _buildColorDropdown({required ColorModel? value, required List<ColorModel> items, required String hint, required Function(ColorModel?) onChanged}) {
-    return Expanded(
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12),
-        decoration: BoxDecoration(borderRadius: BorderRadius.circular(8), border: Border.all(color: Colors.grey.shade300)),
-        child: DropdownButtonHideUnderline(
-          child: DropdownButton<ColorModel>(
-            value: value,
-            isExpanded: true,
-            icon: Icon(Icons.arrow_drop_down, color: Colors.grey.shade700),
-            hint: Text(hint, style: TextStyle(color: Colors.grey.shade600)),
-            items:
-                items.map((ColorModel value) {
-                  return DropdownMenuItem<ColorModel>(value: value, child: Text(value.color ?? ''));
-                }).toList(),
-            onChanged: (val) {
-              onChanged(val);
-            },
-          ),
         ),
       ),
     );
   }
 
-  Widget _buildSizeDropdown({required SizeModel? value, required List<SizeModel> items, required String hint, required Function(SizeModel?) onChanged}) {
+
+  Widget _buildCustomDropdown<T>({
+    required T? value,
+    required List<T> items,
+    required String Function(T) itemText,
+    required String hint,
+    required Function(T?) onChanged,
+  }) {
     return Expanded(
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12),
-        decoration: BoxDecoration(borderRadius: BorderRadius.circular(8), border: Border.all(color: Colors.grey.shade300)),
+        decoration: BoxDecoration(
+          color: myColors.blackSecond,
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: myColors.blackMain),
+        ),
         child: DropdownButtonHideUnderline(
-          child: DropdownButton<SizeModel>(
+          child: DropdownButton<T>(
             value: value,
             isExpanded: true,
-            icon: Icon(Icons.arrow_drop_down, color: Colors.grey.shade700),
-            hint: Text(hint, style: TextStyle(color: Colors.grey.shade600)),
-            items:
-                items.map((SizeModel value) {
-                  return DropdownMenuItem<SizeModel>(value: value, child: Text(value.size ?? ''));
-                }).toList(),
-            onChanged: (val) {
-              onChanged(val); // Call the parent's callback
-            },
+            icon: const Icon(Icons.arrow_drop_down, color: Colors.white),
+            hint: Text(hint, style: const TextStyle(color: Colors.white)),
+            dropdownColor: Colors.grey[800],
+            style: const TextStyle(color: Colors.white),
+            borderRadius: BorderRadius.circular(8),
+            elevation: 4,
+            items: items.map((T value) {
+              return DropdownMenuItem<T>(
+                value: value,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  child: Text(
+                    itemText(value),
+                    style: customTextStyle(14, Colors.white, FontWeight.bold),
+                  ),
+                ),
+              );
+            }).toList(),
+            onChanged: onChanged,
           ),
         ),
       ),
@@ -523,10 +539,66 @@ class _QualityControlScreenState extends State<QualityControlScreen> with Widget
     }
   }
 
-  void onAppOpened() async{
-   var newDay=  await DashboardHelpers.clearDataIfNewDay();
-   if(newDay){
-     Navigator.push(context, CupertinoPageRoute(builder: (context)=>LoginScreen()));
-   }
+  void onAppOpened() async {
+    var newDay = await DashboardHelpers.clearDataIfNewDay();
+    if (newDay) {
+      Navigator.push(context, CupertinoPageRoute(builder: (context) => LoginScreen()));
+    }
+  }
+}
+
+class HeaderCountingInfo extends StatelessWidget {
+  const HeaderCountingInfo({super.key, required String section, required String line}) : _section = section, _line = line;
+
+  final String _section;
+  final String _line;
+
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<BuyerProvider>(
+      builder:
+          (context, pro, _) => Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Padding(padding: const EdgeInsets.symmetric(horizontal: 8.0), child: IconButton(onPressed: () {
+                Navigator.pop(context);
+              }, icon: Icon(Icons.arrow_back, color: Colors.white))),
+              Text('QMS', style: customTextStyle(24, Colors.white, FontWeight.bold)),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                child: Container(height: 30, width: 4, decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(4))),
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [Text(_section, style: customTextStyle(14, Colors.white, FontWeight.bold)), Text(_line, style: customTextStyle(14, Colors.white, FontWeight.bold))],
+              ),
+              Padding(padding: const EdgeInsets.symmetric(horizontal: 16.0), child: ShakingWifiDisableWidget()),
+              SizedBox(width: 8),
+              Consumer<CountingProvider>(
+                builder:
+                    (context, ccp, _) => Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Lunch Time', style: customTextStyle(14, Colors.white, FontWeight.bold)),
+                        if(ccp.lunchTime!=null)Text(
+                          '${DashboardHelpers.formatExactLunchTime(ccp.lunchTime!.lunchStartTime ?? '', ccp.lunchTime!.lunchEndTime ?? '')}',
+                          style: customTextStyle(14, Colors.white, FontWeight.bold),
+                        ),
+                      ],
+                    ),
+              ),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Text(pro.buyerInfo!.name ?? '', style: customTextStyle(14, Colors.white, FontWeight.bold)),
+                    Text(pro.buyerStyle!.style ?? '', style: customTextStyle(14, Colors.white, FontWeight.bold)),
+                  ],
+                ),
+              ),
+              SizedBox(width: 12),
+            ],
+          ),
+    );
   }
 }

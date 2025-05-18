@@ -4,6 +4,7 @@ class UserModel {
     dynamic tokenInfo,
     String? designation,
     String? iDnum,
+    bool? isDepartmentHead,
     num? userId,
     String? userName,
     String? loginName,
@@ -28,6 +29,7 @@ class UserModel {
     _tokenInfo = tokenInfo;
     _designation = designation;
     _iDnum = iDnum;
+    _isDepartmentHead = isDepartmentHead;
     _userId = userId;
     _userName = userName;
     _loginName = loginName;
@@ -55,6 +57,7 @@ class UserModel {
     _tokenInfo = json['TokenInfo'];
     _designation = json['Designation'];
     _iDnum = json['IDnum'];
+    _isDepartmentHead = json['IsDepartmentHead'];
     _userId = json['UserId'];
     _userName = json['UserName'];
     _loginName = json['LoginName'];
@@ -80,6 +83,7 @@ class UserModel {
   dynamic _tokenInfo;
   String? _designation;
   String? _iDnum;
+  bool? _isDepartmentHead;
   num? _userId;
   String? _userName;
   String? _loginName;
@@ -104,6 +108,7 @@ class UserModel {
     dynamic tokenInfo,
     String? designation,
     String? iDnum,
+    bool? isDepartmentHead,
     num? userId,
     String? userName,
     String? loginName,
@@ -128,6 +133,7 @@ class UserModel {
     tokenInfo: tokenInfo ?? _tokenInfo,
     designation: designation ?? _designation,
     iDnum: iDnum ?? _iDnum,
+    isDepartmentHead: isDepartmentHead ?? _isDepartmentHead,
     userId: userId ?? _userId,
     userName: userName ?? _userName,
     loginName: loginName ?? _loginName,
@@ -153,6 +159,7 @@ class UserModel {
   dynamic get tokenInfo => _tokenInfo;
   String? get designation => _designation;
   String? get iDnum => _iDnum;
+  bool? get isDepartmentHead => _isDepartmentHead;
   num? get userId => _userId;
   String? get userName => _userName;
   String? get loginName => _loginName;
@@ -180,6 +187,7 @@ class UserModel {
     map['TokenInfo'] = _tokenInfo;
     map['Designation'] = _designation;
     map['IDnum'] = _iDnum;
+    map['IsDepartmentHead'] = _isDepartmentHead;
     map['UserId'] = _userId;
     map['UserName'] = _userName;
     map['LoginName'] = _loginName;

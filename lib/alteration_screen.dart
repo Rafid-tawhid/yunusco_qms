@@ -49,82 +49,79 @@ class _AlterationReasonScreenState extends State<AlterationReasonScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Operation Selection Section
-          Container(
-            margin: const EdgeInsets.all(16),
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(12), boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 6, offset: Offset(0, 2))]),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+          // Reasons List
+          Expanded(
+            child: Row(
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text('Select Operation:', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.grey[800])),
-                    Icon(Icons.arrow_forward_rounded, color: myColors.primaryColor),
-                  ],
+                Expanded(
+                  child: Container(
+                    margin: const EdgeInsets.only(left: 16, right: 16, top: 8),
+                    alignment: Alignment.topCenter,
+                    decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(12), boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 6, offset: Offset(0, 2))]),
+                    child: Consumer<CountingProvider>(builder: (context, pro, _) => OperationList(items: pro.allOperations)),
+                  ),
                 ),
-                const SizedBox(height: 12),
-                Consumer<CountingProvider>(builder: (context, pro, _) => OperationList(items: pro.allOperations)),
+                Expanded(
+                  child: Container(
+                    margin: const EdgeInsets.only(left: 16, right: 16, top: 8),
+                    decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(12), boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 6, offset: Offset(0, 2))]),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(12),
+                      child: Consumer<CountingProvider>(
+                        builder:
+                            (context, pro, _) => Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 12.0),
+                              child: Column(
+                                children: [
+                                  Container(
+                                    margin: const EdgeInsets.symmetric(horizontal: 16),
+                                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                                    decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(12)),
+                                    child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Text('Select Reasons:', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.grey[800]))]),
+                                  ),
+                                  Expanded(
+                                    child: ListView.builder(
+                                      padding: EdgeInsets.zero,
+                                      itemCount: pro.allDefectList.length,
+                                      itemBuilder: (context, index) {
+                                        final reason = pro.allDefectList[index];
+                                        return Container(
+                                          decoration: BoxDecoration(border: Border(bottom: BorderSide(color: Colors.grey[200]!, width: 1))),
+                                          child: Card(
+                                            margin: EdgeInsets.zero,
+                                            elevation: 0,
+                                            color: selectedIndex == index ? Colors.orange[50] : Colors.white,
+                                            child: CheckboxListTile(
+                                              title: Text(reason.defectName ?? '', style: TextStyle(fontWeight: FontWeight.w500, color: Colors.grey[800])),
+                                              value: selectedReasons.contains(reason.defectName),
+                                              onChanged: (value) {
+                                                setState(() {
+                                                  selectedIndex = index;
+                                                });
+                                                debugPrint('DefectModels ${reason.toJson()}');
+                                                _toggleReason(reason.defectName ?? '');
+                                              },
+                                              secondary: Icon(Icons.warning_amber_rounded, color: Colors.orange[700]),
+                                              controlAffinity: ListTileControlAffinity.leading,
+                                              activeColor: Colors.orange,
+                                              dense: true,
+                                              contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                      ),
+                    ),
+                  ),
+                ),
               ],
             ),
           ),
-
-          // Reason Selection Header
-          Container(
-            margin: const EdgeInsets.symmetric(horizontal: 16),
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(12)),
-            child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Text('Select Reasons:', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.grey[800]))]),
-          ),
-
-          // Reasons List
-          Expanded(
-            child: Container(
-              margin: const EdgeInsets.only(left: 16, right: 16, top: 8),
-              decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(12), boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 6, offset: Offset(0, 2))]),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(12),
-                child: Consumer<CountingProvider>(
-                  builder:
-                      (context, pro, _) => Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 4.0),
-                        child: ListView.builder(
-                          padding: EdgeInsets.zero,
-                          itemCount: pro.allDefectList.length,
-                          itemBuilder: (context, index) {
-                            final reason = pro.allDefectList[index];
-                            return Container(
-                              decoration: BoxDecoration(border: Border(bottom: BorderSide(color: Colors.grey[200]!, width: 1))),
-                              child: Card(
-                                margin: EdgeInsets.zero,
-                                elevation: 0,
-                                color: selectedIndex == index ? Colors.orange[50] : Colors.white,
-                                child: CheckboxListTile(
-                                  title: Text(reason.defectName ?? '', style: TextStyle(fontWeight: FontWeight.w500, color: Colors.grey[800])),
-                                  value: selectedReasons.contains(reason.defectName),
-                                  onChanged: (value) {
-                                    setState(() {
-                                      selectedIndex = index;
-                                    });
-                                    debugPrint('DefectModels ${reason.toJson()}');
-                                    _toggleReason(reason.defectName ?? '');
-                                  },
-                                  secondary: Icon(Icons.warning_amber_rounded, color: Colors.orange[700]),
-                                  controlAffinity: ListTileControlAffinity.leading,
-                                  activeColor: Colors.orange,
-                                  dense: true,
-                                  contentPadding: const EdgeInsets.symmetric(horizontal: 16),
-                                ),
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-                ),
-              ),
-            ),
-          ),
-
           // Confirm Button
           Container(
             padding: const EdgeInsets.all(16),

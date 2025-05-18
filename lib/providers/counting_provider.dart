@@ -50,7 +50,13 @@ class CountingProvider with ChangeNotifier {
   Future<void> checkedItemFromAlter() async {
     // alter = alter - 1;
     checked = checked + 1;
-    alter_check = alter_check + 1;
+    if(alter==alter_check||alter_check>alter){
+      alter_check=alter;
+    }
+    else {
+      alter_check = alter_check + 1;
+    }
+
     notifyListeners();
   }
 

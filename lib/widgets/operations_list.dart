@@ -2,10 +2,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:nidle_qty/providers/buyer_provider.dart';
 import 'package:nidle_qty/providers/counting_provider.dart';
-import 'package:nidle_qty/utils/constants.dart';
 import 'package:provider/provider.dart';
 
 import '../models/operation_model.dart';
+import '../utils/constants.dart';
 
 class OperationList extends StatefulWidget {
   final List<OperationModel> items;
@@ -36,97 +36,95 @@ class _OperationListState extends State<OperationList> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
-      child: SizedBox(
-        height: 160, // Slightly taller for better touch targets
-        child: GridView.builder(
-          scrollDirection: Axis.horizontal,
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            mainAxisSpacing: 10,
-            crossAxisSpacing: 10,
-            childAspectRatio: 0.5, // Better aspect ratio for text
+      padding: const EdgeInsets.symmetric(vertical: 16.0,horizontal: 16),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text('Select Operation:', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.grey[800])),
+              Icon(Icons.arrow_forward_rounded, color: myColors.primaryColor),
+            ],
           ),
-          itemCount: widget.items.length,
-          itemBuilder: (context, index) {
-            final isSelected = selectedIndex == index;
-            final operation = widget.items[index];
+          const SizedBox(height: 12),
+          Expanded(
+            child: ListView.builder(
+              scrollDirection: Axis.vertical,
+              itemCount: widget.items.length,
 
-            return AnimatedContainer(
-              duration: const Duration(milliseconds: 200),
-              curve: Curves.easeInOut,
-              margin: const EdgeInsets.all(4),
-              decoration: BoxDecoration(
-                color: isSelected ? Colors.orange[50] : Colors.grey[50],
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(
-                  color: isSelected ? Colors.orange : Colors.grey[300]!,
-                  width: isSelected ? 1 : 1,
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
-                    blurRadius: 4,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: Material(
-                color: Colors.transparent,
-                child: InkWell(
-                  borderRadius: BorderRadius.circular(10),
-                  onTap: () {
-                    setState(() => selectedIndex = index);
-                    final cp = context.read<CountingProvider>();
-                    cp.selectedOperation(operation);
-                 //   cp.getDefectListByOperationId(operation.operationId.toString());
-                  },
-                  child: Stack(
-                    children: [
-                      Center(
-                        child: Padding(
-                          padding: const EdgeInsets.all(12),
-                          child: Text(
-                            operation.operationName ?? '',
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-                              color: isSelected ? Colors.orange[800] : Colors.grey[800],
-                            ),
-                            textAlign: TextAlign.center,
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
+              itemBuilder: (context, index) {
+                final isSelected = selectedIndex == index;
+                final operation = widget.items[index];
+                return Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 4.0,vertical: 4),
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
+                    curve: Curves.easeInOut,
+                    decoration: BoxDecoration(
+                      color: isSelected ? Colors.orange[50] : Colors.grey[50],
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(
+                        color: isSelected ? Colors.orange : Colors.grey[300]!,
+                        width: isSelected ? 1 : 1,
                       ),
-                      if (isSelected)
-                        Positioned(
-                          top: 2,
-                          right: 2,
-                          child: Container(
-                            padding: const EdgeInsets.all(2),
-                            decoration: BoxDecoration(
-                              color: Colors.orange,
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                color: Colors.white,
-                                width: 2,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.05),
+                          blurRadius: 4,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(8),
+                        onTap: () {
+                          setState(() => selectedIndex = index);
+                          final cp = context.read<CountingProvider>();
+                          cp.selectedOperation(operation);
+                        },
+                        child: Stack(
+                          children: [
+                            Positioned(
+                              top: 8,
+                              right: 12,
+                              child: isSelected? Icon(Icons.check_circle,color: Colors.deepOrange,size: 20,):SizedBox(),
+                            ),
+                            Container(
+                              child: Center(
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(vertical: 16.0),
+                                  child: Text(
+                                    operation.operationName ?? '',
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: isSelected
+                                          ? FontWeight.w600
+                                          : FontWeight.w500,
+                                      color: isSelected
+                                          ? Colors.orange[800]
+                                          : Colors.grey[800],
+                                    ),
+                                    textAlign: TextAlign.center,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
                               ),
                             ),
-                            child: const Icon(
-                              Icons.check,
-                              size: 10,
-                              color: Colors.white,
-                            ),
-                          ),
+                          ],
                         ),
-                    ],
+                      ),
+                    ),
                   ),
-                ),
-              ),
-            );
-          },
-        ),
+                );
+              },
+            ),
+          )
+
+        ],
       ),
     );
   }
