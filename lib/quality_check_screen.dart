@@ -59,16 +59,15 @@ class _QualityControlScreenState extends State<QualityControlScreen> with Widget
 
   @override
   void didChangeDependencies() {
-    _countingProvider = Provider.of<CountingProvider>(context,listen: false);
+    _countingProvider = Provider.of<CountingProvider>(context, listen: false);
     super.didChangeDependencies();
   }
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-
     if (state == AppLifecycleState.paused) {
       // App is going to background (minimized/switched away)
-      saveData(Provider.of<CountingProvider>(context,listen: false));
+      saveData(Provider.of<CountingProvider>(context, listen: false));
     }
     if (state == AppLifecycleState.resumed) {
       //onAppOpened(); // Called every time the app is entered from anywhere
@@ -77,18 +76,22 @@ class _QualityControlScreenState extends State<QualityControlScreen> with Widget
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       backgroundColor: myColors.blackMain,
 
       body: SafeArea(
         child: Consumer<CountingProvider>(
-          builder: (context, ccp, _) =>
+          builder:
+              (context, ccp, _) =>
                   ccp.isLoadingLunchTime
                       ? CircularProgressIndicator()
                       : ccp.isLunchTime
                       ? Center(
-                        child: Text('Your Lunch time ${DashboardHelpers.formatExactLunchTime(ccp.lunchTime!.lunchStartTime ?? '', ccp.lunchTime!.lunchEndTime ?? '')}', textAlign: TextAlign.center),
+                        child: Text(
+                          'Your Lunch time ${DashboardHelpers.formatExactLunchTime(ccp.lunchTime!.lunchStartTime ?? '', ccp.lunchTime!.lunchEndTime ?? '')}',
+                          textAlign: TextAlign.center,
+                          style: customTextStyle(20, Colors.white, FontWeight.bold),
+                        ),
                       )
                       : Column(
                         mainAxisSize: MainAxisSize.min,
@@ -145,7 +148,6 @@ class _QualityControlScreenState extends State<QualityControlScreen> with Widget
                                                               _selectSize = value;
                                                             });
                                                             pro.setBuyersStylePoInfo(size: _selectSize);
-
                                                           }
                                                         },
                                                       ),
@@ -217,7 +219,7 @@ class _QualityControlScreenState extends State<QualityControlScreen> with Widget
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       Expanded(
-                                        flex:5,
+                                        flex: 5,
                                         child: Padding(
                                           padding: const EdgeInsets.symmetric(horizontal: 16.0),
                                           child: Column(
@@ -225,31 +227,27 @@ class _QualityControlScreenState extends State<QualityControlScreen> with Widget
                                               Expanded(
                                                 child: Stack(
                                                   children: [
-                                                    SizedBox.expand( // Use SizedBox.expand to fill all available space
+                                                    SizedBox.expand(
+                                                      // Use SizedBox.expand to fill all available space
                                                       child: ElevatedButton(
                                                         style: ElevatedButton.styleFrom(
                                                           backgroundColor: Colors.green,
                                                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                                                           elevation: 4,
                                                         ),
-                                                        onPressed: _selectColor != null && _selectSize != null
-                                                            ? () async {
-                                                          pro.checkedItem();
-                                                          var bp = context.read<BuyerProvider>();
-                                                          pro.addDataToLocalList(bp, status: CheckedStatus.pass);
-                                                        }
-                                                            : null,
+                                                        onPressed:
+                                                            _selectColor != null && _selectSize != null
+                                                                ? () async {
+                                                                  pro.checkedItem();
+                                                                  var bp = context.read<BuyerProvider>();
+                                                                  pro.addDataToLocalList(bp, status: CheckedStatus.pass);
+                                                                }
+                                                                : null,
                                                         child: Row(
                                                           mainAxisSize: MainAxisSize.min,
                                                           children: [
-                                                            Padding(
-                                                              padding: const EdgeInsets.all(8.0),
-                                                              child: Icon(Icons.check_circle,color: Colors.white,size: 54,),
-                                                            ),
-                                                            Text(
-                                                              'PASS(${pro.checked})',
-                                                              style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: Colors.white),
-                                                            ),
+                                                            Padding(padding: const EdgeInsets.all(8.0), child: Icon(Icons.check_circle, color: Colors.white, size: 54)),
+                                                            Text('PASS(${pro.checked})', style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: Colors.white)),
                                                           ],
                                                         ),
                                                       ),
@@ -258,13 +256,14 @@ class _QualityControlScreenState extends State<QualityControlScreen> with Widget
                                                       bottom: 8,
                                                       right: 8,
                                                       child: Consumer<CountingProvider>(
-                                                        builder: (context, pp, _) => Row(
-                                                          mainAxisSize: MainAxisSize.min,
-                                                          children: [
-                                                            Text(pp.reportDataList.length.toString(), style: TextStyle(color: Colors.white,fontSize: 18,fontWeight: FontWeight.bold)),
-                                                            Icon(Icons.history, color: Colors.white,size: 24,),
-                                                          ],
-                                                        ),
+                                                        builder:
+                                                            (context, pp, _) => Row(
+                                                              mainAxisSize: MainAxisSize.min,
+                                                              children: [
+                                                                Text(pp.reportDataList.length.toString(), style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+                                                                Icon(Icons.history, color: Colors.white, size: 24),
+                                                              ],
+                                                            ),
                                                       ),
                                                     ),
                                                   ],
@@ -275,9 +274,13 @@ class _QualityControlScreenState extends State<QualityControlScreen> with Widget
                                                 children: [
                                                   Expanded(
                                                     child: SizedBox(
-                                                      height: MediaQuery.sizeOf(context).height/5,
+                                                      height: MediaQuery.sizeOf(context).height / 5,
                                                       child: ElevatedButton(
-                                                        style: ElevatedButton.styleFrom(backgroundColor: Colors.red, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)), elevation: 4),
+                                                        style: ElevatedButton.styleFrom(
+                                                          backgroundColor: Colors.red,
+                                                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                                                          elevation: 4,
+                                                        ),
                                                         onPressed:
                                                             _selectColor != null && _selectSize != null
                                                                 ? () {
@@ -293,25 +296,23 @@ class _QualityControlScreenState extends State<QualityControlScreen> with Widget
                                                         child: Row(
                                                           mainAxisSize: MainAxisSize.min,
                                                           children: [
-                                                            Padding(
-                                                              padding: const EdgeInsets.all(4.0),
-                                                              child: Icon(Icons.close_outlined,color: Colors.white,size: 40,),
-                                                            ),
-                                                            Text(
-                                                              'REJECT(${pro.reject})',
-                                                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
-                                                            ),
+                                                            Padding(padding: const EdgeInsets.all(4.0), child: Icon(Icons.close_outlined, color: Colors.white, size: 40)),
+                                                            Text('REJECT(${pro.reject})', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)),
                                                           ],
-                                                        )
+                                                        ),
                                                       ),
                                                     ),
                                                   ),
                                                   const SizedBox(width: 16),
                                                   Expanded(
                                                     child: SizedBox(
-                                                      height: MediaQuery.sizeOf(context).height/5,
+                                                      height: MediaQuery.sizeOf(context).height / 5,
                                                       child: ElevatedButton(
-                                                        style: ElevatedButton.styleFrom(backgroundColor: Colors.orange, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)), elevation: 4),
+                                                        style: ElevatedButton.styleFrom(
+                                                          backgroundColor: Colors.orange,
+                                                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                                                          elevation: 4,
+                                                        ),
                                                         onPressed:
                                                             _selectColor != null && _selectSize != null
                                                                 ? () {
@@ -322,23 +323,17 @@ class _QualityControlScreenState extends State<QualityControlScreen> with Widget
                                                         child: Row(
                                                           mainAxisSize: MainAxisSize.min,
                                                           children: [
-                                                            Padding(
-                                                              padding: const EdgeInsets.all(4.0),
-                                                              child: Icon(Icons.change_circle_outlined,color: Colors.white,size: 40,),
-                                                            ),
-                                                            Text(
-                                                              'ALTER(${pro.alter})',
-                                                              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
-                                                            ),
+                                                            Padding(padding: const EdgeInsets.all(4.0), child: Icon(Icons.change_circle_outlined, color: Colors.white, size: 40)),
+                                                            Text('ALTER(${pro.alter})', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)),
                                                           ],
-                                                        )
+                                                        ),
                                                       ),
                                                     ),
                                                   ),
                                                   const SizedBox(width: 16),
                                                   Expanded(
                                                     child: SizedBox(
-                                                      height: MediaQuery.sizeOf(context).height/5,
+                                                      height: MediaQuery.sizeOf(context).height / 5,
                                                       child: ElevatedButton(
                                                         style: ElevatedButton.styleFrom(
                                                           backgroundColor: Colors.green.shade800,
@@ -349,16 +344,8 @@ class _QualityControlScreenState extends State<QualityControlScreen> with Widget
                                                         child: Row(
                                                           mainAxisSize: MainAxisSize.min,
                                                           children: [
-                                                            Padding(
-                                                              padding: const EdgeInsets.all(2.0),
-                                                              child: Icon(Icons.recycling_outlined,color: Colors.white,size: 40,),
-                                                            ),
-                                                            FittedBox(
-                                                              child: Text(
-                                                                'ALTER CHECK(${pro.alter_check})',
-                                                                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
-                                                              ),
-                                                            ),
+                                                            Padding(padding: const EdgeInsets.all(2.0), child: Icon(Icons.recycling_outlined, color: Colors.white, size: 40)),
+                                                            FittedBox(child: Text('ALTER CHECK(${pro.alter_check})', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white))),
                                                           ],
                                                         ),
                                                       ),
@@ -385,31 +372,33 @@ class _QualityControlScreenState extends State<QualityControlScreen> with Widget
                                                         width: double.infinity,
                                                         alignment: Alignment.center,
                                                         padding: EdgeInsets.symmetric(vertical: 10, horizontal: 12),
-                                                        decoration: BoxDecoration(color: myColors.blackSecond,borderRadius: BorderRadius.circular(8)),
-                                                        child: Text('${cp.checked+cp.alter+cp.alter_check+cp.reject} | ${cp.checked} | ${cp.alter} | ${cp.reject}',style: customTextStyle(20, Colors.white, FontWeight.bold),),
+                                                        decoration: BoxDecoration(color: myColors.blackSecond, borderRadius: BorderRadius.circular(8)),
+                                                        child: Text(
+                                                          '${cp.checked + cp.alter + cp.alter_check + cp.reject} | ${cp.checked} | ${cp.alter} | ${cp.reject}',
+                                                          style: customTextStyle(20, Colors.white, FontWeight.bold),
+                                                        ),
                                                       ),
                                                 ),
-                                                SizedBox(height: 12,),
+                                                SizedBox(height: 12),
                                                 Container(
                                                   width: double.infinity,
-                                                  decoration: BoxDecoration(
-                                                    color: myColors.blackSecond,
-                                                    borderRadius: BorderRadius.circular(8)
-                                                  ),
+                                                  decoration: BoxDecoration(color: myColors.blackSecond, borderRadius: BorderRadius.circular(8)),
                                                   child: DualLineChart(
-                                                    primaryValues: [45, 60, 75, 50, 65], // First production line values
-                                                    secondaryValues: [35, 50, 85, 40, 75], // Second production line values
+                                                    primaryValues: [45, 60, 75, 50, 65],
+                                                    // First production line values
+                                                    secondaryValues: [35, 50, 85, 40, 75],
+                                                    // Second production line values
                                                     primaryColor: Colors.orange,
                                                     secondaryColor: Colors.blue,
                                                     labels: ['8', '10', '12', '14', '16'], // Day labels
                                                   ),
                                                 ),
-                                                OperationsListWidget(operations: ccp.tempDefectList),
+                                                if (ccp.tempDefectList.isNotEmpty) OperationsListWidget(operations: ccp.tempDefectList),
                                               ],
                                             ),
                                           ),
                                         ),
-                                      )
+                                      ),
                                     ],
                                   ),
                             ),
@@ -422,22 +411,11 @@ class _QualityControlScreenState extends State<QualityControlScreen> with Widget
     );
   }
 
-
-  Widget _buildCustomDropdown<T>({
-    required T? value,
-    required List<T> items,
-    required String Function(T) itemText,
-    required String hint,
-    required Function(T?) onChanged,
-  }) {
+  Widget _buildCustomDropdown<T>({required T? value, required List<T> items, required String Function(T) itemText, required String hint, required Function(T?) onChanged}) {
     return Expanded(
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12),
-        decoration: BoxDecoration(
-          color: myColors.blackSecond,
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: myColors.blackMain),
-        ),
+        decoration: BoxDecoration(color: myColors.blackSecond, borderRadius: BorderRadius.circular(8), border: Border.all(color: myColors.blackMain)),
         child: DropdownButtonHideUnderline(
           child: DropdownButton<T>(
             value: value,
@@ -448,18 +426,13 @@ class _QualityControlScreenState extends State<QualityControlScreen> with Widget
             style: const TextStyle(color: Colors.white),
             borderRadius: BorderRadius.circular(8),
             elevation: 4,
-            items: items.map((T value) {
-              return DropdownMenuItem<T>(
-                value: value,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8),
-                  child: Text(
-                    itemText(value),
-                    style: customTextStyle(14, Colors.white, FontWeight.bold),
-                  ),
-                ),
-              );
-            }).toList(),
+            items:
+                items.map((T value) {
+                  return DropdownMenuItem<T>(
+                    value: value,
+                    child: Padding(padding: const EdgeInsets.symmetric(vertical: 8), child: Text(itemText(value), style: customTextStyle(14, Colors.white, FontWeight.bold))),
+                  );
+                }).toList(),
             onChanged: onChanged,
           ),
         ),
@@ -480,7 +453,6 @@ class _QualityControlScreenState extends State<QualityControlScreen> with Widget
       },
     );
   }
-
 
   Future<void> getPreviousCount() async {
     _section = await DashboardHelpers.getString('selectedSection');
@@ -535,14 +507,19 @@ class HeaderCountingInfo extends StatelessWidget {
           (context, pro, _) => Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Padding(padding: const EdgeInsets.symmetric(horizontal: 8.0), child: IconButton(onPressed: () {
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                child: IconButton(
+                  onPressed: () {
+                    //save data
+                    var cp = context.read<CountingProvider>();
+                    cp.saveFullDataPeriodically();
 
-                //save data
-                var cp = context.read<CountingProvider>();
-                cp.saveFullDataPeriodically();
-
-                Navigator.pop(context);
-              }, icon: Icon(Icons.arrow_back, color: Colors.white))),
+                    Navigator.pop(context);
+                  },
+                  icon: Icon(Icons.arrow_back, color: Colors.white),
+                ),
+              ),
               Text('QMS', style: customTextStyle(24, Colors.white, FontWeight.bold)),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 12.0),
@@ -560,10 +537,11 @@ class HeaderCountingInfo extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text('Lunch Time', style: customTextStyle(14, Colors.white, FontWeight.bold)),
-                        if(ccp.lunchTime!=null)Text(
-                          '${DashboardHelpers.formatExactLunchTime(ccp.lunchTime!.lunchStartTime ?? '', ccp.lunchTime!.lunchEndTime ?? '')}',
-                          style: customTextStyle(14, Colors.white, FontWeight.bold),
-                        ),
+                        if (ccp.lunchTime != null)
+                          Text(
+                            '${DashboardHelpers.formatExactLunchTime(ccp.lunchTime!.lunchStartTime ?? '', ccp.lunchTime!.lunchEndTime ?? '')}',
+                            style: customTextStyle(14, Colors.white, FontWeight.bold),
+                          ),
                       ],
                     ),
               ),

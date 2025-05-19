@@ -4,7 +4,7 @@ import 'package:nidle_qty/utils/constants.dart';
 
 
 class OperationsListWidget extends StatelessWidget {
-  final List<String> operations;
+  final List<Map<String,dynamic>> operations;
 
   const OperationsListWidget({super.key, required this.operations});
 
@@ -35,11 +35,11 @@ class OperationsListWidget extends StatelessWidget {
                       ),
                       child: Padding(
                         padding: const EdgeInsets.symmetric(vertical: 4.0,horizontal: 12),
-                        child: Text('0',),
+                        child: Text(op['value'].toString(),style: customTextStyle(16, Colors.white, FontWeight.bold),),
                       )),
                   Padding(
                     padding: const EdgeInsets.all(4.0),
-                    child: Text(op, style: customTextStyle(15, Colors.white, FontWeight.w500)),
+                    child: Text(op['item']??'', style: customTextStyle(15, Colors.white, FontWeight.w500)),
                   ),
                 ],
               ),

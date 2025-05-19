@@ -403,16 +403,35 @@ class CountingProvider with ChangeNotifier {
   }
 
 
-  final List<String> _tempDefectList = [];
-  List<String> get tempDefectList => _tempDefectList;
+  final List<Map<String,dynamic>> _tempDefectList = [];
+  List<Map<String,dynamic>> get tempDefectList => _tempDefectList;
   final int _maxSize = 10;
 
   /// Adds a new item to the list, removing the first item if at max capacity
+
   void addTempDefectList(String newItem) {
+    // Check if list is full and remove oldest item if needed
     if (_tempDefectList.length >= _maxSize) {
-      _tempDefectList.removeAt(0); // Remove oldest item
+      _tempDefectList.removeAt(0);
     }
-    _tempDefectList.add(newItem);
-    // Add new item
+
+    // Check if item already exists
+    final existingItem = _tempDefectList.firstWhere(
+          (e) => e['item'] == newItem,
+      orElse: () => {},
+    );
+
+    if (existingItem.isNotEmpty) {
+      // Increment count if item exists
+      existingItem['value']++;
+    } else {
+      // Add new item if it doesn't exist
+      _tempDefectList.add({
+        "value": 1,
+        "item": newItem
+      });
+    }
+
+    notifyListeners();
   }
 }
