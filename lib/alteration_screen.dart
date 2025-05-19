@@ -153,6 +153,12 @@ class _AlterationReasonScreenState extends State<AlterationReasonScreen> {
                             status: getStatus(widget.form),
                           );
 
+                          //add to temp defect list
+                          selectedReasons.forEach((e){
+                            cp.addTempDefectList(e);
+                          });
+
+
                           Navigator.pop(context, selectedReasons);
                         },
                 child: const Text('CONFIRM', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white, letterSpacing: 0.5)),

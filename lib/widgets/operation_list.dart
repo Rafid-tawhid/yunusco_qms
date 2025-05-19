@@ -1,15 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:nidle_qty/utils/constants.dart';
-final List<String> operations = [
-  "Cutting",
-  "Stitching",
-  "Finishing",
-  "Packing",
-  "Quality Check",
-  "Finishing",
-  "Packing",
-];
 
 
 class OperationsListWidget extends StatelessWidget {

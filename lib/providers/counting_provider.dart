@@ -401,4 +401,18 @@ class CountingProvider with ChangeNotifier {
       setTestingReportData(reportData);
     }
   }
+
+
+  final List<String> _tempDefectList = [];
+  List<String> get tempDefectList => _tempDefectList;
+  final int _maxSize = 10;
+
+  /// Adds a new item to the list, removing the first item if at max capacity
+  void addTempDefectList(String newItem) {
+    if (_tempDefectList.length >= _maxSize) {
+      _tempDefectList.removeAt(0); // Remove oldest item
+    }
+    _tempDefectList.add(newItem);
+    // Add new item
+  }
 }

@@ -1,18 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:hive/hive.dart';
 import 'package:nidle_qty/login_screen.dart';
 import 'package:nidle_qty/models/checked_enum.dart';
 import 'package:nidle_qty/models/color_model.dart';
-import 'package:nidle_qty/models/po_models.dart';
 import 'package:nidle_qty/models/size_model.dart';
 import 'package:nidle_qty/providers/buyer_provider.dart';
 import 'package:nidle_qty/providers/counting_provider.dart';
-import 'package:nidle_qty/purchase_order_list.dart';
 import 'package:nidle_qty/quality_report_screen.dart';
-import 'package:nidle_qty/service_class/hive_service_class.dart';
-import 'package:nidle_qty/test/testing.dart';
 import 'package:nidle_qty/utils/constants.dart';
 import 'package:nidle_qty/utils/dashboard_helpers.dart';
 import 'package:nidle_qty/widgets/alter_check.dart';
@@ -20,14 +15,9 @@ import 'package:nidle_qty/widgets/icon_button.dart';
 import 'package:nidle_qty/widgets/operation_list.dart';
 import 'package:nidle_qty/widgets/production_chart.dart';
 import 'package:nidle_qty/widgets/reject_alert.dart';
-import 'package:nidle_qty/widgets/reset_alert.dart';
 import 'package:nidle_qty/widgets/saking_button.dart';
 import 'package:provider/provider.dart';
-import 'package:syncfusion_flutter_charts/charts.dart';
-
 import 'alteration_screen.dart';
-import 'alteration_testing_screen.dart';
-import 'models/send_data_model.dart';
 
 class QualityControlScreen extends StatefulWidget {
   const QualityControlScreen({super.key});
@@ -44,6 +34,7 @@ class _QualityControlScreenState extends State<QualityControlScreen> with Widget
   String _section = '';
   String _line = '';
   List<String> alterationReasons = [];
+  late CountingProvider _countingProvider;
 
   @override
   void initState() {
@@ -59,17 +50,25 @@ class _QualityControlScreenState extends State<QualityControlScreen> with Widget
 
   @override
   void dispose() {
+    saveData(_countingProvider);
     WidgetsBinding.instance.removeObserver(this);
-    endSchedularSaveData();
+    endSchedularSaveData(_countingProvider);
     SystemChrome.setPreferredOrientations(DeviceOrientation.values);
     super.dispose();
   }
 
   @override
+  void didChangeDependencies() {
+    _countingProvider = Provider.of<CountingProvider>(context,listen: false);
+    super.didChangeDependencies();
+  }
+
+  @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
+
     if (state == AppLifecycleState.paused) {
       // App is going to background (minimized/switched away)
-      saveData();
+      saveData(Provider.of<CountingProvider>(context,listen: false));
     }
     if (state == AppLifecycleState.resumed) {
       //onAppOpened(); // Called every time the app is entered from anywhere
@@ -78,8 +77,6 @@ class _QualityControlScreenState extends State<QualityControlScreen> with Widget
 
   @override
   Widget build(BuildContext context) {
-    // Sample data for last 7 days
-    final timeData = [45.0, 60.0, 75.0, 50.0, 65.0];
 
     return Scaffold(
       backgroundColor: myColors.blackMain,
@@ -164,7 +161,7 @@ class _QualityControlScreenState extends State<QualityControlScreen> with Widget
                                                     RectangleIconButton(
                                                       icon: Icons.save_alt,
                                                       onPressed: () {
-                                                        saveData();
+                                                        saveData(_countingProvider);
                                                       },
                                                       backgroundColor: myColors.blackSecond,
                                                       iconColor: Colors.white,
@@ -389,7 +386,7 @@ class _QualityControlScreenState extends State<QualityControlScreen> with Widget
                                                         alignment: Alignment.center,
                                                         padding: EdgeInsets.symmetric(vertical: 10, horizontal: 12),
                                                         decoration: BoxDecoration(color: myColors.blackSecond,borderRadius: BorderRadius.circular(8)),
-                                                        child: Text('${cp.checked} | ${cp.alter} | ${cp.alter_check} | ${cp.reject}',style: customTextStyle(20, Colors.white, FontWeight.bold),),
+                                                        child: Text('${cp.checked+cp.alter+cp.alter_check+cp.reject} | ${cp.checked} | ${cp.alter} | ${cp.reject}',style: customTextStyle(20, Colors.white, FontWeight.bold),),
                                                       ),
                                                 ),
                                                 SizedBox(height: 12,),
@@ -407,7 +404,7 @@ class _QualityControlScreenState extends State<QualityControlScreen> with Widget
                                                     labels: ['8', '10', '12', '14', '16'], // Day labels
                                                   ),
                                                 ),
-                                                OperationsListWidget(operations: operations),
+                                                OperationsListWidget(operations: ccp.tempDefectList),
                                               ],
                                             ),
                                           ),
@@ -484,27 +481,6 @@ class _QualityControlScreenState extends State<QualityControlScreen> with Widget
     );
   }
 
-  Widget _buildInfoRow(String label, String? value) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        // Label (fixed width)
-        SizedBox(
-          width: 50, // Adjust based on your longest label
-          child: Text('$label : ', style: TextStyle(fontWeight: FontWeight.w500), overflow: TextOverflow.visible),
-        ),
-        // Value (flexible space)
-        Flexible(
-          child: Text(
-            value != null ? DashboardHelpers.truncateString(value, 30) : 'Not selected',
-            style: TextStyle(color: Colors.blue),
-            overflow: TextOverflow.ellipsis, // Handles overflow gracefully
-            maxLines: 2, // Allows text to wrap
-          ),
-        ),
-      ],
-    );
-  }
 
   Future<void> getPreviousCount() async {
     _section = await DashboardHelpers.getString('selectedSection');
@@ -521,13 +497,12 @@ class _QualityControlScreenState extends State<QualityControlScreen> with Widget
     cp.startPeriodicTask(bp);
   }
 
-  void endSchedularSaveData() async {
-    var cp = context.read<CountingProvider>();
+  void endSchedularSaveData(CountingProvider cp) async {
     cp.stopPeriodicTask();
   }
 
-  void saveData() async {
-    var cp = context.read<CountingProvider>();
+  void saveData(CountingProvider cp) async {
+    //var cp = context.read<CountingProvider>();
     cp.saveFullDataPeriodically();
   }
 
@@ -561,6 +536,11 @@ class HeaderCountingInfo extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Padding(padding: const EdgeInsets.symmetric(horizontal: 8.0), child: IconButton(onPressed: () {
+
+                //save data
+                var cp = context.read<CountingProvider>();
+                cp.saveFullDataPeriodically();
+
                 Navigator.pop(context);
               }, icon: Icon(Icons.arrow_back, color: Colors.white))),
               Text('QMS', style: customTextStyle(24, Colors.white, FontWeight.bold)),
