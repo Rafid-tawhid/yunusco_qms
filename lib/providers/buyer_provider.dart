@@ -285,8 +285,13 @@ class BuyerProvider extends ChangeNotifier {
 
   bool get lock => _lock;
 
-  void lockUnlockSizeColor() {
-    _lock = !_lock;
+  void lockUnlockSizeColor({bool? val}) {
+    if(val!=null){
+      _lock=val;
+    }
+    else {
+      _lock = !_lock;
+    }
     notifyListeners();
   }
 

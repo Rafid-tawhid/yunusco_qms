@@ -374,7 +374,7 @@ class _QualityControlScreenState extends State<QualityControlScreen> with Widget
                                                         padding: EdgeInsets.symmetric(vertical: 10, horizontal: 12),
                                                         decoration: BoxDecoration(color: myColors.blackSecond, borderRadius: BorderRadius.circular(8)),
                                                         child: Text(
-                                                          '${cp.checked + cp.alter + cp.alter_check + cp.reject} | ${cp.checked} | ${cp.alter} | ${cp.reject}',
+                                                          '${cp.checked + cp.alter + cp.reject} | ${cp.checked} | ${cp.alter} | ${cp.reject}',
                                                           style: customTextStyle(20, Colors.white, FontWeight.bold),
                                                         ),
                                                       ),
@@ -482,7 +482,10 @@ class _QualityControlScreenState extends State<QualityControlScreen> with Widget
     var secId = await DashboardHelpers.getString('selectedSectionId');
     if (secId != '') {
       var cp = context.read<CountingProvider>();
+      var bp = context.read<BuyerProvider>();
       cp.getLunchTimeBySectionId(secId);
+      //set unlock
+      bp.lockUnlockSizeColor(val: false);
     }
   }
 
