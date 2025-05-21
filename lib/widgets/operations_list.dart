@@ -24,13 +24,6 @@ class _OperationListState extends State<OperationList> {
     super.initState();
     getOperations();
     // Select first item automatically when widget initializes
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (widget.items.isNotEmpty) {
-        setState(() => selectedIndex = 0);
-        final cp = context.read<CountingProvider>();
-        cp.getDefectListByOperationId(widget.items[0].operationId.toString());
-      }
-    });
   }
 
   @override
@@ -132,12 +125,13 @@ class _OperationListState extends State<OperationList> {
   void getOperations() async {
     final cp = context.read<CountingProvider>();
     final bp = context.read<BuyerProvider>();
-    await cp.getAllOperations(buyerPo: bp.buyerPo!);
-
+    if(cp.allOperations.isEmpty){
+      await cp.getAllOperations(buyerPo: bp.buyerPo!);
+    }
     // Ensure first item remains selected after data loads
     if (widget.items.isNotEmpty && selectedIndex == null) {
       setState(() => selectedIndex = 0);
-      cp.getDefectListByOperationId(widget.items[0].operationId.toString());
+     // cp.getDefectListByOperationId(widget.items[0].operationId.toString());
     }
   }
 }

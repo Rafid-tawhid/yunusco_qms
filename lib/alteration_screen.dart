@@ -174,7 +174,7 @@ class _AlterationReasonScreenState extends State<AlterationReasonScreen> {
   void getFirstDefectReason() async {
     var cp = context.read<CountingProvider>();
     if (cp.allDefectList.isEmpty) {
-      cp.getDefectListByOperationId('1');
+      cp.getDefectListByOperationId();
     }
   }
 

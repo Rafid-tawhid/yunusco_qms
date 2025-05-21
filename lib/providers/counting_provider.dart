@@ -95,7 +95,7 @@ class CountingProvider with ChangeNotifier {
   List<DefectModels> get allDefectList => _allDefectList;
 
 
-  void getDefectListByOperationId(String id) async {
+  void getDefectListByOperationId() async {
     var result = await apiService.getData('api/qms/GetDefects');
     if (result != null) {
      _allDefectList.clear();
