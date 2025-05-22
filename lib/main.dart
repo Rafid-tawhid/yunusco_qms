@@ -55,8 +55,6 @@ class MyApp extends StatelessWidget {
       navigatorKey: navigatorKey,
       debugShowCheckedModeBanner: false,
       builder: (context, child) {
-        print('App: MaterialApp builder called');
-
         // Initialize network listener
         WidgetsBinding.instance.addPostFrameCallback((_) {
           print('App: Initializing network listener');

@@ -327,7 +327,7 @@ class CountingProvider with ChangeNotifier {
       }
     }
     else {
-      debugPrint('FROM THIS NO DATA ADDED 3');
+      debugPrint('NO DATA FOUND IN STACK');
     }
 
     debugPrint('_reportDataList ${_reportDataList.length}');

@@ -11,6 +11,7 @@ import 'package:nidle_qty/quality_report_screen.dart';
 import 'package:nidle_qty/utils/constants.dart';
 import 'package:nidle_qty/utils/dashboard_helpers.dart';
 import 'package:nidle_qty/widgets/alter_check.dart';
+import 'package:nidle_qty/widgets/clock_widget.dart';
 import 'package:nidle_qty/widgets/icon_button.dart';
 import 'package:nidle_qty/widgets/operation_list.dart';
 import 'package:nidle_qty/widgets/production_chart.dart';
@@ -160,6 +161,7 @@ class _QualityControlScreenState extends State<QualityControlScreen> with Widget
                                                 child: Row(
                                                   mainAxisAlignment: MainAxisAlignment.end,
                                                   children: [
+
                                                     RectangleIconButton(
                                                       icon: Icons.save_alt,
                                                       onPressed: () {
@@ -533,7 +535,7 @@ class HeaderCountingInfo extends StatelessWidget {
                 children: [Text(_section, style: customTextStyle(14, Colors.white, FontWeight.bold)), Text(_line, style: customTextStyle(14, Colors.white, FontWeight.bold))],
               ),
               Padding(padding: const EdgeInsets.symmetric(horizontal: 16.0), child: ShakingWifiDisableWidget()),
-              SizedBox(width: 8),
+              SizedBox(width: 4),
               Consumer<CountingProvider>(
                 builder:
                     (context, ccp, _) => Column(
@@ -547,6 +549,20 @@ class HeaderCountingInfo extends StatelessWidget {
                           ),
                       ],
                     ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                child: Container(height: 30, width: 4, decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(4))),
+              ),
+              Align(
+                child: CurrentTimeWidget(
+                  textStyle: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+                alignment: Alignment.center,
               ),
               Expanded(
                 child: Column(
