@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nidle_qty/models/checked_enum.dart';
 import 'package:nidle_qty/providers/buyer_provider.dart';
 import 'package:nidle_qty/providers/counting_provider.dart';
 import 'package:nidle_qty/utils/constants.dart';
@@ -85,14 +86,24 @@ class _AlterationReasonScreenState extends State<AlterationReasonScreen> {
                                       itemCount: pro.allDefectList.length,
                                       itemBuilder: (context, index) {
                                         final reason = pro.allDefectList[index];
+
+                                        // Hide items with defectId <= 20 ONLY in reject mode
+                                        // if (widget.form == CheckedStatus.reject && reason.defectId! <= 20) {
+                                        //   return SizedBox.shrink(); // Skip rendering
+                                        // }
+
+                                        // Default UI (same for all items)
                                         return Container(
-                                          decoration: BoxDecoration(border: Border(bottom: BorderSide(color: Colors.grey[200]!, width: 1))),
+                                          decoration: BoxDecoration(
+                                            border: Border(bottom: BorderSide(color: Colors.grey[200]!, width: 1)),
+                                          ),
                                           child: Card(
                                             margin: EdgeInsets.zero,
                                             elevation: 0,
                                             color: selectedIndex == index ? Colors.orange[50] : Colors.white,
                                             child: CheckboxListTile(
-                                              title: Text(reason.defectName ?? '', style: TextStyle(fontWeight: FontWeight.w500, color: Colors.grey[800])),
+                                              title: Text(reason.defectName ?? '',
+                                                  style: TextStyle(fontWeight: FontWeight.w500, color: Colors.grey[800])),
                                               value: selectedReasons.contains(reason.defectName),
                                               onChanged: (value) {
                                                 setState(() {
