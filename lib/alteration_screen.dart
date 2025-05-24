@@ -87,12 +87,13 @@ class _AlterationReasonScreenState extends State<AlterationReasonScreen> {
                                       itemBuilder: (context, index) {
                                         final reason = pro.allDefectList[index];
 
-                                        // Hide items with defectId <= 20 ONLY in reject mode
-                                        // if (widget.form == CheckedStatus.reject && reason.defectId! <= 20) {
-                                        //   return SizedBox.shrink(); // Skip rendering
-                                        // }
+                                        // Filter logic
+                                        if (widget.form == CheckedStatus.reject) {
+                                          if (reason.status != 2) return SizedBox.shrink();
+                                        } else {
+                                          if (reason.status != 1) return SizedBox.shrink();
+                                        }
 
-                                        // Default UI (same for all items)
                                         return Container(
                                           decoration: BoxDecoration(
                                             border: Border(bottom: BorderSide(color: Colors.grey[200]!, width: 1)),
@@ -102,8 +103,13 @@ class _AlterationReasonScreenState extends State<AlterationReasonScreen> {
                                             elevation: 0,
                                             color: selectedIndex == index ? Colors.orange[50] : Colors.white,
                                             child: CheckboxListTile(
-                                              title: Text(reason.defectName ?? '',
-                                                  style: TextStyle(fontWeight: FontWeight.w500, color: Colors.grey[800])),
+                                              title: Text(
+                                                reason.defectName ?? '',
+                                                style: TextStyle(
+                                                    fontWeight: FontWeight.w500,
+                                                    color: Colors.grey[800]
+                                                ),
+                                              ),
                                               value: selectedReasons.contains(reason.defectName),
                                               onChanged: (value) {
                                                 setState(() {

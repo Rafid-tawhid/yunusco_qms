@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:nidle_qty/login_screen.dart';
 import 'package:nidle_qty/models/checked_enum.dart';
 import 'package:nidle_qty/models/color_model.dart';
@@ -176,10 +177,14 @@ class _QualityControlScreenState extends State<QualityControlScreen> with Widget
                                                     SizedBox(width: 8),
                                                     RectangleIconButton(
                                                       icon: Icons.add_chart_outlined,
-                                                      onPressed: () {
+                                                      onPressed: () async {
                                                         var cp = context.read<CountingProvider>();
-                                                        cp.getReportData();
-                                                        Navigator.push(context, CupertinoPageRoute(builder: (context) => ProductionReportScreen()));
+                                                        var bp = context.read<BuyerProvider>();
+                                                        await cp.getTodaysCountingData(bp);
+                                                        if(cp.totalCountingModel!=null){
+                                                          Navigator.push(context, CupertinoPageRoute(builder: (context) => ProductionReportScreen(stats: cp.totalCountingModel!,)));
+                                                        }
+
                                                       },
                                                       backgroundColor: myColors.blackSecond,
                                                       iconColor: Colors.white,

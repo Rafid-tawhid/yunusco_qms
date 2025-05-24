@@ -17,6 +17,7 @@ import 'package:nidle_qty/service_class/api_services.dart';
 import '../models/lunch_time_model.dart';
 import '../models/operation_model.dart';
 import '../models/send_data_model.dart';
+import '../models/total_counting_model.dart';
 import '../service_class/hive_service_class.dart';
 import '../utils/dashboard_helpers.dart';
 
@@ -123,7 +124,10 @@ class CountingProvider with ChangeNotifier {
 
       if (result != null) {
         _lunchTime = LunchTimeModel.fromJson(result['Results'][0]);
-        isCurrentTimeInLunchRangeFixed(_lunchTime); // Your existing check
+        debugPrint('LUNCH TIME ${ _lunchTime}');
+        isCurrentTimeInLunchRangeFixed(_lunchTime);
+        //automatic screen freezing
+        //initializeLunchTimeChecker();
       }
     } catch (e) {
       debugPrint('Error fetching lunch time: $e');
@@ -137,22 +141,6 @@ class CountingProvider with ChangeNotifier {
 
   bool get isLunchTime => _isLunchTime;
 
-  bool isCurrentTimeInLunchRange(Map<String, dynamic> lunchTimeData) {
-    try {
-      // Parse the input times
-      final lunchStart = DateTime.parse(lunchTimeData['lunchStartTime'].toString());
-      final lunchEnd = DateTime.parse(lunchTimeData['lunchEndTime'].toString());
-      final currentTime = DateTime.now();
-
-      // Compare with current time (ignoring milliseconds)
-      _isLunchTime = (currentTime.isAfter(lunchStart) || currentTime.isAtSameMomentAs(lunchStart)) && (currentTime.isBefore(lunchEnd) || currentTime.isAtSameMomentAs(lunchEnd));
-      notifyListeners();
-      return _isLunchTime;
-    } catch (e) {
-      print('Error parsing time: $e');
-      return false;
-    }
-  }
 
   bool isCurrentTimeInLunchRangeFixed(LunchTimeModel? lunchTimeData) {
     if (lunchTime == null) {
@@ -160,8 +148,8 @@ class CountingProvider with ChangeNotifier {
     }
     try {
       // Parse the time strings (ignoring the date part)
-      final startTimeStr = lunchTimeData!.lunchStartTime.toString().split(' ')[1];
-      final endTimeStr = lunchTimeData.lunchEndTime.toString().split(' ')[1];
+      var startTimeStr = lunchTimeData!.lunchStartTime.toString().split(' ')[1];
+      var endTimeStr = lunchTimeData.lunchEndTime.toString().split(' ')[1];
 
       debugPrint('startTimeStr $startTimeStr');
       debugPrint('endTimeStr $endTimeStr');
@@ -249,6 +237,7 @@ class CountingProvider with ChangeNotifier {
   @override
   void dispose() {
     _periodicTimer?.cancel();
+    _lunchTimeChecker?.cancel();
     super.dispose();
   }
 
@@ -395,11 +384,22 @@ class CountingProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  getReportData(){
-    var reportData= HiveLocalSendDataService.getLocalSendDataList();
-    if(reportData!=null){
-      setTestingReportData(reportData);
+  TotalCountingModel? _totalCountingModel;
+  TotalCountingModel? get totalCountingModel=>_totalCountingModel;
+
+  Future<void> getTodaysCountingData(BuyerProvider bp) async{
+    //  final secId = await DashboardHelpers.getString('selectedSectionId');
+    final line = await DashboardHelpers.getString('selectedLineId');
+    var data = await apiService.postData('api/qms/GetQmsSummery', {
+      "LineId":line,
+      "BuyerId":bp.buyerInfo!.code.toString(),
+      "Style":bp.buyerStyle!.style.toString(),
+      "Po":bp.buyerPo!.po
+    });
+    if(data!=null){
+      _totalCountingModel=TotalCountingModel.fromJson(data['Results'][0]);
     }
+    notifyListeners();
   }
 
 
@@ -434,4 +434,60 @@ class CountingProvider with ChangeNotifier {
 
     notifyListeners();
   }
+
+
+
+  // lunch time auto checker
+  Timer? _lunchTimeChecker;
+
+  void initializeLunchTimeChecker() {
+    // Cancel any existing timer
+    _lunchTimeChecker?.cancel();
+
+    // Check immediately
+    _checkLunchTime();
+
+    // Then check every minute (adjust interval as needed)
+    _lunchTimeChecker = Timer.periodic(const Duration(minutes: 1), (_) {
+      _checkLunchTime();
+    });
+  }
+
+  void _checkLunchTime() {
+    if (lunchTime == null) {
+      _isLunchTime = false;
+      notifyListeners();
+      return;
+    }
+    try {
+      final now = DateTime.now();
+      final todayDate = "${now.year.toString().padLeft(4, '0')}-"
+          "${now.month.toString().padLeft(2, '0')}-"
+          "${now.day.toString().padLeft(2, '0')}";
+
+      // Parse times (assuming format is like "HH:mm:ss")
+      var startTimeStr = lunchTime!.lunchStartTime.toString().split(' ')[1];
+      var endTimeStr = lunchTime!.lunchEndTime.toString().split(' ')[1];
+      // startTimeStr='15:16:38';
+      // endTimeStr='15:17:38';
+
+      final lunchStart = DateTime.parse("$todayDate $startTimeStr");
+      final lunchEnd = DateTime.parse("$todayDate $endTimeStr");
+
+      final newStatus = (now.isAfter(lunchStart) || now.isAtSameMomentAs(lunchStart)) &&
+          (now.isBefore(lunchEnd) || now.isAtSameMomentAs(lunchEnd));
+
+      if (newStatus != _isLunchTime) {
+        _isLunchTime = newStatus;
+        notifyListeners();
+      }
+    } catch (e) {
+      debugPrint('Error checking lunch time: $e');
+      if (_isLunchTime) {
+        _isLunchTime = false;
+        notifyListeners();
+      }
+    }
+  }
+
 }

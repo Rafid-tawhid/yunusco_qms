@@ -1,11 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:nidle_qty/providers/buyer_provider.dart';
 import 'package:nidle_qty/quality_report_screen.dart';
 import 'package:nidle_qty/utils/dashboard_helpers.dart';
+import 'package:provider/provider.dart';
 
 import '../home_screen.dart';
 import '../line_dropdown_settings.dart';
 import '../line_setting_screen.dart';
+import '../providers/counting_provider.dart';
 import '../widgets/logout_alert.dart';
 
 class MyDrawer extends StatelessWidget {
@@ -76,15 +79,17 @@ class MyDrawer extends StatelessWidget {
           ListTile(
             leading: const Icon(Icons.settings, color: Colors.black54),
             title: const Text('Production'),
-            onTap: () {
+            onTap: () async {
               Navigator.pop(context);
               /// Navigate to this screen from another widget
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => ProductionReportScreen(),
-                ),
-              );
+
+              var cp = context.read<CountingProvider>();
+              var bp = context.read<BuyerProvider>();
+              await cp.getTodaysCountingData(bp);
+              if(cp.totalCountingModel!=null){
+                Navigator.push(context, CupertinoPageRoute(builder: (context) => ProductionReportScreen(stats: cp.totalCountingModel!,)));
+              }
+
             },
           ),
           const Divider(),
