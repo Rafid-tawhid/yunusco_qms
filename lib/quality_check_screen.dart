@@ -547,7 +547,7 @@ class HeaderCountingInfo extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text('Lunch Time', style: customTextStyle(14, Colors.white, FontWeight.bold)),
-                        if (ccp.lunchTime != null)
+                        if (ccp.lunchTime != null&&ccp.lunchTime!.isActive==true)
                           Text(
                             '${DashboardHelpers.formatExactLunchTime(ccp.lunchTime!.lunchStartTime ?? '', ccp.lunchTime!.lunchEndTime ?? '')}',
                             style: customTextStyle(14, Colors.white, FontWeight.bold),

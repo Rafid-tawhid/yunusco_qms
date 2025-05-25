@@ -232,7 +232,7 @@ class _SearchDropdownScreenState extends State<SearchDropdownScreen> {
                     Consumer<CountingProvider>(
                       builder:
                           (context, pro, _) =>
-                              pro.lunchTime == null
+                              (pro.lunchTime == null&&pro.lunchTime!.isActive==true)
                                   ? SizedBox.shrink()
                                   : _buildSelectionRow(
                                     Icons.emoji_food_beverage_sharp,

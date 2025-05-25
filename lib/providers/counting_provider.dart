@@ -371,18 +371,18 @@ class CountingProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  void setTestingReportData(List<LocalSendDataModel>? data) {
-    // Get the entire list
-    List<LocalSendDataModel>? dataList = HiveLocalSendDataService.getLocalSendDataList();
-    _testingreportDataList.clear();
-    if (dataList != null && dataList.isNotEmpty) {
-      _testingreportDataList.addAll(dataList);
-     debugPrint('Previously saved report data : ${_testingreportDataList.length}');
-    } else {
-      print("No data found in Hive.");
-    }
-    notifyListeners();
-  }
+  // void setTestingReportData(List<LocalSendDataModel>? data) {
+  //   // Get the entire list
+  //   List<LocalSendDataModel>? dataList = HiveLocalSendDataService.getLocalSendDataList();
+  //   _testingreportDataList.clear();
+  //   if (dataList != null && dataList.isNotEmpty) {
+  //     _testingreportDataList.addAll(dataList);
+  //    debugPrint('Previously saved report data : ${_testingreportDataList.length}');
+  //   } else {
+  //     print("No data found in Hive.");
+  //   }
+  //   notifyListeners();
+  // }
 
   TotalCountingModel? _totalCountingModel;
   TotalCountingModel? get totalCountingModel=>_totalCountingModel;
