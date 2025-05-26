@@ -63,8 +63,11 @@ class _ProductionReportScreenState extends State<ProductionReportScreen> {
 
               Consumer<CountingProvider>(
                 builder: (context,pro,_)=>// In your parent widget:
-                HourlyProductionDashboard(
-                  productionData: pro.hourly_production_List,
+                SizedBox(
+                  height: 400,
+                  child: HourlyProductionDashboard(
+                    productionData: pro.hourly_production_List,
+                  ),
                 ),
               )
             ],

@@ -14,7 +14,7 @@ import 'package:nidle_qty/models/local_send_data_model.dart';
 import 'package:nidle_qty/models/po_models.dart';
 import 'package:nidle_qty/providers/buyer_provider.dart';
 import 'package:nidle_qty/service_class/api_services.dart';
-
+import 'package:http/http.dart' as http;
 import '../models/lunch_time_model.dart';
 import '../models/operation_model.dart';
 import '../models/send_data_model.dart';
@@ -497,17 +497,41 @@ class CountingProvider with ChangeNotifier {
   List<HourlyProductionDataModel> get hourly_production_List=>_hourly_production_List;
 
   Future<void> getHourlyProductionData() async{
+      const String apiUrl = 'https://127.0.0.1:7443/api/test/quality-checks/time-ranges-raw';
 
-    var data = await apiService.getData2('https://localhost:7443/api/test/quality-checks/time-ranges-raw');
+      try {
+        final response = await http.get(
+          Uri.parse(apiUrl),
 
-    if(data!=null){
-      _hourly_production_List.clear();
-      for(var i in data){
-        _hourly_production_List.add(HourlyProductionDataModel.fromJson(i));
+        ).timeout(const Duration(seconds: 15));
+
+        if (response.statusCode == 200) {
+          final List<dynamic> jsonData = json.decode(response.body);
+          _hourly_production_List.clear();
+          for(var i in jsonData){
+            _hourly_production_List.add(HourlyProductionDataModel.fromJson(i));
+          }
+        } else {
+          throw Exception('Failed to load data: ${response.statusCode}');
+        }
+      } catch (e) {
+        throw Exception('Error fetching data: $e');
       }
-    }
-    notifyListeners();
-    debugPrint('_hourly_production_List ${_hourly_production_List.length}');
+
+
+
+
+    //
+    // var data = await apiService.getData2('https://127.0.0.1:7443/api/test/quality-checks/time-ranges-raw');
+    //
+    // if(data!=null){
+    //   _hourly_production_List.clear();
+    //   for(var i in data){
+    //     _hourly_production_List.add(HourlyProductionDataModel.fromJson(i));
+    //   }
+    // }
+    // notifyListeners();
+    // debugPrint('_hourly_production_List ${_hourly_production_List.length}');
   }
 
 }
