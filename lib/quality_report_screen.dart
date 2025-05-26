@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:nidle_qty/providers/counting_provider.dart';
 import 'package:nidle_qty/service_class/hive_service_class.dart';
+import 'package:nidle_qty/widgets/hourly_production_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
@@ -8,19 +9,31 @@ import 'package:syncfusion_flutter_charts/charts.dart';
 import 'models/local_send_data_model.dart';
 import 'models/total_counting_model.dart';
 
-class ProductionReportScreen extends StatelessWidget {
+class ProductionReportScreen extends StatefulWidget {
   final TotalCountingModel stats;
 
   ProductionReportScreen({required this.stats});
 
+  @override
+  State<ProductionReportScreen> createState() => _ProductionReportScreenState();
+}
+
+class _ProductionReportScreenState extends State<ProductionReportScreen> {
+
+
+  @override
+  void initState() {
+    getHourlyProduction();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     final chartData = [
-      _ChartData('Pass', stats.totalPass ?? 0, Colors.green),
-      _ChartData('Alter', stats.totalAlter ?? 0, Colors.orange),
-      _ChartData('Alter Check', stats.totalAlterCheck ?? 0, Colors.blue),
-      _ChartData('Reject', stats.totalReject ?? 0, Colors.red),
+      _ChartData('Pass', widget.stats.totalPass ?? 0, Colors.green),
+      _ChartData('Alter', widget.stats.totalAlter ?? 0, Colors.orange),
+      _ChartData('Alter Check', widget.stats.totalAlterCheck ?? 0, Colors.blue),
+      _ChartData('Reject', widget.stats.totalReject ?? 0, Colors.red),
     ];
 
     final total = chartData.fold(0, (sum, item) => sum + item.value.toInt());
@@ -47,13 +60,19 @@ class ProductionReportScreen extends StatelessWidget {
 
               // Data Table
               _buildDataTable(chartData, total),
+
+              Consumer<CountingProvider>(
+                builder: (context,pro,_)=>// In your parent widget:
+                HourlyProductionDashboard(
+                  productionData: pro.hourly_production_List,
+                ),
+              )
             ],
           ),
         ),
       ),
     );
   }
-
 
   Widget _buildVerticalBarChart(List<_ChartData> chartData) {
     return Card(
@@ -148,7 +167,7 @@ class ProductionReportScreen extends StatelessWidget {
           child: _StatCard(
             title: 'Pass Rate',
             value: total > 0
-                ? (stats.totalPass ?? 0) / total * 100
+                ? (widget.stats.totalPass ?? 0) / total * 100
                 : 0,
             icon: Icons.percent,
             color: Colors.green,
@@ -210,6 +229,11 @@ class ProductionReportScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  void getHourlyProduction() {
+    var cp=context.read<CountingProvider>();
+    cp.getHourlyProductionData();
   }
 }
 

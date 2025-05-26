@@ -9,6 +9,7 @@ import 'package:hive/hive.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:nidle_qty/models/checked_enum.dart';
 import 'package:nidle_qty/models/defect_models.dart';
+import 'package:nidle_qty/models/hourly_production_data_model.dart';
 import 'package:nidle_qty/models/local_send_data_model.dart';
 import 'package:nidle_qty/models/po_models.dart';
 import 'package:nidle_qty/providers/buyer_provider.dart';
@@ -488,6 +489,25 @@ class CountingProvider with ChangeNotifier {
         notifyListeners();
       }
     }
+  }
+
+
+
+  List<HourlyProductionDataModel> _hourly_production_List=[];
+  List<HourlyProductionDataModel> get hourly_production_List=>_hourly_production_List;
+
+  Future<void> getHourlyProductionData() async{
+
+    var data = await apiService.getData2('https://localhost:7443/api/test/quality-checks/time-ranges-raw');
+
+    if(data!=null){
+      _hourly_production_List.clear();
+      for(var i in data){
+        _hourly_production_List.add(HourlyProductionDataModel.fromJson(i));
+      }
+    }
+    notifyListeners();
+    debugPrint('_hourly_production_List ${_hourly_production_List.length}');
   }
 
 }
