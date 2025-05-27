@@ -15,6 +15,7 @@ import 'package:nidle_qty/models/po_models.dart';
 import 'package:nidle_qty/providers/buyer_provider.dart';
 import 'package:nidle_qty/service_class/api_services.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 import '../models/lunch_time_model.dart';
 import '../models/operation_model.dart';
 import '../models/send_data_model.dart';
@@ -406,7 +407,7 @@ class CountingProvider with ChangeNotifier {
 
   final List<Map<String,dynamic>> _tempDefectList = [];
   List<Map<String,dynamic>> get tempDefectList => _tempDefectList;
-  final int _maxSize = 10;
+  final int _maxSize = 20;
 
   /// Adds a new item to the list, removing the first item if at max capacity
 
@@ -432,8 +433,15 @@ class CountingProvider with ChangeNotifier {
         "item": newItem
       });
     }
-
     notifyListeners();
+    //save defect data locally
+    saveTempDefectList();
+  }
+
+
+  Future<void> saveTempDefectList() async {
+    final jsonString = jsonEncode(_tempDefectList);
+    DashboardHelpers.setString('tempDefectList', jsonString);
   }
 
 
@@ -532,6 +540,13 @@ class CountingProvider with ChangeNotifier {
     // }
     // notifyListeners();
     // debugPrint('_hourly_production_List ${_hourly_production_List.length}');
+  }
+
+
+  void setDefectList(List<Map<String, dynamic>> defectList) {
+    _tempDefectList.clear();
+    _tempDefectList.addAll(defectList);
+    notifyListeners();
   }
 
 }

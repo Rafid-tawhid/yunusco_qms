@@ -772,7 +772,6 @@ class DashboardHelpers {
 
     if (lastClearDate != today) {
       // It's a new day — clear Hive box
-
       HiveLocalSendDataService.clearLocalSendData();
       // Save today's date
       await prefs.setString('lastClearDate', today);
@@ -809,6 +808,11 @@ class DashboardHelpers {
   static bool isLandscape(BuildContext context) {
     final size = MediaQuery.of(context).size;
     return size.width > size.height;
+  }
+
+  static void removeString(String key) async{
+    SharedPreferences pref=await SharedPreferences.getInstance();
+    pref.remove(key);
   }
 
 }

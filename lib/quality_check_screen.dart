@@ -1,7 +1,8 @@
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:nidle_qty/login_screen.dart';
 import 'package:nidle_qty/models/checked_enum.dart';
 import 'package:nidle_qty/models/color_model.dart';
@@ -47,6 +48,7 @@ class _QualityControlScreenState extends State<QualityControlScreen> with Widget
       getLunchTime();
       getPreviousCount();
       startSchedulerCallToSaveData();
+      checkIfThereIsAnyDefectList();
     });
   }
 
@@ -502,6 +504,18 @@ class _QualityControlScreenState extends State<QualityControlScreen> with Widget
       Navigator.push(context, CupertinoPageRoute(builder: (context) => LoginScreen()));
     }
   }
+
+  void checkIfThereIsAnyDefectList() async{
+    final jsonString = DashboardHelpers.getString('tempDefectList');
+    if (jsonString!='') {
+      var defectList =await List<Map<String, dynamic>>.from(jsonDecode(await jsonString));
+      if(defectList.isNotEmpty){
+        var cp=context.read<CountingProvider>();
+        cp.setDefectList(defectList);
+      }
+    }
+  }
+
 }
 
 class HeaderCountingInfo extends StatelessWidget {

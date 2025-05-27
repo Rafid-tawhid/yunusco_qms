@@ -1,4 +1,5 @@
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:nidle_qty/utils/dashboard_helpers.dart';
 import '../models/local_send_data_model.dart';
 import '../models/send_data_model.dart';
 
@@ -39,8 +40,8 @@ class HiveLocalSendDataService {
     final box = Hive.box(_boxName);
     await box.delete(_listKey);
     await box.clear();
-    //
     final box2 = Hive.box<SendDataModel>('sendDataBox');
     await box2.clear();
+    DashboardHelpers.removeString('tempDefectList');
   }
 }

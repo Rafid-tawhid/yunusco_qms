@@ -50,28 +50,88 @@ class _ProductionReportScreenState extends State<ProductionReportScreen> {
           builder: (context,pro,_)=>Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+
+
+              // Summary Cards
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Expanded(child: _buildStatCard('Total Passed', (widget.stats.totalPass!+widget.stats.totalAlterCheck!).toInt(), Colors.green)),
+                  Expanded(child: _buildStatCard('Total Alterations', widget.stats.totalAlter!.toInt(), Colors.orange)),
+                  Expanded(child: _buildStatCard('Total Rejected', widget.stats.totalReject!.toInt(), Colors.red)),
+                ],
+              ),
+
               // Pie Chart
               _buildVerticalBarChart(chartData),
               const SizedBox(height: 24),
 
-              // Summary Cards
+
+
+
               _buildSummaryCards(total),
               const SizedBox(height: 16),
 
               // Data Table
               _buildDataTable(chartData, total),
 
-              Consumer<CountingProvider>(
-                builder: (context,pro,_)=>// In your parent widget:
-                SizedBox(
-                  height: 400,
-                  child: HourlyProductionDashboard(
-                    productionData: pro.hourly_production_List,
-                  ),
-                ),
-              )
+              // Consumer<CountingProvider>(
+              //   builder: (context,pro,_)=>// In your parent widget:
+              //   SizedBox(
+              //     height: 400,
+              //     child: HourlyProductionDashboard(
+              //       productionData: pro.hourly_production_List,
+              //     ),
+              //   ),
+              // )
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+
+  Widget _buildStatCard(String title, int value, Color color) {
+    return Card(
+      elevation: 4,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              color.withOpacity(0.7),
+              color.withOpacity(0.9),
+            ],
+          ),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              title,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              value.toString(),
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
         ),
       ),
     );
