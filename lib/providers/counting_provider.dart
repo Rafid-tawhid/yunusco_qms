@@ -392,6 +392,8 @@ class CountingProvider with ChangeNotifier {
   Future<void> getTodaysCountingData(BuyerProvider bp) async{
     //  final secId = await DashboardHelpers.getString('selectedSectionId');
     final line = await DashboardHelpers.getString('selectedLineId');
+
+    //api/qms/GetQmsSummery
     var data = await apiService.postData('api/qms/GetQmsSummery', {
       "LineId":line,
       "BuyerId":bp.buyerInfo!.code.toString(),
