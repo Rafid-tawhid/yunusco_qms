@@ -14,6 +14,7 @@ import 'package:nidle_qty/utils/constants.dart';
 import 'package:nidle_qty/utils/dashboard_helpers.dart';
 import 'package:nidle_qty/widgets/alter_check.dart';
 import 'package:nidle_qty/widgets/clock_widget.dart';
+import 'package:nidle_qty/widgets/custom_button.dart';
 import 'package:nidle_qty/widgets/icon_button.dart';
 import 'package:nidle_qty/widgets/operation_list.dart';
 import 'package:nidle_qty/widgets/production_chart.dart';
@@ -91,10 +92,24 @@ class _QualityControlScreenState extends State<QualityControlScreen> with Widget
                       ? CircularProgressIndicator()
                       : ccp.isLunchTime
                       ? Center(
-                        child: Text(
-                          'Your Lunch time ${DashboardHelpers.formatExactLunchTime(ccp.lunchTime!.lunchStartTime ?? '', ccp.lunchTime!.lunchEndTime ?? '')}',
-                          textAlign: TextAlign.center,
-                          style: customTextStyle(20, Colors.white, FontWeight.bold),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              'Your Lunch time ${DashboardHelpers.formatExactLunchTime(ccp.lunchTime!.lunchStartTime ?? '', ccp.lunchTime!.lunchEndTime ?? '')}',
+                              textAlign: TextAlign.center,
+                              style: customTextStyle(20, Colors.white, FontWeight.bold),
+                            ),
+                            ActionButton(
+                              icon: Icons.alarm,
+                              text: 'Try Again ! ',
+                              color: Colors.green,
+                              onPressed: () {
+                                // Handle first button press
+                                ccp.checkLunchTime();
+                              },
+                            ),
+                          ],
                         ),
                       )
                       : Column(

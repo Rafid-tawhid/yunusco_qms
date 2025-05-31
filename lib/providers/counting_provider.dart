@@ -153,6 +153,10 @@ class CountingProvider with ChangeNotifier {
       var startTimeStr = lunchTimeData!.lunchStartTime.toString().split(' ')[1];
       var endTimeStr = lunchTimeData.lunchEndTime.toString().split(' ')[1];
 
+      //testing
+      // startTimeStr='18:01:00';
+      // endTimeStr='18:02:00';
+
       debugPrint('startTimeStr $startTimeStr');
       debugPrint('endTimeStr $endTimeStr');
 
@@ -227,7 +231,7 @@ class CountingProvider with ChangeNotifier {
     // First stop any existing timer
     stopPeriodicTask();
 
-    debugPrint('Starting periodic task with 5-second interval');
+    debugPrint('Starting periodic task with 30-second interval');
 
     _periodicTimer = Timer.periodic(const Duration(seconds: 30), (timer) {
       debugPrint('Executing periodic task...');
@@ -350,6 +354,7 @@ class CountingProvider with ChangeNotifier {
     _reportDataList.add(sendingData);
     debugPrint('_reportDataList local saved list : ${_reportDataList.length}');
 
+
     //add to testing list
 
     //save local data for testing
@@ -370,21 +375,15 @@ class CountingProvider with ChangeNotifier {
     );
     final box = Hive.box<SendDataModel>('sendDataBox');
     await box.put('sendDataKey', sendData);
+
     notifyListeners();
+
+    //check everytime if it is lunchtime or not
+    checkLunchTime();
   }
 
-  // void setTestingReportData(List<LocalSendDataModel>? data) {
-  //   // Get the entire list
-  //   List<LocalSendDataModel>? dataList = HiveLocalSendDataService.getLocalSendDataList();
-  //   _testingreportDataList.clear();
-  //   if (dataList != null && dataList.isNotEmpty) {
-  //     _testingreportDataList.addAll(dataList);
-  //    debugPrint('Previously saved report data : ${_testingreportDataList.length}');
-  //   } else {
-  //     print("No data found in Hive.");
-  //   }
-  //   notifyListeners();
-  // }
+
+
 
   TotalCountingModel? _totalCountingModel;
   TotalCountingModel? get totalCountingModel=>_totalCountingModel;
@@ -456,15 +455,15 @@ class CountingProvider with ChangeNotifier {
     _lunchTimeChecker?.cancel();
 
     // Check immediately
-    _checkLunchTime();
+    checkLunchTime();
 
     // Then check every minute (adjust interval as needed)
     _lunchTimeChecker = Timer.periodic(const Duration(minutes: 1), (_) {
-      _checkLunchTime();
+      checkLunchTime();
     });
   }
 
-  void _checkLunchTime() {
+  void checkLunchTime() {
     if (lunchTime == null) {
       _isLunchTime = false;
       notifyListeners();
@@ -500,7 +499,6 @@ class CountingProvider with ChangeNotifier {
       }
     }
   }
-
 
 
   List<HourlyProductionDataModel> _hourly_production_List=[];
