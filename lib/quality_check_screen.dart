@@ -95,19 +95,39 @@ class _QualityControlScreenState extends State<QualityControlScreen> with Widget
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
+                            Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: Align(
+                                child: CurrentTimeWidget(
+                                  textStyle: TextStyle(
+                                    fontSize: 24,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                alignment: Alignment.center,
+                              ),
+                            ),
                             Text(
                               'Your Lunch time ${DashboardHelpers.formatExactLunchTime(ccp.lunchTime!.lunchStartTime ?? '', ccp.lunchTime!.lunchEndTime ?? '')}',
                               textAlign: TextAlign.center,
                               style: customTextStyle(20, Colors.white, FontWeight.bold),
                             ),
-                            ActionButton(
-                              icon: Icons.alarm,
-                              text: 'Try Again ! ',
-                              color: Colors.green,
-                              onPressed: () {
-                                // Handle first button press
-                                ccp.checkLunchTime();
-                              },
+                            Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: Container(
+                                width: 340,
+                                height: 100,
+                                child: ActionButton(
+                                  icon: Icons.alarm,
+                                  text: 'Try Again ! ',
+                                  color: Colors.green,
+                                  onPressed: () {
+                                    // Handle first button press
+                                    ccp.checkLunchTime();
+                                  },
+                                ),
+                              ),
                             ),
                           ],
                         ),

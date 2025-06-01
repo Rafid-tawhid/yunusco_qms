@@ -125,7 +125,16 @@ class CountingProvider with ChangeNotifier {
       final result = await apiService.getData('api/qms/GetLunchTime/$secId');
 
       if (result != null) {
+
         _lunchTime = LunchTimeModel.fromJson(result['Results'][0]);
+        ////Testing
+        // _lunchTime=LunchTimeModel.fromJson({
+        //   "LunchStartTime": "2025-04-27 08:58:00",
+        //   "LunchEndTime": "2025-04-27 08:59:00",
+        //   "SectionId": 10,
+        //   "LunchTimeId": 1,
+        //   "IsActive": true
+        // });
         debugPrint('LUNCH TIME ${ _lunchTime}');
         isCurrentTimeInLunchRangeFixed(_lunchTime);
         //automatic screen freezing
@@ -152,10 +161,6 @@ class CountingProvider with ChangeNotifier {
       // Parse the time strings (ignoring the date part)
       var startTimeStr = lunchTimeData!.lunchStartTime.toString().split(' ')[1];
       var endTimeStr = lunchTimeData.lunchEndTime.toString().split(' ')[1];
-
-      //testing
-      // startTimeStr='18:01:00';
-      // endTimeStr='18:02:00';
 
       debugPrint('startTimeStr $startTimeStr');
       debugPrint('endTimeStr $endTimeStr');
@@ -478,8 +483,8 @@ class CountingProvider with ChangeNotifier {
       // Parse times (assuming format is like "HH:mm:ss")
       var startTimeStr = lunchTime!.lunchStartTime.toString().split(' ')[1];
       var endTimeStr = lunchTime!.lunchEndTime.toString().split(' ')[1];
-      // startTimeStr='15:16:38';
-      // endTimeStr='15:17:38';
+      // startTimeStr='08:40:38';
+      // endTimeStr='08:42:38';
 
       final lunchStart = DateTime.parse("$todayDate $startTimeStr");
       final lunchEnd = DateTime.parse("$todayDate $endTimeStr");
