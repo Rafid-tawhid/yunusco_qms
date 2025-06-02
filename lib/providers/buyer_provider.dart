@@ -285,7 +285,7 @@ class BuyerProvider extends ChangeNotifier {
 
   bool get lock => _lock;
 
-  void lockUnlockSizeColor({bool? val}) {
+  Future<void> lockUnlockSizeColor({bool? val})async {
     if(val!=null){
       _lock=val;
     }

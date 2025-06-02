@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 
-class RectangleIconButton extends StatelessWidget {
+class RectangleIconButton extends StatefulWidget {
   final IconData icon;
   final double iconSize;
   final Color iconColor;
   final Color backgroundColor;
+  final Color disabledColor; // New property for disabled state
   final double borderRadius;
   final EdgeInsetsGeometry padding;
-  final VoidCallback onPressed;
+  final Future<void> Function()? onPressed; // Changed to async function
   final double elevation;
   final Size? minimumSize;
   final BoxBorder? border;
@@ -19,6 +20,7 @@ class RectangleIconButton extends StatelessWidget {
     this.iconSize = 24,
     this.iconColor = Colors.white,
     this.backgroundColor = Colors.blue,
+    this.disabledColor = Colors.grey, // Default disabled color
     this.borderRadius = 8.0,
     this.padding = const EdgeInsets.all(12),
     this.elevation = 2.0,
@@ -27,28 +29,57 @@ class RectangleIconButton extends StatelessWidget {
   });
 
   @override
+  State<RectangleIconButton> createState() => _RectangleIconButtonState();
+}
+
+class _RectangleIconButtonState extends State<RectangleIconButton> {
+  bool _isLoading = false;
+
+  Future<void> _handlePress() async {
+    if (widget.onPressed == null || _isLoading) return;
+
+    setState(() => _isLoading = true);
+    try {
+      await widget.onPressed!();
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Material(
-      elevation: elevation,
-      borderRadius: BorderRadius.circular(borderRadius),
-      color: backgroundColor,
+      elevation: _isLoading ? 0 : widget.elevation,
+      borderRadius: BorderRadius.circular(widget.borderRadius),
+      color: _isLoading ? widget.disabledColor : widget.backgroundColor,
       child: InkWell(
-        borderRadius: BorderRadius.circular(borderRadius),
-        onTap: onPressed,
+        borderRadius: BorderRadius.circular(widget.borderRadius),
+        onTap: _isLoading ? null : _handlePress,
         child: Container(
           constraints: BoxConstraints(
-            minWidth: minimumSize?.width ?? 48,
-            minHeight: minimumSize?.height ?? 48,
+            minWidth: widget.minimumSize?.width ?? 48,
+            minHeight: widget.minimumSize?.height ?? 48,
           ),
-          padding: padding,
+          padding: widget.padding,
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(borderRadius),
-            border: border,
+            borderRadius: BorderRadius.circular(widget.borderRadius),
+            border: widget.border,
           ),
-          child: Icon(
-            icon,
-            size: iconSize,
-            color: iconColor,
+          child: _isLoading
+              ? const SizedBox(
+            width: 24,
+            height: 24,
+            child: CircularProgressIndicator(
+              strokeWidth: 2,
+              valueColor: AlwaysStoppedAnimation(Colors.white),
+            ),
+          )
+              : Icon(
+            widget.icon,
+            size: widget.iconSize,
+            color: widget.iconColor,
           ),
         ),
       ),

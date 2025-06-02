@@ -117,9 +117,9 @@ class _QualityControlScreenState extends State<QualityControlScreen> with Widget
                               padding: const EdgeInsets.all(16.0),
                               child: Container(
                                 width: 340,
-                                height: 100,
+                                height: 80,
                                 child: ActionButton(
-                                  icon: Icons.alarm,
+                                  icon: Icons.refresh,
                                   text: 'Try Again ! ',
                                   color: Colors.green,
                                   onPressed: () {
@@ -202,8 +202,8 @@ class _QualityControlScreenState extends State<QualityControlScreen> with Widget
 
                                                     RectangleIconButton(
                                                       icon: Icons.save_alt,
-                                                      onPressed: () {
-                                                        saveData(_countingProvider);
+                                                      onPressed: () async{
+                                                       await saveData(_countingProvider);
                                                       },
                                                       backgroundColor: myColors.blackSecond,
                                                       iconColor: Colors.white,
@@ -221,7 +221,6 @@ class _QualityControlScreenState extends State<QualityControlScreen> with Widget
                                                         if(cp.totalCountingModel!=null){
                                                           Navigator.push(context, CupertinoPageRoute(builder: (context) => ProductionReportScreen(stats: cp.totalCountingModel!,)));
                                                         }
-
                                                       },
                                                       backgroundColor: myColors.blackSecond,
                                                       iconColor: Colors.white,
@@ -234,8 +233,8 @@ class _QualityControlScreenState extends State<QualityControlScreen> with Widget
                                                       builder:
                                                           (context, pro, _) => RectangleIconButton(
                                                             icon: pro.lock ? Icons.lock : Icons.lock_open,
-                                                            onPressed: () {
-                                                              pro.lockUnlockSizeColor();
+                                                            onPressed: () async{
+                                                              await pro.lockUnlockSizeColor();
                                                             },
                                                             backgroundColor: myColors.blackSecond,
                                                             iconColor: Colors.white,
@@ -517,9 +516,9 @@ class _QualityControlScreenState extends State<QualityControlScreen> with Widget
     cp.stopPeriodicTask();
   }
 
-  void saveData(CountingProvider cp) async {
+  Future<void> saveData(CountingProvider cp) async {
     //var cp = context.read<CountingProvider>();
-    cp.saveFullDataPeriodically();
+    await cp.saveFullDataPeriodically();
   }
 
   void getLunchTime() async {
