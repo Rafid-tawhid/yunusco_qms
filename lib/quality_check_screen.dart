@@ -200,25 +200,28 @@ class _QualityControlScreenState extends State<QualityControlScreen> with Widget
                                                   mainAxisAlignment: MainAxisAlignment.end,
                                                   children: [
 
-                                                    RectangleIconButton(
-                                                      icon: Icons.save_alt,
-                                                      onPressed: () async{
-                                                       await saveData(_countingProvider);
-                                                      },
-                                                      backgroundColor: myColors.blackSecond,
-                                                      iconColor: Colors.white,
-                                                      borderRadius: 6.0,
-                                                      elevation: 4.0,
-                                                      padding: const EdgeInsets.all(12),
-                                                    ),
-                                                    SizedBox(width: 8),
+                                                    // RectangleIconButton(
+                                                    //   icon: Icons.save_alt,
+                                                    //   onPressed: () async{
+                                                    //    await saveData(_countingProvider);
+                                                    //   },
+                                                    //   backgroundColor: myColors.blackSecond,
+                                                    //   iconColor: Colors.white,
+                                                    //   borderRadius: 6.0,
+                                                    //   elevation: 4.0,
+                                                    //   padding: const EdgeInsets.all(12),
+                                                    // ),
+                                                    // SizedBox(width: 8),
                                                     RectangleIconButton(
                                                       icon: Icons.add_chart_outlined,
                                                       onPressed: () async {
                                                         var cp = context.read<CountingProvider>();
                                                         var bp = context.read<BuyerProvider>();
-                                                        await cp.getTodaysCountingData(bp);
-                                                        if(cp.totalCountingModel!=null){
+                                                        //save before chart..
+                                                        //june3
+                                                        await saveData(_countingProvider);
+                                                        bool ok= await cp.getTodaysCountingData(bp);
+                                                        if(cp.totalCountingModel!=null&&ok){
                                                           Navigator.push(context, CupertinoPageRoute(builder: (context) => ProductionReportScreen(stats: cp.totalCountingModel!,)));
                                                         }
                                                       },

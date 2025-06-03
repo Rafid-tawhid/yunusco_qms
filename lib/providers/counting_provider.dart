@@ -393,7 +393,7 @@ class CountingProvider with ChangeNotifier {
   TotalCountingModel? _totalCountingModel;
   TotalCountingModel? get totalCountingModel=>_totalCountingModel;
 
-  Future<void> getTodaysCountingData(BuyerProvider bp) async{
+  Future<bool> getTodaysCountingData(BuyerProvider bp) async{
     //  final secId = await DashboardHelpers.getString('selectedSectionId');
     final line = await DashboardHelpers.getString('selectedLineId');
 
@@ -406,17 +406,23 @@ class CountingProvider with ChangeNotifier {
     });
     if(data!=null){
       _totalCountingModel=TotalCountingModel.fromJson(data['Results'][0]);
-
       //changed today june 3
       //sync data auto
       if(_totalCountingModel!=null){
-        checked=_totalCountingModel!.totalPass!.toInt();
+        checked=_totalCountingModel!.totalPass!.toInt()+_totalCountingModel!.totalAlterCheck!.toInt();
         alter=_totalCountingModel!.totalAlter!.toInt();
-        alter_check=_totalCountingModel!.totalAlter!.toInt();
+        alter_check=_totalCountingModel!.totalAlterCheck!.toInt();
         reject=_totalCountingModel!.totalReject!.toInt();
       }
+
+      debugPrint('FINAL CHECKED VALUE ${checked}');
+      notifyListeners();
+      return true;
     }
-    notifyListeners();
+    else {
+      return false;
+    }
+
   }
 
 
