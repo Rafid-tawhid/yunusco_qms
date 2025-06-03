@@ -490,9 +490,11 @@ class _QualityControlScreenState extends State<QualityControlScreen> with Widget
         var cp = context.read<CountingProvider>();
         var bp = context.read<BuyerProvider>();
 
-        cp.checkedItemFromAlter();
-        //save counting data locally
-        await cp.addDataToLocalList(bp, status: CheckedStatus.alter_check);
+       var isNotGreaterThanAlter=await cp.checkedItemFromAlter();
+        if(isNotGreaterThanAlter){
+          //save counting data locally
+          await cp.addDataToLocalList(bp, status: CheckedStatus.alter_check);
+        }
       },
     );
   }
