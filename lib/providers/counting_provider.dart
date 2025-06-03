@@ -335,6 +335,7 @@ class CountingProvider with ChangeNotifier {
     debugPrint('_reportDataList ${_reportDataList.length}');
   }
 
+
   Future<void> addDataToLocalList(BuyerProvider bp, {required String status,dynamic info}) async{
     final secId = await DashboardHelpers.getString('selectedSectionId');
     final line = await DashboardHelpers.getString('selectedLineId');
@@ -360,9 +361,6 @@ class CountingProvider with ChangeNotifier {
     }
     _reportDataList.add(sendingData);
     debugPrint('_reportDataList local saved list : ${_reportDataList.length}');
-
-
-    //add to testing list
 
     //save local data for testing
     await HiveLocalSendDataService.saveLocalSendData(LocalSendDataModel.fromJson(sendingData));
@@ -408,6 +406,15 @@ class CountingProvider with ChangeNotifier {
     });
     if(data!=null){
       _totalCountingModel=TotalCountingModel.fromJson(data['Results'][0]);
+
+      //changed today june 3
+      //sync data auto
+      if(_totalCountingModel!=null){
+        checked=_totalCountingModel!.totalPass!.toInt();
+        alter=_totalCountingModel!.totalAlter!.toInt();
+        alter_check=_totalCountingModel!.totalAlter!.toInt();
+        reject=_totalCountingModel!.totalReject!.toInt();
+      }
     }
     notifyListeners();
   }
@@ -532,21 +539,6 @@ class CountingProvider with ChangeNotifier {
       } catch (e) {
         throw Exception('Error fetching data: $e');
       }
-
-
-
-
-    //
-    // var data = await apiService.getData2('https://127.0.0.1:7443/api/test/quality-checks/time-ranges-raw');
-    //
-    // if(data!=null){
-    //   _hourly_production_List.clear();
-    //   for(var i in data){
-    //     _hourly_production_List.add(HourlyProductionDataModel.fromJson(i));
-    //   }
-    // }
-    // notifyListeners();
-    // debugPrint('_hourly_production_List ${_hourly_production_List.length}');
   }
 
 

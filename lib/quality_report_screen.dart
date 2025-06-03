@@ -23,7 +23,7 @@ class _ProductionReportScreenState extends State<ProductionReportScreen> {
 
   @override
   void initState() {
-    getHourlyProduction();
+    //getHourlyProduction();
     super.initState();
   }
 
