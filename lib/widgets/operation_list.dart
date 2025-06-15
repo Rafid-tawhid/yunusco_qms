@@ -7,7 +7,7 @@ class OperationsListWidget extends StatelessWidget {
   final List<Map<String,dynamic>> operations;
 
   const OperationsListWidget({super.key, required this.operations});
-
+//
   @override
   Widget build(BuildContext context) {
     // Create a sorted copy of the operations list
