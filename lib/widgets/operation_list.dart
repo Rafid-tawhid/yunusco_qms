@@ -13,7 +13,7 @@ class OperationsListWidget extends StatelessWidget {
     // Create a sorted copy of the operations list
     final sortedOperations = List<Map<String, dynamic>>.from(operations)
       ..sort((a, b) => (b['value'] as int).compareTo(a['value'] as int));
-
+    //
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 12),
       child: Column(
