@@ -11,7 +11,9 @@ import '../home_screen.dart';
 import '../line_dropdown_settings.dart'; // For SVG logos
 
 class LauncherScreen extends StatefulWidget {
-  const LauncherScreen({super.key});
+  final bool isNewDay;
+
+  const LauncherScreen({Key? key, required this.isNewDay}) : super(key: key);
 
   @override
   State<LauncherScreen> createState() => _LauncherScreenState();
@@ -50,10 +52,9 @@ class _LauncherScreenState extends State<LauncherScreen>
 
   void _navigateToHome() async {
 
-
       await Future.delayed(const Duration(seconds: 2));
       var token=await DashboardHelpers.getString('token');
-      if (token!='') {
+      if (token!=''&&widget.isNewDay==false) {
         DashboardHelpers.setUserInfo();
         DashboardHelpers.setToken(token);
         var section=await DashboardHelpers.getString('section');

@@ -537,12 +537,7 @@ class _QualityControlScreenState extends State<QualityControlScreen> with Widget
     }
   }
 
-  void onAppOpened() async {
-    var newDay = await DashboardHelpers.clearDataIfNewDay();
-    if (newDay) {
-      Navigator.push(context, CupertinoPageRoute(builder: (context) => LoginScreen()));
-    }
-  }
+
 
   void checkIfThereIsAnyDefectList() async{
     final jsonString = DashboardHelpers.getString('tempDefectList');

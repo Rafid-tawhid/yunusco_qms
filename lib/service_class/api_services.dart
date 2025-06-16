@@ -1,10 +1,13 @@
 import 'dart:convert';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http_interceptor/http/intercepted_client.dart';
 import 'package:nidle_qty/utils/dashboard_helpers.dart';
 
+import '../login_screen.dart';
+import '../main.dart';
 import '../utils/constants.dart';
 import 'interceptor_class.dart'; // Optional for error message display
 
@@ -234,7 +237,9 @@ class ApiService {
         EasyLoading.dismiss();
         print("Unauthorized Access: $responseBody");
         Fluttertoast.showToast(msg:response['Message']?? "Unauthorized Access");
-
+        // navigatorKey.currentState?.pushReplacement(
+        //   MaterialPageRoute(builder: (_) => LoginScreen()),
+        // );
         break;
       case 403:
         EasyLoading.dismiss();

@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:hive/hive.dart';
@@ -8,6 +9,7 @@ import 'package:nidle_qty/providers/buyer_provider.dart';
 import 'package:nidle_qty/providers/counting_provider.dart';
 import 'package:nidle_qty/providers/network_provider.dart';
 import 'package:nidle_qty/service_class/hive_service_class.dart';
+import 'package:nidle_qty/utils/constants.dart';
 import 'package:nidle_qty/utils/dashboard_helpers.dart';
 import 'package:nidle_qty/widgets/launcher_screen.dart';
 import 'package:nidle_qty/widgets/network_alert.dart';
@@ -33,7 +35,7 @@ void main() async {
     await Hive.openBox('localSendDataBox');
   }
 
-  await DashboardHelpers.clearDataIfNewDay();
+  var isNewDay = await DashboardHelpers.clearDataIfNewDay();
 
   runApp(
     MultiProvider(
@@ -41,12 +43,16 @@ void main() async {
         ChangeNotifierProvider(create: (_) => BuyerProvider()),
         ChangeNotifierProvider(create: (_) => CountingProvider()),
         ChangeNotifierProvider(create: (_) => NetworkProvider())],
-      child: MyApp(),
+      child: MyApp(isNewDay:isNewDay),
     ),
   );
 }
 
+
 class MyApp extends StatelessWidget {
+  final bool isNewDay;
+  const MyApp({Key? key, required this.isNewDay}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -63,7 +69,7 @@ class MyApp extends StatelessWidget {
 
         return EasyLoading.init()(context, child);
       },
-      home: LauncherScreen(),
+      home: LauncherScreen(isNewDay: isNewDay,),
     );
   }
 }
