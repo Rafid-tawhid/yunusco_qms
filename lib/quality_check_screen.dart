@@ -16,6 +16,7 @@ import 'package:nidle_qty/widgets/alter_check.dart';
 import 'package:nidle_qty/widgets/clock_widget.dart';
 import 'package:nidle_qty/widgets/custom_button.dart';
 import 'package:nidle_qty/widgets/icon_button.dart';
+import 'package:nidle_qty/widgets/message_widget.dart';
 import 'package:nidle_qty/widgets/operation_list.dart';
 import 'package:nidle_qty/widgets/production_chart.dart';
 import 'package:nidle_qty/widgets/reject_alert.dart';
@@ -97,16 +98,7 @@ class _QualityControlScreenState extends State<QualityControlScreen> with Widget
                           children: [
                             Padding(
                               padding: const EdgeInsets.all(16.0),
-                              child: Align(
-                                child: CurrentTimeWidget(
-                                  textStyle: TextStyle(
-                                    fontSize: 24,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                                alignment: Alignment.center,
-                              ),
+                              child: Align(child: CurrentTimeWidget(textStyle: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white)), alignment: Alignment.center),
                             ),
                             Text(
                               'Your Lunch time ${DashboardHelpers.formatExactLunchTime(ccp.lunchTime!.lunchStartTime ?? '', ccp.lunchTime!.lunchEndTime ?? '')}',
@@ -199,19 +191,22 @@ class _QualityControlScreenState extends State<QualityControlScreen> with Widget
                                                 child: Row(
                                                   mainAxisAlignment: MainAxisAlignment.end,
                                                   children: [
-
-                                                    // RectangleIconButton(
-                                                    //   icon: Icons.save_alt,
-                                                    //   onPressed: () async{
-                                                    //    await saveData(_countingProvider);
-                                                    //   },
-                                                    //   backgroundColor: myColors.blackSecond,
-                                                    //   iconColor: Colors.white,
-                                                    //   borderRadius: 6.0,
-                                                    //   elevation: 4.0,
-                                                    //   padding: const EdgeInsets.all(12),
-                                                    // ),
-                                                    // SizedBox(width: 8),
+                                                    RectangleIconButton(
+                                                      icon: Icons.message,
+                                                      onPressed: () async {
+                                                        //support message
+                                                        Navigator.push(
+                                                          context,
+                                                          MaterialPageRoute(builder: (context) => const SupportScreen()),
+                                                        );
+                                                      },
+                                                      backgroundColor: myColors.blackSecond,
+                                                      iconColor: Colors.white,
+                                                      borderRadius: 6.0,
+                                                      elevation: 4.0,
+                                                      padding: const EdgeInsets.all(12),
+                                                    ),
+                                                    SizedBox(width: 8),
                                                     RectangleIconButton(
                                                       icon: Icons.add_chart_outlined,
                                                       onPressed: () async {
@@ -220,9 +215,9 @@ class _QualityControlScreenState extends State<QualityControlScreen> with Widget
                                                         //save before chart..
                                                         //june3
                                                         await saveData(_countingProvider);
-                                                        bool ok= await cp.getTodaysCountingData(bp);
-                                                        if(cp.totalCountingModel!=null&&ok){
-                                                          Navigator.push(context, CupertinoPageRoute(builder: (context) => ProductionReportScreen(stats: cp.totalCountingModel!,)));
+                                                        bool ok = await cp.getTodaysCountingData(bp);
+                                                        if (cp.totalCountingModel != null && ok) {
+                                                          Navigator.push(context, CupertinoPageRoute(builder: (context) => ProductionReportScreen(stats: cp.totalCountingModel!)));
                                                         }
                                                       },
                                                       backgroundColor: myColors.blackSecond,
@@ -236,7 +231,7 @@ class _QualityControlScreenState extends State<QualityControlScreen> with Widget
                                                       builder:
                                                           (context, pro, _) => RectangleIconButton(
                                                             icon: pro.lock ? Icons.lock : Icons.lock_open,
-                                                            onPressed: () async{
+                                                            onPressed: () async {
                                                               await pro.lockUnlockSizeColor();
                                                             },
                                                             backgroundColor: myColors.blackSecond,
@@ -493,8 +488,8 @@ class _QualityControlScreenState extends State<QualityControlScreen> with Widget
         var cp = context.read<CountingProvider>();
         var bp = context.read<BuyerProvider>();
 
-       var isNotGreaterThanAlter=await cp.checkedItemFromAlter();
-        if(isNotGreaterThanAlter){
+        var isNotGreaterThanAlter = await cp.checkedItemFromAlter();
+        if (isNotGreaterThanAlter) {
           //save counting data locally
           await cp.addDataToLocalList(bp, status: CheckedStatus.alter_check);
         }
@@ -537,19 +532,16 @@ class _QualityControlScreenState extends State<QualityControlScreen> with Widget
     }
   }
 
-
-
-  void checkIfThereIsAnyDefectList() async{
+  void checkIfThereIsAnyDefectList() async {
     final jsonString = DashboardHelpers.getString('tempDefectList');
-    if (jsonString!='') {
-      var defectList =await List<Map<String, dynamic>>.from(jsonDecode(await jsonString));
-      if(defectList.isNotEmpty){
-        var cp=context.read<CountingProvider>();
+    if (jsonString != '') {
+      var defectList = await List<Map<String, dynamic>>.from(jsonDecode(await jsonString));
+      if (defectList.isNotEmpty) {
+        var cp = context.read<CountingProvider>();
         cp.setDefectList(defectList);
       }
     }
   }
-
 }
 
 class HeaderCountingInfo extends StatelessWidget {
@@ -595,7 +587,7 @@ class HeaderCountingInfo extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text('Lunch Time', style: customTextStyle(14, Colors.white, FontWeight.bold)),
-                        if (ccp.lunchTime != null&&ccp.lunchTime!.isActive==true)
+                        if (ccp.lunchTime != null && ccp.lunchTime!.isActive == true)
                           Text(
                             '${DashboardHelpers.formatExactLunchTime(ccp.lunchTime!.lunchStartTime ?? '', ccp.lunchTime!.lunchEndTime ?? '')}',
                             style: customTextStyle(14, Colors.white, FontWeight.bold),
@@ -607,16 +599,7 @@ class HeaderCountingInfo extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 12.0),
                 child: Container(height: 30, width: 4, decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(4))),
               ),
-              Align(
-                child: CurrentTimeWidget(
-                  textStyle: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
-                alignment: Alignment.center,
-              ),
+              Align(child: CurrentTimeWidget(textStyle: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)), alignment: Alignment.center),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
