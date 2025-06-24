@@ -309,30 +309,47 @@ class CountingProvider with ChangeNotifier {
   List<LocalSendDataModel> _testingreportDataList = [];
 
 
+  //changed june 24
+  //double data saved problem solved
+  bool _isSaving = false;
+
   Future<void> saveFullDataPeriodically() async {
-    if(_reportDataList.length>0){
-      final bool isConnected = await InternetConnectionChecker.instance.hasConnection;
-      //send to save data in server
-      if(isConnected){
-        final apiResponse = await apiService.postData('api/qms/SaveQms', reportDataList);
-        if(apiResponse!=null){
-          debugPrint('Data is cleared');
-          _reportDataList.clear();
-          notifyListeners();
+    // Return immediately if already saving
+    if (_isSaving) {
+      debugPrint('Save operation already in progress');
+      return;
+    }
+
+    try {
+      _isSaving = true;
+
+      if(_reportDataList.length>0){
+        final bool isConnected = await InternetConnectionChecker.instance.hasConnection;
+        //send to save data in server
+        if(isConnected){
+          final apiResponse = await apiService.postData('api/qms/SaveQms', reportDataList);
+          if(apiResponse!=null){
+            debugPrint('Data is cleared');
+            _reportDataList.clear();
+            notifyListeners();
+          }
+          else {
+            debugPrint('FROM THIS DATA NOT SEND 1');
+          }
         }
         else {
-          debugPrint('FROM THIS DATA NOT SEND 1');
+          debugPrint('FROM THIS FROM THIS DATA NOT SEND 2');
         }
       }
       else {
-        debugPrint('FROM THIS FROM THIS DATA NOT SEND 2');
+        debugPrint('NO DATA FOUND IN STACK');
       }
-    }
-    else {
-      debugPrint('NO DATA FOUND IN STACK');
-    }
 
-    debugPrint('_reportDataList ${_reportDataList.length}');
+      debugPrint('_reportDataList ${_reportDataList.length}');
+    } finally {
+      // Ensure the flag is always reset when done
+      _isSaving = false;
+    }
   }
 
 
