@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:nidle_qty/providers/counting_provider.dart';
 import 'package:nidle_qty/service_class/hive_service_class.dart';
 import 'package:nidle_qty/widgets/hourly_production_widget.dart';
+import 'package:nidle_qty/widgets/operation_defect_list.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
@@ -23,7 +24,7 @@ class _ProductionReportScreenState extends State<ProductionReportScreen> {
 
   @override
   void initState() {
-    //getHourlyProduction();
+    getHourlyProduction();
     super.initState();
   }
 
@@ -75,15 +76,25 @@ class _ProductionReportScreenState extends State<ProductionReportScreen> {
               // Data Table
               _buildDataTable(chartData, total),
 
-              // Consumer<CountingProvider>(
-              //   builder: (context,pro,_)=>// In your parent widget:
-              //   SizedBox(
-              //     height: 400,
-              //     child: HourlyProductionDashboard(
-              //       productionData: pro.hourly_production_List,
-              //     ),
-              //   ),
-              // )
+              Consumer<CountingProvider>(
+                builder: (context,pro,_)=>// In your parent widget:
+                SizedBox(
+                  height: 500,
+                  child: HourlyProductionDashboard(
+                    productionData: pro.hourly_production_List,
+                  ),
+                ),
+              ),
+              Consumer<CountingProvider>(
+                builder: (context,pro,_)=>// In your parent widget:
+                SizedBox(
+                  height: 500,
+                  child: DefectsDisplayWidget(
+                    defects: pro.operation_defect,
+                  ),
+                ),
+              ),
+
             ],
           ),
         ),
@@ -296,7 +307,10 @@ class _ProductionReportScreenState extends State<ProductionReportScreen> {
 
   void getHourlyProduction() {
     var cp=context.read<CountingProvider>();
-    cp.getHourlyProductionData();
+    DateTime today = DateTime.now();
+    String formattedDate = "${today.year}-${today.month.toString().padLeft(2, '0')}-${today.day.toString().padLeft(2, '0')}";
+    cp.getHourlyProductionData(formattedDate);
+    cp.getHourlyOperationDefects(formattedDate);
   }
 }
 

@@ -1,21 +1,18 @@
 import 'dart:async';
 import 'dart:convert';
-
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:hive/hive.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:nidle_qty/models/checked_enum.dart';
 import 'package:nidle_qty/models/defect_models.dart';
 import 'package:nidle_qty/models/hourly_production_data_model.dart';
 import 'package:nidle_qty/models/local_send_data_model.dart';
+import 'package:nidle_qty/models/operation_defect_count_model.dart';
 import 'package:nidle_qty/models/po_models.dart';
 import 'package:nidle_qty/providers/buyer_provider.dart';
 import 'package:nidle_qty/service_class/api_services.dart';
 import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
 import '../models/lunch_time_model.dart';
 import '../models/operation_model.dart';
 import '../models/send_data_model.dart';
@@ -327,6 +324,7 @@ class CountingProvider with ChangeNotifier {
         final bool isConnected = await InternetConnectionChecker.instance.hasConnection;
         //send to save data in server
         if(isConnected){
+
           final apiResponse = await apiService.postData('api/qms/SaveQms', reportDataList);
           if(apiResponse!=null){
             debugPrint('Data is cleared');
@@ -541,33 +539,44 @@ class CountingProvider with ChangeNotifier {
   List<HourlyProductionDataModel> _hourly_production_List=[];
   List<HourlyProductionDataModel> get hourly_production_List=>_hourly_production_List;
 
-  Future<void> getHourlyProductionData() async{
-      const String apiUrl = 'https://127.0.0.1:7443/api/test/quality-checks/time-ranges-raw';
+  Future<void> getHourlyProductionData(String date) async{
 
-      try {
-        final response = await http.get(
-          Uri.parse(apiUrl),
-
-        ).timeout(const Duration(seconds: 15));
-
-        if (response.statusCode == 200) {
-          final List<dynamic> jsonData = json.decode(response.body);
-          _hourly_production_List.clear();
-          for(var i in jsonData){
-            _hourly_production_List.add(HourlyProductionDataModel.fromJson(i));
-          }
-        } else {
-          throw Exception('Failed to load data: ${response.statusCode}');
-        }
-      } catch (e) {
-        throw Exception('Error fetching data: $e');
+     var lineId = await DashboardHelpers.getString('selectedLineId');
+     debugPrint('Line ID  ${lineId}');
+      var data=await apiService.getData('api/Qms/QualityCheckSummary?LineNo=${lineId}&FilterDate=${date}');
+      if(data!=null){
+        _hourly_production_List.clear();
+       for(var i in data['Results']){
+         _hourly_production_List.add(HourlyProductionDataModel.fromJson(i));
+       }
+       debugPrint('_hourly_production_List ${_hourly_production_List.length}');
       }
+      notifyListeners();
   }
 
 
   void setDefectList(List<Map<String, dynamic>> defectList) {
     _tempDefectList.clear();
     _tempDefectList.addAll(defectList);
+    notifyListeners();
+  }
+
+
+  List<OperationDefectCountModel> _operation_defect=[];
+  List<OperationDefectCountModel> get operation_defect=>_operation_defect;
+
+  Future<void> getHourlyOperationDefects(String formattedDate) async {
+
+    var lineId = await DashboardHelpers.getString('selectedLineId');
+    debugPrint('Line ID  ${lineId}');
+    var data=await apiService.getData('api/Qms/DefectSummary?LineNo=${13}&FilterDate=$formattedDate');
+    if(data!=null){
+      _operation_defect.clear();
+      for(var i in data['Results']){
+        _operation_defect.add(OperationDefectCountModel.fromJson(i));
+      }
+      debugPrint('_operation_defect ${_operation_defect.length}');
+    }
     notifyListeners();
   }
 

@@ -7,7 +7,6 @@ import 'package:provider/provider.dart';
 
 import '../home_screen.dart';
 import '../line_dropdown_settings.dart';
-import '../line_setting_screen.dart';
 import '../providers/counting_provider.dart';
 import '../widgets/logout_alert.dart';
 
