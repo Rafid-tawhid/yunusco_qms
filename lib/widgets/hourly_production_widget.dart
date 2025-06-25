@@ -64,10 +64,10 @@ class HourlyProductionDashboard extends StatelessWidget {
                 DataColumn(label: Text('Time', style: TextStyle(color: Colors.white))),
                 DataColumn(label: Text('Line', style: TextStyle(color: Colors.white))),
                 DataColumn(label: Text('Buyer', style: TextStyle(color: Colors.white))),
-                DataColumn(label: Text('PO', style: TextStyle(color: Colors.white))),
                 DataColumn(label: Text('Style', style: TextStyle(color: Colors.white))),
                 DataColumn(label: Text('Pass', style: TextStyle(color: Colors.white))),
                 DataColumn(label: Text('Alter', style: TextStyle(color: Colors.white))),
+                DataColumn(label: Text('Check', style: TextStyle(color: Colors.white))),
                 DataColumn(label: Text('Reject', style: TextStyle(color: Colors.white))),
                 DataColumn(label: Text('Total', style: TextStyle(color: Colors.white))),
               ],
@@ -77,7 +77,7 @@ class HourlyProductionDashboard extends StatelessWidget {
                     DataCell(Text(data.timeRange ?? '-', style: _cellStyle())),
                     DataCell(Text(data.lineId?.toString() ?? '-', style: _cellStyle())),
                     DataCell(Text(data.buyerName ?? '-', style: _cellStyle())),
-                    DataCell(Text(data.po ?? '-', style: _cellStyle())),
+
                     DataCell(
                       ConstrainedBox(
                         constraints: const BoxConstraints(minWidth: 200),
@@ -90,8 +90,8 @@ class HourlyProductionDashboard extends StatelessWidget {
                     ),
                     DataCell(Text(data.pass?.toString() ?? '-',
                         style: _cellStyle(color: Colors.green[700]))),
-                    DataCell(Text(data.alteration?.toString() ?? '-',
-                        style: _cellStyle(color: Colors.orange[700]))),
+                    DataCell(Text(data.alteration?.toString() ?? '-', style: _cellStyle(color: Colors.orange[700]))),
+                    DataCell(Text(data.alterCheck?.toString() ?? '-', style: _cellStyle(color: Colors.green[700]))),
                     DataCell(Text(data.reject?.toString() ?? '-',
                         style: _cellStyle(color: Colors.red[700]))),
                     DataCell(Text(data.totalRecords?.toString() ?? '-',
