@@ -52,6 +52,7 @@ class DefectsDisplayWidget extends StatelessWidget {
                       ),
                     ],
                   ),
+                  //
                   const SizedBox(height: 4),
                   ...operation.value.map(
                     (defect) => Padding(
