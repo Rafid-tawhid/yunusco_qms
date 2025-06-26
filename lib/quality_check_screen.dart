@@ -425,13 +425,13 @@ class _QualityControlScreenState extends State<QualityControlScreen> with Widget
                                                   width: double.infinity,
                                                   decoration: BoxDecoration(color: myColors.blackSecond, borderRadius: BorderRadius.circular(8)),
                                                   child: DualLineChart(
-                                                    primaryValues: [45, 60, 75, 50, 65],
+                                                    primaryValues: pro.todayDayPassList,
                                                     // First production line values
-                                                    secondaryValues: [35, 50, 85, 40, 75],
+                                                    secondaryValues:pro.yesterDayPassList,
                                                     // Second production line values
                                                     primaryColor: Colors.orange,
                                                     secondaryColor: Colors.blue,
-                                                    labels: ['8', '10', '12', '14', '16'], // Day labels
+                                                    labels: ['8am', '10am', '12pm', '2pm', '4pm','6pm','8pm'], // Day labels
                                                   ),
                                                 ),
                                                 if (ccp.tempDefectList.isNotEmpty) OperationsListWidget(operations: ccp.tempDefectList),

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:math';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
@@ -13,6 +14,7 @@ import 'package:nidle_qty/models/po_models.dart';
 import 'package:nidle_qty/providers/buyer_provider.dart';
 import 'package:nidle_qty/service_class/api_services.dart';
 import 'package:http/http.dart' as http;
+import '../models/difference_count_model.dart';
 import '../models/lunch_time_model.dart';
 import '../models/operation_model.dart';
 import '../models/send_data_model.dart';
@@ -329,6 +331,12 @@ class CountingProvider with ChangeNotifier {
           if(apiResponse!=null){
             debugPrint('Data is cleared');
             _reportDataList.clear();
+
+            //call the two day difference to update chart
+            DateTime today = DateTime.now();
+            String formattedDate = "${today.year}-${today.month.toString().padLeft(2, '0')}-${today.day.toString().padLeft(2, '0')}";
+            getTwodaysDifference(formattedDate);
+
             notifyListeners();
           }
           else {
@@ -578,6 +586,86 @@ class CountingProvider with ChangeNotifier {
       debugPrint('_operation_defect ${_operation_defect.length}');
     }
     notifyListeners();
+  }
+
+
+  List<DifferenceCountModel> _difference_list=[];
+  List<DifferenceCountModel> get difference_list=>_difference_list;
+  List<double> _yesterDayPassList = List.generate(8, (index) => Random().nextDouble() * 80);
+  List<double> _todayDayPassList = List.generate(8, (index) => Random().nextDouble() * 80);
+  List<double> get yesterDayPassList=>_yesterDayPassList;
+  List<double> get todayDayPassList=>_todayDayPassList;
+
+
+  Future<void> getTwodaysDifference(String formattedDate) async {
+    try {
+      var lineId = await DashboardHelpers.getString('selectedLineId');
+      if (lineId.isEmpty) {
+        debugPrint('Line ID is empty');
+        return;
+      }
+
+      var data = await apiService.getData(
+        'api/Qms/QualityCheckComprasionByLine?LineNo=$lineId&FilterDate=$formattedDate',
+      );
+
+      // Clear lists before processing new data
+      _difference_list.clear();
+      _todayDayPassList.clear();
+      _yesterDayPassList.clear();
+
+      // Fallback to empty list if data is null or doesn't contain 'Results'
+      final results = data?['Results'] as List? ?? [];
+
+      if (results.isEmpty) {
+        debugPrint('No data found in API response');
+        // Optionally, set default values (e.g., zeros) if needed
+        _todayDayPassList = List.filled(8, 0);
+        _yesterDayPassList = List.filled(8, 0);
+        notifyListeners();
+        return;
+      }
+
+      // Process each item in results with null checks
+      for (var item in results) {
+        try {
+          var model = DifferenceCountModel.fromJson(item);
+          _difference_list.add(model);
+
+          // Safely parse todayPass and yesterdayPass (fallback to 0 if null)
+          _todayDayPassList.add((model.todayPass ?? 0).toDouble());
+          _yesterDayPassList.add((model.yesterdayPass ?? 0).toDouble());
+        } catch (e) {
+          debugPrint('Error parsing item: $e');
+          // Fallback to 0 if parsing fails
+          _todayDayPassList.add(0);
+          _yesterDayPassList.add(0);
+        }
+      }
+
+      // Ensure lists have at most 8 elements (or pad with 0 if needed)
+      _todayDayPassList = _todayDayPassList.take(8).toList();
+      _yesterDayPassList = _yesterDayPassList.take(8).toList();
+
+      // If lists are shorter than 8, pad with zeros (optional)
+      if (_todayDayPassList.length < 8) {
+        _todayDayPassList.addAll(List.filled(8 - _todayDayPassList.length, 0));
+      }
+      if (_yesterDayPassList.length < 8) {
+        _yesterDayPassList.addAll(List.filled(8 - _yesterDayPassList.length, 0));
+      }
+
+      notifyListeners();
+      debugPrint('_difference_list ${_difference_list.length}');
+      debugPrint('_todayDayPassList $_todayDayPassList');
+      debugPrint('_yesterDayPassList $_yesterDayPassList');
+    } catch (e) {
+      debugPrint('Error in getTwodaysDifference: $e');
+      // Fallback to default values on error
+      _todayDayPassList = List.filled(8, 0);
+      _yesterDayPassList = List.filled(8, 0);
+      notifyListeners();
+    }
   }
 
 }
