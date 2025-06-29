@@ -416,6 +416,7 @@ class CountingProvider with ChangeNotifier {
   TotalCountingModel? _totalCountingModel;
   TotalCountingModel? get totalCountingModel=>_totalCountingModel;
 
+  //
   Future<bool> getTodaysCountingData(BuyerProvider bp) async{
     //  final secId = await DashboardHelpers.getString('selectedSectionId');
     final line = await DashboardHelpers.getString('selectedLineId');
