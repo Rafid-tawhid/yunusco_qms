@@ -214,7 +214,7 @@ class _QualityControlScreenState extends State<QualityControlScreen> with Widget
                                                         var bp = context.read<BuyerProvider>();
                                                         //save before chart..
                                                         //june3
-                                                        await saveData(_countingProvider);
+                                                        // await saveData(_countingProvider);
                                                         bool ok = await cp.getTodaysCountingData(bp);
                                                         if (cp.totalCountingModel != null && ok) {
                                                           Navigator.push(context, CupertinoPageRoute(builder: (context) => ProductionReportScreen(stats: cp.totalCountingModel!)));
