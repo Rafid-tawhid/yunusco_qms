@@ -312,48 +312,50 @@ class CountingProvider with ChangeNotifier {
   //double data saved problem solved
   bool _isSaving = false;
 
-  Future<void> saveFullDataPeriodically() async {
+  Future<bool> saveFullDataPeriodically() async {
     // Return immediately if already saving
     if (_isSaving) {
       debugPrint('Save operation already in progress');
-      return;
+      return false;
     }
 
     try {
       _isSaving = true;
 
-      if(_reportDataList.length>0){
+      if (_reportDataList.isNotEmpty) {
         final bool isConnected = await InternetConnectionChecker.instance.hasConnection;
-        //send to save data in server
-        if(isConnected){
 
-          final apiResponse = await apiService.postData('api/qms/SaveQms', reportDataList);
-          if(apiResponse!=null){
-            debugPrint('Data is cleared');
+        // If connected, send data to the server
+        if (isConnected) {
+          final apiResponse = await apiService.postData('api/qms/SaveQms', _reportDataList);
+
+          if (apiResponse != null) {
+            debugPrint('Data saved successfully & cleared');
             _reportDataList.clear();
 
-            //call the two day difference to update chart
+            // Update chart with the latest data
             DateTime today = DateTime.now();
             String formattedDate = "${today.year}-${today.month.toString().padLeft(2, '0')}-${today.day.toString().padLeft(2, '0')}";
             getTwodaysDifference(formattedDate);
 
             notifyListeners();
+            return true; // Success
+          } else {
+            debugPrint('API request failed (null response)');
+            return false; // Failed
           }
-          else {
-            debugPrint('FROM THIS DATA NOT SEND 1');
-          }
+        } else {
+          debugPrint('No internet connection');
+          return false; // Failed
         }
-        else {
-          debugPrint('FROM THIS FROM THIS DATA NOT SEND 2');
-        }
+      } else {
+        debugPrint('No data found in _reportDataList');
+        return true; // No data to save
       }
-      else {
-        debugPrint('NO DATA FOUND IN STACK');
-      }
-
-      debugPrint('_reportDataList ${_reportDataList.length}');
+    } catch (e) {
+      debugPrint('Error in saveFullDataPeriodically(): $e');
+      return false; // Exception occurred
     } finally {
-      // Ensure the flag is always reset when done
       _isSaving = false;
     }
   }

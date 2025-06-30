@@ -214,9 +214,10 @@ class _QualityControlScreenState extends State<QualityControlScreen> with Widget
                                                         var bp = context.read<BuyerProvider>();
                                                         //save before chart..
                                                         //june3
-                                                        // await saveData(_countingProvider);
-                                                        bool ok = await cp.getTodaysCountingData(bp);
-                                                        if (cp.totalCountingModel != null && ok) {
+                                                          bool saved= await _countingProvider.saveFullDataPeriodically();
+                                                          debugPrint('saved ${saved}');
+                                                          bool ok = await cp.getTodaysCountingData(bp);
+                                                        if (cp.totalCountingModel != null && ok && saved) {
                                                           Navigator.push(context, CupertinoPageRoute(builder: (context) => ProductionReportScreen(stats: cp.totalCountingModel!)));
                                                         }
                                                       },
@@ -560,7 +561,7 @@ class HeaderCountingInfo extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8.0),
                 child: IconButton(
-                  onPressed: () {
+                  onPressed: () async {
                     //save data
                     var cp = context.read<CountingProvider>();
                     cp.saveFullDataPeriodically();
