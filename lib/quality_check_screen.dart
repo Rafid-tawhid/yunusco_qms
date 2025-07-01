@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:nidle_qty/login_screen.dart';
 import 'package:nidle_qty/models/checked_enum.dart';
 import 'package:nidle_qty/models/color_model.dart';
@@ -214,9 +215,11 @@ class _QualityControlScreenState extends State<QualityControlScreen> with Widget
                                                         var bp = context.read<BuyerProvider>();
                                                         //save before chart..
                                                         //june3
+                                                          EasyLoading.show(maskType: EasyLoadingMaskType.black);
                                                           bool saved= await _countingProvider.saveFullDataPeriodically();
                                                           debugPrint('saved ${saved}');
                                                           bool ok = await cp.getTodaysCountingData(bp);
+                                                          EasyLoading.dismiss();
                                                         if (cp.totalCountingModel != null && ok && saved) {
                                                           Navigator.push(context, CupertinoPageRoute(builder: (context) => ProductionReportScreen(stats: cp.totalCountingModel!)));
                                                         }
