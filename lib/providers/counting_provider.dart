@@ -51,12 +51,13 @@ class CountingProvider with ChangeNotifier {
 
   Future<bool> checkedItemFromAlter() async {
     // alter = alter - 1;
-    checked = checked + 1;
+
     if(alter==alter_check||alter_check>alter){
       alter_check=alter;
       return false;
     }
     else {
+      checked = checked + 1;
       alter_check = alter_check + 1;
      return true;
     }
