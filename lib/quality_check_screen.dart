@@ -506,7 +506,7 @@ class _QualityControlScreenState extends State<QualityControlScreen> with Widget
     _line = await DashboardHelpers.getString('selectedLine');
     //
     //if style is different from previous the count will be zero
-
+    //
     setState(() {});
   }
 
