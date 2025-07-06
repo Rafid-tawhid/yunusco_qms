@@ -581,7 +581,7 @@ class CountingProvider with ChangeNotifier {
 
     var lineId = await DashboardHelpers.getString('selectedLineId');
     debugPrint('Line ID  ${lineId}');
-    var data=await apiService.getData('api/Qms/DefectSummary?LineNo=${13}&FilterDate=$formattedDate');
+    var data=await apiService.getData('api/Qms/DefectSummary?LineNo=${lineId}&FilterDate=$formattedDate');
     if(data!=null){
       _operation_defect.clear();
       for(var i in data['Results']){
