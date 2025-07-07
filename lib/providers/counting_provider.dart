@@ -616,7 +616,6 @@ class CountingProvider with ChangeNotifier {
     notifyListeners();
   }
 
-
   List<DifferenceCountModel> _difference_list=[];
   List<DifferenceCountModel> get difference_list=>_difference_list;
   List<double> _yesterDayPassList = List.generate(8, (index) => Random().nextDouble() * 80);

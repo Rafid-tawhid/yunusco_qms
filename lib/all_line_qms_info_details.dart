@@ -69,8 +69,15 @@ class _AllLineQmsInfoDetailsState extends State<AllLineQmsInfoDetails> {
           ),
           const SizedBox(width: 10),
           _buildSummaryCard(
-            title: 'Total Alter',
-            value: summary['totalAlteration'].toString(),
+            title: 'Alter',
+            value: summary['alter'].toString(),
+            icon: Icons.autorenew,
+            color: Colors.orange,
+          ),
+          const SizedBox(width: 10),
+          _buildSummaryCard(
+            title: 'Alter Check',
+            value: summary['alterCheck'].toString(),
             icon: Icons.autorenew,
             color: Colors.orange,
           ),
@@ -200,8 +207,8 @@ class _AllLineQmsInfoDetailsState extends State<AllLineQmsInfoDetails> {
             DataColumn(label: Text('PO')),
             DataColumn(label: Text('Pass'), numeric: true),
             DataColumn(label: Text('Alter'), numeric: true),
+            DataColumn(label: Text('Alter Check'), numeric: true),
             DataColumn(label: Text('Reject'), numeric: true),
-            DataColumn(label: Text('Total'), numeric: true),
             DataColumn(label: Text('Efficiency')),
           ],
           rows: filteredData.map((data) {
@@ -216,8 +223,8 @@ class _AllLineQmsInfoDetailsState extends State<AllLineQmsInfoDetails> {
               DataCell(Text(data.po ?? '')),
               DataCell(Text(data.pass.toString())),
               DataCell(Text(data.alteration.toString())),
+              DataCell(Text(data.alterCheck.toString())),
               DataCell(Text(data.reject.toString())),
-              DataCell(Text(data.totalRecords.toString())),
               DataCell(Text('${efficiency.toStringAsFixed(2)}%')),
             ]);
           }).toList(),
@@ -228,14 +235,16 @@ class _AllLineQmsInfoDetailsState extends State<AllLineQmsInfoDetails> {
 
   Map<String, dynamic> _calculateSummary() {
     int totalPass = 0;
-    int totalAlteration = 0;
+    int alter = 0;
+    int alterCheck = 0;
     int totalReject = 0;
     int totalRecords = 0;
     double efficiency = 0.0;
 
     for (var data in filteredData) {
       totalPass += data.pass!.toInt();
-      totalAlteration += data.alteration!.toInt();
+      alter += data.alteration!.toInt();
+      alterCheck += data.alterCheck!.toInt();
       totalReject += data.reject!.toInt();
       totalRecords += data.totalRecords!.toInt();
     }
@@ -246,7 +255,8 @@ class _AllLineQmsInfoDetailsState extends State<AllLineQmsInfoDetails> {
 
     return {
       'totalPass': totalPass,
-      'totalAlteration': totalAlteration,
+      'alter': alter,
+      'alterCheck': alterCheck,
       'totalReject': totalReject,
       'efficiency': efficiency,
     };
