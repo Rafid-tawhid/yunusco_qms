@@ -209,12 +209,10 @@ class _AllLineQmsInfoDetailsState extends State<AllLineQmsInfoDetails> {
             DataColumn(label: Text('Alter'), numeric: true),
             DataColumn(label: Text('Alter Check'), numeric: true),
             DataColumn(label: Text('Reject'), numeric: true),
-            DataColumn(label: Text('Efficiency')),
+            DataColumn(label: Text('DHU')),
           ],
           rows: filteredData.map((data) {
-            final efficiency = data.totalRecords! > 0
-                ? (data.pass! / data.totalRecords! * 100)
-                : 0.0;
+            final efficiency = (data.alteration!/data.pass!)*100;
 
             return DataRow(cells: [
               DataCell(Text(data.timeRange ?? '')),
@@ -225,7 +223,7 @@ class _AllLineQmsInfoDetailsState extends State<AllLineQmsInfoDetails> {
               DataCell(Text(data.alteration.toString())),
               DataCell(Text(data.alterCheck.toString())),
               DataCell(Text(data.reject.toString())),
-              DataCell(Text('${efficiency.toStringAsFixed(2)}%')),
+              DataCell(Text('${efficiency!.toStringAsFixed(2)}%')),
             ]);
           }).toList(),
         ),
