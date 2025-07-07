@@ -5,6 +5,7 @@ import 'package:nidle_qty/quality_report_screen.dart';
 import 'package:nidle_qty/utils/dashboard_helpers.dart';
 import 'package:provider/provider.dart';
 
+import '../all_line_qms_info_details.dart';
 import '../home_screen.dart';
 import '../line_dropdown_settings.dart';
 import '../providers/counting_provider.dart';
@@ -84,9 +85,9 @@ class MyDrawer extends StatelessWidget {
 
               var cp = context.read<CountingProvider>();
               var bp = context.read<BuyerProvider>();
-              await cp.getTodaysCountingData(bp);
-              if(cp.totalCountingModel!=null){
-                Navigator.push(context, CupertinoPageRoute(builder: (context) => ProductionReportScreen(stats: cp.totalCountingModel!,)));
+              await cp.getTodaysCountingDataHourDetails(bp);
+              if(cp.all_hourly_production_List.isNotEmpty){
+                Navigator.push(context, CupertinoPageRoute(builder: (context) => AllLineQmsInfoDetails( productionData: cp.all_hourly_production_List,)));
               }
 
             },

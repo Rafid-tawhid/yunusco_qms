@@ -156,8 +156,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
 
   void _getBearerTokenFromServer() async{
-    var data=await NotificationServices.getFirebaseBearerToken();
-    debugPrint('Server Key : ${data}');
+    //var data=await NotificationServices.getFirebaseBearerToken();
+   // debugPrint('Server Key : ${data}');
   }
 
 

@@ -453,6 +453,30 @@ class CountingProvider with ChangeNotifier {
   }
 
 
+  List<HourlyProductionDataModel> _all_hourly_production_List=[];
+  List<HourlyProductionDataModel> get all_hourly_production_List=>_all_hourly_production_List;
+
+  Future<bool> getTodaysCountingDataHourDetails(BuyerProvider bp) async{
+    //  final secId = await DashboardHelpers.getString('selectedSectionId');
+
+    //api/qms/GetQmsSummery
+    var data = await apiService.getData('api/Qms/QualityCheckSummary');
+    if(data!=null){
+      _all_hourly_production_List.clear();
+      for(var i in data['Results']){
+        _all_hourly_production_List.add(HourlyProductionDataModel.fromJson(i));
+      }
+      debugPrint('_all_hourly_production_List ${_all_hourly_production_List.length}');
+      notifyListeners();
+      return true;
+    }
+    else {
+      return false;
+    }
+
+  }
+
+
   final List<Map<String,dynamic>> _tempDefectList = [];
   List<Map<String,dynamic>> get tempDefectList => _tempDefectList;
   final int _maxSize = 20;

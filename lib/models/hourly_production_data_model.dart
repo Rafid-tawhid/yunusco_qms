@@ -29,7 +29,7 @@ class HourlyProductionDataModel {
     _lineId = json['LineId'];
     _buyerId = json['BuyerId'];
     _buyerName = json['BuyerName'];
-    _po = json['Po'];
+    _po = json['PO'];
     _style = json['Style'];
     _pass = json['Pass'];
     _alteration = json['Alteration'];
@@ -89,7 +89,7 @@ HourlyProductionDataModel copyWith({  String? timeRange,
     map['LineId'] = _lineId;
     map['BuyerId'] = _buyerId;
     map['BuyerName'] = _buyerName;
-    map['Po'] = _po;
+    map['PO'] = _po;
     map['Style'] = _style;
     map['Pass'] = _pass;
     map['Alteration'] = _alteration;

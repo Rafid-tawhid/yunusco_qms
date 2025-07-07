@@ -8,25 +8,24 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:googleapis_auth/auth_io.dart';
 import 'package:nidle_qty/service_class/api_services.dart';
 import 'package:nidle_qty/utils/dashboard_helpers.dart';
 
 class NotificationServices {
 
-  static Future<AccessToken> getFirebaseBearerToken() async {
-    final accountCredentials = ServiceAccountCredentials.fromJson(
-        json.decode(await rootBundle.loadString('images/utils/server_key.json')));
-
-    final scopes = ['https://www.googleapis.com/auth/firebase.messaging'];
-
-    final client = await clientViaServiceAccount(accountCredentials, scopes);
-
-    final token = await client.credentials.accessToken;
-    client.close();
-
-    return token;
-  }
+  // static Future<AccessToken> getFirebaseBearerToken() async {
+  //   final accountCredentials = ServiceAccountCredentials.fromJson(
+  //       json.decode(await rootBundle.loadString('images/utils/server_key.json')));
+  //
+  //   final scopes = ['https://www.googleapis.com/auth/firebase.messaging'];
+  //
+  //   final client = await clientViaServiceAccount(accountCredentials, scopes);
+  //
+  //   final token = await client.credentials.accessToken;
+  //   client.close();
+  //
+  //   return token;
+  // }
 
 
 
