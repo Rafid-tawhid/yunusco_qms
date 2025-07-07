@@ -28,6 +28,7 @@ class _AllLineQmsInfoDetailsState extends State<AllLineQmsInfoDetails> {
     final summary = _calculateSummary();
 
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: const Text('Production Line Dashboard'),
         centerTitle: true,
@@ -68,7 +69,7 @@ class _AllLineQmsInfoDetailsState extends State<AllLineQmsInfoDetails> {
           ),
           const SizedBox(width: 10),
           _buildSummaryCard(
-            title: 'Total Alterations',
+            title: 'Total Alter',
             value: summary['totalAlteration'].toString(),
             icon: Icons.autorenew,
             color: Colors.orange,
@@ -145,7 +146,7 @@ class _AllLineQmsInfoDetailsState extends State<AllLineQmsInfoDetails> {
             ...lineIds.map((lineId) {
               return DropdownMenuItem(
                 value: lineId!.toInt(),
-                child: Text(lineId.toString()),
+                child: Text(getLineName(lineId.toInt())),
               );
             }).toList(),
           ],
@@ -159,7 +160,20 @@ class _AllLineQmsInfoDetailsState extends State<AllLineQmsInfoDetails> {
       ],
     );
   }
+  String getLineName(int lineNumber) {
+    final lineMapping = {
+      9: 'A-01',
+      10: 'A-02',
+      12: 'A-04',
+      13: 'A-05',
+      15: 'A-07',
+      16: 'A-08',
+      17: 'A-09',
+      18: 'A-10',
+    };
 
+    return lineMapping[lineNumber] ?? lineNumber.toString();
+  }
   void _applyFilters() {
     setState(() {
       filteredData = widget.productionData.where((data) {
@@ -174,6 +188,7 @@ class _AllLineQmsInfoDetailsState extends State<AllLineQmsInfoDetails> {
 
   Widget _buildDataTable() {
     return Card(
+      color: Colors.white,
       elevation: 3,
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
@@ -196,7 +211,7 @@ class _AllLineQmsInfoDetailsState extends State<AllLineQmsInfoDetails> {
 
             return DataRow(cells: [
               DataCell(Text(data.timeRange ?? '')),
-              DataCell(Text(data.lineId.toString())),
+              DataCell(Text(getLineName(data.lineId!.toInt()))),
               DataCell(Text(data.style ?? '')),
               DataCell(Text(data.po ?? '')),
               DataCell(Text(data.pass.toString())),
@@ -246,6 +261,7 @@ class _AllLineQmsInfoDetailsState extends State<AllLineQmsInfoDetails> {
     return SizedBox(
       width: 150,
       child: Card(
+        color: Colors.white,
         elevation: 3,
         child: Padding(
           padding: const EdgeInsets.all(12.0),
