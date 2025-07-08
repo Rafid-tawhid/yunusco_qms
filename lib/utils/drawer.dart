@@ -13,6 +13,7 @@ import '../widgets/logout_alert.dart';
 
 class MyDrawer extends StatelessWidget {
   const MyDrawer({super.key});
+
   final String correctPassword = "82645";
 
   @override
@@ -23,47 +24,25 @@ class MyDrawer extends StatelessWidget {
       child: ListView(
         padding: EdgeInsets.zero,
         children: [
-         if(DashboardHelpers.userModel!=null) DrawerHeader(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [Colors.blue.shade400, Colors.purple.shade400],
+          if (DashboardHelpers.userModel != null)
+            DrawerHeader(
+              decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [Colors.blue.shade400, Colors.purple.shade400])),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const CircleAvatar(radius: 30, backgroundImage: AssetImage('images/icon.png')),
+                  const SizedBox(height: 10),
+                  Text(DashboardHelpers.userModel!.userName ?? 'Sarah Johnson', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+                  const SizedBox(height: 5),
+                  Text(DashboardHelpers.userModel!.designation ?? 'sarah.johnson@example.com', style: TextStyle(color: Colors.white.withOpacity(0.8), fontSize: 14)),
+                ],
               ),
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const CircleAvatar(
-                  radius: 30,
-                  backgroundImage: AssetImage(
-                      'images/icon.png'),
-                ),
-                const SizedBox(height: 10),
-                 Text(
-                 DashboardHelpers.userModel!.userName?? 'Sarah Johnson',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 5),
-                Text(
-                  DashboardHelpers.userModel!.designation??'sarah.johnson@example.com',
-                  style: TextStyle(
-                    color: Colors.white.withOpacity(0.8),
-                    fontSize: 14,
-                  ),
-                ),
-              ],
-            ),
-          ),
           ListTile(
             leading: const Icon(Icons.home, color: Colors.black54),
             title: const Text('Home'),
             onTap: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context)=>HomeScreen()));
+              Navigator.push(context, MaterialPageRoute(builder: (context) => HomeScreen()));
               // Navigate to home (already here)
             },
           ),
@@ -73,8 +52,8 @@ class MyDrawer extends StatelessWidget {
             onTap: () {
               Navigator.pop(context);
               // Navigate to settings
-            //  Navigator.push(context, MaterialPageRoute(builder: (context)=>LineSettingScreen()));
-             Navigator.push(context, MaterialPageRoute(builder: (context)=>SearchDropdownScreen()));
+              //  Navigator.push(context, MaterialPageRoute(builder: (context)=>LineSettingScreen()));
+              Navigator.push(context, MaterialPageRoute(builder: (context) => SearchDropdownScreen()));
             },
           ),
           const Divider(),
@@ -83,6 +62,7 @@ class MyDrawer extends StatelessWidget {
             title: const Text('Production'),
             onTap: () async {
               Navigator.pop(context);
+
               /// Navigate to this screen from another widget
               showDialog(
                 context: context,
@@ -91,7 +71,7 @@ class MyDrawer extends StatelessWidget {
                     title: Text("Enter Password"),
                     content: TextField(
                       controller: passwordController,
-                      obscureText: true, // Hide password input
+                      obscureText: true,
                       decoration: InputDecoration(
                         hintText: "Enter your password",
                         border: OutlineInputBorder(),
@@ -100,22 +80,47 @@ class MyDrawer extends StatelessWidget {
                     actions: <Widget>[
                       TextButton(
                         child: Text("Cancel"),
-                        onPressed: () {
-                          Navigator.of(context).pop(); // Close dialog
-                        },
+                        onPressed: () => Navigator.pop(context),
                       ),
                       TextButton(
                         child: Text("Submit"),
                         onPressed: () async {
                           final enteredPassword = passwordController.text;
                           if (enteredPassword == correctPassword) {
-                            print("Password matched! Access granted."); // Or perform action
+                            // Close dialog first
                             Navigator.pop(context);
-                            var cp = context.read<CountingProvider>();
-                            var bp = context.read<BuyerProvider>();
-                            await cp.getTodaysCountingDataHourDetails(bp);
-                            if(cp.all_hourly_production_List.isNotEmpty){
-                              Navigator.push(context, CupertinoPageRoute(builder: (context) => AllLineQmsInfoDetails( productionData: cp.all_hourly_production_List,)));
+
+                            // Show loading indicator
+                            showDialog(
+                              context: context,
+                              barrierDismissible: false,
+                              builder: (context) => Center(child: CircularProgressIndicator()),
+                            );
+
+                            try {
+                              final cp = context.read<CountingProvider>();
+                              final bp = context.read<BuyerProvider>();
+                              await cp.getTodaysCountingDataHourDetails(bp);
+
+                              // Close loading indicator
+                              Navigator.pop(context);
+
+                              if (cp.all_hourly_production_List.isNotEmpty) {
+                                Navigator.push(
+                                  context,
+                                  CupertinoPageRoute(
+                                    builder: (context) => AllLineQmsInfoDetails(
+                                      productionData: cp.all_hourly_production_List,
+                                    ),
+                                  ),
+                                );
+                              }
+                            } catch (e) {
+                              // Close loading indicator if error occurs
+                              Navigator.pop(context);
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text("Error: ${e.toString()}")),
+                              );
                             }
                           } else {
                             ScaffoldMessenger.of(context).showSnackBar(
@@ -128,8 +133,6 @@ class MyDrawer extends StatelessWidget {
                   );
                 },
               );
-
-
             },
           ),
           const Divider(),
@@ -137,12 +140,9 @@ class MyDrawer extends StatelessWidget {
             leading: const Icon(Icons.exit_to_app, color: Colors.red),
             title: const Text('Logout', style: TextStyle(color: Colors.red)),
             onTap: () async {
-
               await showLogoutAlert(context);
               // Handle logout
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Logging out...')),
-              );
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Logging out...')));
             },
           ),
         ],
@@ -150,4 +150,3 @@ class MyDrawer extends StatelessWidget {
     );
   }
 }
-
