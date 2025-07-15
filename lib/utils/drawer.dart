@@ -106,6 +106,17 @@ class MyDrawer extends StatelessWidget {
           ),
           const Divider(),
           ListTile(
+            leading: const Icon(Icons.settings, color: Colors.black54),
+            title: const Text('Version 15.7.25'),
+            onTap: () {
+              Navigator.pop(context);
+              // Navigate to settings
+              //  Navigator.push(context, MaterialPageRoute(builder: (context)=>LineSettingScreen()));
+
+            },
+          ),
+          const Divider(),
+          ListTile(
             leading: const Icon(Icons.exit_to_app, color: Colors.red),
             title: const Text('Logout', style: TextStyle(color: Colors.red)),
             onTap: () async {

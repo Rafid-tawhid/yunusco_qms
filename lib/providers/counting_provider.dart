@@ -240,10 +240,6 @@ class CountingProvider with ChangeNotifier {
 
     debugPrint('Starting periodic task with 30-second interval');
 
-    Timer.periodic(const Duration(seconds: 1), (timer) {
-      debugPrint('Timer is going... ${timer.tick}');
-    });
-
     _periodicTimer = Timer.periodic(const Duration(seconds: 30), (timer) {
       debugPrint('Executing periodic task...');
       saveFullDataPeriodically();
@@ -335,13 +331,11 @@ class CountingProvider with ChangeNotifier {
           final apiResponse = await apiService.postData('api/qms/SaveQms', _reportDataList);
 
           if (apiResponse != null) {
-            debugPrint('Data saved successfully & cleared');
+
             _reportDataList.clear();
-            // Update chart with the latest data
-            DateTime today = DateTime.now();
-            String formattedDate = "${today.year}-${today.month.toString().padLeft(2, '0')}-${today.day.toString().padLeft(2, '0')}";
-            getTwodaysDifference(formattedDate);
+
             notifyListeners();
+            debugPrint('Data saved successfully & cleared');
             return true; // Success
           }
           else {

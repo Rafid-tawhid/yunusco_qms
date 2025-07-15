@@ -283,9 +283,10 @@ class _QualityControlScreenState extends State<QualityControlScreen> with Widget
                                                         onPressed:
                                                             _selectColor != null && _selectSize != null
                                                                 ? () async {
-                                                                  pro.checkedItem();
+
                                                                   var bp = context.read<BuyerProvider>();
-                                                                  pro.addDataToLocalList(bp, status: CheckedStatus.pass);
+                                                                  await pro.addDataToLocalList(bp, status: CheckedStatus.pass);
+                                                                  pro.checkedItem();
                                                                 }
                                                                 : null,
                                                         child: Row(

@@ -23,6 +23,8 @@ class _ProductionReportScreenState extends State<ProductionReportScreen> {
   @override
   void initState() {
     getHourlyProduction();
+    //changed july 15
+    getPreviousDayDifferenceChart();
     super.initState();
   }
 
@@ -206,6 +208,14 @@ class _ProductionReportScreenState extends State<ProductionReportScreen> {
     String formattedDate = "${today.year}-${today.month.toString().padLeft(2, '0')}-${today.day.toString().padLeft(2, '0')}";
     cp.getHourlyProductionData(formattedDate);
     cp.getHourlyOperationDefects(formattedDate);
+  }
+
+  void getPreviousDayDifferenceChart() async{
+    var cp = context.read<CountingProvider>();
+    // Update chart with the latest data
+    DateTime today = DateTime.now();
+    String formattedDate = "${today.year}-${today.month.toString().padLeft(2, '0')}-${today.day.toString().padLeft(2, '0')}";
+    cp.getTwodaysDifference(formattedDate);
   }
 }
 
