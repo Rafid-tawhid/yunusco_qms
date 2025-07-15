@@ -56,9 +56,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   const SizedBox(height: 20),
                   Text("Welcome Back", style: AppConstants.customTextStyle(18, Colors.white, FontWeight.bold)),
                   const SizedBox(height: 8),
-                  Text("Sign in to continue", style: AppConstants.customTextStyle(18, Colors.white.withOpacity(0.8), FontWeight.w600)),
+                  Text("Sign in to QMS", style: AppConstants.customTextStyle(18, Colors.white.withOpacity(0.8), FontWeight.w600)),
                   const SizedBox(height: 40),
-
                   // Login Form
                   Form(
                     key: _formKey,
@@ -163,7 +162,6 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
                   const SizedBox(height: 30),
-
                   // Sign Up Link
                   Row(mainAxisAlignment: MainAxisAlignment.center, children: [Text("Don't have an account?", style: AppConstants.customTextStyle(12, Colors.white.withOpacity(.7), FontWeight.w400))]),
                 ],

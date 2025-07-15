@@ -71,61 +71,30 @@ class MyDrawer extends StatelessWidget {
                     title: Text("Enter Password"),
                     content: TextField(
                       controller: passwordController,
-                      obscureText: true,
-                      decoration: InputDecoration(
-                        hintText: "Enter your password",
-                        border: OutlineInputBorder(),
-                      ),
+                      obscureText: true, // Hide password input
+                      decoration: InputDecoration(hintText: "Enter your password", border: OutlineInputBorder()),
                     ),
                     actions: <Widget>[
                       TextButton(
                         child: Text("Cancel"),
-                        onPressed: () => Navigator.pop(context),
+                        onPressed: () {
+                          Navigator.of(context).pop(); // Close dialog
+                        },
                       ),
                       TextButton(
                         child: Text("Submit"),
                         onPressed: () async {
                           final enteredPassword = passwordController.text;
                           if (enteredPassword == correctPassword) {
-                            // Close dialog first
-                            Navigator.pop(context);
-
-                            // Show loading indicator
-                            showDialog(
-                              context: context,
-                              barrierDismissible: false,
-                              builder: (context) => Center(child: CircularProgressIndicator()),
-                            );
-
-                            try {
-                              final cp = context.read<CountingProvider>();
-                              final bp = context.read<BuyerProvider>();
-                              await cp.getTodaysCountingDataHourDetails(bp);
-
-                              // Close loading indicator
-                              Navigator.pop(context);
-
-                              if (cp.all_hourly_production_List.isNotEmpty) {
-                                Navigator.push(
-                                  context,
-                                  CupertinoPageRoute(
-                                    builder: (context) => AllLineQmsInfoDetails(
-                                      productionData: cp.all_hourly_production_List,
-                                    ),
-                                  ),
-                                );
-                              }
-                            } catch (e) {
-                              // Close loading indicator if error occurs
-                              Navigator.pop(context);
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text("Error: ${e.toString()}")),
-                              );
+                            print("Password matched! Access granted."); // Or perform action
+                            var cp = context.read<CountingProvider>();
+                            var bp = context.read<BuyerProvider>();
+                            await cp.getTodaysCountingDataHourDetails(bp);
+                            if (cp.all_hourly_production_List.isNotEmpty) {
+                              Navigator.push(context, CupertinoPageRoute(builder: (context) => AllLineQmsInfoDetails(productionData: cp.all_hourly_production_List)));
                             }
                           } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text("Wrong password! Try again.")),
-                            );
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Wrong password! Try again.")));
                           }
                         },
                       ),

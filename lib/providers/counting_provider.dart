@@ -240,6 +240,10 @@ class CountingProvider with ChangeNotifier {
 
     debugPrint('Starting periodic task with 30-second interval');
 
+    Timer.periodic(const Duration(seconds: 1), (timer) {
+      debugPrint('Timer is going... ${timer.tick}');
+    });
+
     _periodicTimer = Timer.periodic(const Duration(seconds: 30), (timer) {
       debugPrint('Executing periodic task...');
       saveFullDataPeriodically();
@@ -333,15 +337,14 @@ class CountingProvider with ChangeNotifier {
           if (apiResponse != null) {
             debugPrint('Data saved successfully & cleared');
             _reportDataList.clear();
-
             // Update chart with the latest data
             DateTime today = DateTime.now();
             String formattedDate = "${today.year}-${today.month.toString().padLeft(2, '0')}-${today.day.toString().padLeft(2, '0')}";
             getTwodaysDifference(formattedDate);
-
             notifyListeners();
             return true; // Success
-          } else {
+          }
+          else {
             debugPrint('API request failed (null response)');
             return false; // Failed
           }
@@ -362,10 +365,18 @@ class CountingProvider with ChangeNotifier {
   }
 
 
-  Future<void> addDataToLocalList(BuyerProvider bp, {required String status,dynamic info}) async{
+  //set in july 15
+  Future<void> addDataToLocalList(BuyerProvider bp, {required String status, dynamic info}) async {
     final secId = await DashboardHelpers.getString('selectedSectionId');
     final line = await DashboardHelpers.getString('selectedLineId');
-    var sendingData={
+
+    // Generate a unique timestamp with milliseconds precision
+    final now = DateTime.now();
+    final uniqueCreatedDate = '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}T'
+        '${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}:'
+        '${now.second.toString().padLeft(2, '0')}.${now.millisecond.toString().padLeft(3, '0')}';
+
+    var sendingData = {
       "SectionId": secId,
       "LineId": line,
       "BuyerId": bp.buyerStyle!.buyerId,
@@ -380,38 +391,100 @@ class CountingProvider with ChangeNotifier {
       "OperationId": '${checkForPassOrAlterCheck(status) ? 0 : info!['operationId']}',
       "DefectId": '${checkForPassOrAlterCheck(status) ? 0 : info!['defectId']}',
       "Quantity": 1,
-      "CreatedDate": DashboardHelpers.convertDateTime(DateTime.now().toString(),pattern: 'yyyy-MM-ddTHH:mm:ss')
+      "CreatedDate": uniqueCreatedDate, // Using our custom formatted timestamp
     };
-    if (info != null) {
-      debugPrint('Coming from alter or reject.. :: operation Id : ${info['operationId']} and defect ID : ${info['defectId']}');
+
+    // Check for duplicate CreatedDate before adding (just in case)
+    bool isDuplicate = _reportDataList.any((item) => item['CreatedDate'] == uniqueCreatedDate);
+
+    if (!isDuplicate) {
+      if (info != null) {
+        debugPrint('Coming from alter or reject.. :: operation Id : ${info['operationId']} and defect ID : ${info['defectId']}');
+      }
+
+      _reportDataList.add(sendingData);
+      debugPrint('_reportDataList local saved list : ${_reportDataList.length}');
+
+      // Save local data for testing
+      await HiveLocalSendDataService.saveLocalSendData(LocalSendDataModel.fromJson(sendingData));
+
+      // SAVE COUNTER DATA TO LOCAL DATABASE
+      final sendData = SendDataModel(
+        idNum: DashboardHelpers.userModel!.iDnum ?? '',
+        passed: checked.toString(),
+        reject: reject.toString(),
+        alter: alter.toString(),
+        alt_check: alter_check.toString(),
+        buyer: bp.buyerInfo!.code.toString(),
+        style: bp.buyerStyle!.style.toString(),
+        po: bp.buyerPo!.po.toString(),
+        color: bp.color.toString(),
+        size: bp.size.toString(),
+      );
+      final box = Hive.box<SendDataModel>('sendDataBox');
+      await box.put('sendDataKey', sendData);
+
+      notifyListeners();
+    } else {
+      debugPrint('Duplicate entry detected with CreatedDate: $uniqueCreatedDate - Not added to list');
     }
-    _reportDataList.add(sendingData);
-    debugPrint('_reportDataList local saved list : ${_reportDataList.length}');
 
-    //save local data for testing
-    await HiveLocalSendDataService.saveLocalSendData(LocalSendDataModel.fromJson(sendingData));
-
-    //SAVE COUNTER DATA TO LOCAL DATABASE
-    final sendData = SendDataModel(
-      idNum: DashboardHelpers.userModel!.iDnum ?? '',
-      passed: checked.toString(),
-      reject: reject.toString(),
-      alter: alter.toString(),
-      alt_check: alter_check.toString(),
-      buyer: bp.buyerInfo!.code.toString(),
-      style: bp.buyerStyle!.style.toString(),
-      po: bp.buyerPo!.po.toString(),
-      color: bp.color.toString(),
-      size: bp.size.toString(),
-    );
-    final box = Hive.box<SendDataModel>('sendDataBox');
-    await box.put('sendDataKey', sendData);
-
-    notifyListeners();
-
-    //check everytime if it is lunchtime or not
+    // Check every time if it is lunchtime or not
     checkLunchTime();
   }
+
+  //change in july 15
+  // Future<void> addDataToLocalList(BuyerProvider bp, {required String status,dynamic info}) async{
+  //   final secId = await DashboardHelpers.getString('selectedSectionId');
+  //   final line = await DashboardHelpers.getString('selectedLineId');
+  //   var sendingData={
+  //     "SectionId": secId,
+  //     "LineId": line,
+  //     "BuyerId": bp.buyerStyle!.buyerId,
+  //     "Style": bp.buyerStyle!.style,
+  //     "Po": bp.buyerPo!.po,
+  //     "LunchId": _lunchTime == null ? 0 : _lunchTime!.lunchTimeId,
+  //     "ItemId": bp.buyerPo!.itemId,
+  //     "Status": status,
+  //     "ColorId": bp.color!.colorId,
+  //     "SizeId": bp.size!.sizeId,
+  //     "OperationDetailsId": '${checkForPassOrAlterCheck(status) ? 0 : info!['operationDetailsId']}',
+  //     "OperationId": '${checkForPassOrAlterCheck(status) ? 0 : info!['operationId']}',
+  //     "DefectId": '${checkForPassOrAlterCheck(status) ? 0 : info!['defectId']}',
+  //     "Quantity": 1,
+  //     "CreatedDate": DateTime.now().toIso8601String(),
+  //     //"CreatedDate": DashboardHelpers.convertDateTime(DateTime.now().toString(),pattern: 'yyyy-MM-ddTHH:mm:ss')
+  //   };
+  //   if (info != null) {
+  //     debugPrint('Coming from alter or reject.. :: operation Id : ${info['operationId']} and defect ID : ${info['defectId']}');
+  //   }
+  //   _reportDataList.add(sendingData);
+  //   debugPrint('_reportDataList local saved list : ${_reportDataList.length}');
+  //
+  //   //save local data for testing
+  //   await HiveLocalSendDataService.saveLocalSendData(LocalSendDataModel.fromJson(sendingData));
+  //
+  //   //SAVE COUNTER DATA TO LOCAL DATABASE
+  //   final sendData = SendDataModel(
+  //     idNum: DashboardHelpers.userModel!.iDnum ?? '',
+  //     passed: checked.toString(),
+  //     reject: reject.toString(),
+  //     alter: alter.toString(),
+  //     alt_check: alter_check.toString(),
+  //     buyer: bp.buyerInfo!.code.toString(),
+  //     style: bp.buyerStyle!.style.toString(),
+  //     po: bp.buyerPo!.po.toString(),
+  //     color: bp.color.toString(),
+  //     size: bp.size.toString(),
+  //   );
+  //   final box = Hive.box<SendDataModel>('sendDataBox');
+  //   await box.put('sendDataKey', sendData);
+  //
+  //   notifyListeners();
+  //
+  //   //check everytime if it is lunchtime or not
+  //   checkLunchTime();
+  // }
 
 
 
