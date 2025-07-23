@@ -187,11 +187,14 @@ class _QualityControlScreenState extends State<QualityControlScreen> with Widget
                                                   ),
                                                 ),
                                               ),
+
                                               Expanded(
                                                 flex: 2,
                                                 child: Row(
                                                   mainAxisAlignment: MainAxisAlignment.end,
                                                   children: [
+                                                    Consumer<CountingProvider>(builder: (context,pro,_)=>Text(pro.sinkingTime.toString(),style: TextStyle(color: Colors.white),)),
+                                                    SizedBox(width: 8,),
                                                     RectangleIconButton(
                                                       icon: Icons.message,
                                                       onPressed: () async {
@@ -217,7 +220,7 @@ class _QualityControlScreenState extends State<QualityControlScreen> with Widget
                                                         //june3
                                                           EasyLoading.show(maskType: EasyLoadingMaskType.black);
                                                           bool saved= await _countingProvider.saveFullDataPeriodically();
-                                                          debugPrint('saved ${saved}');
+                                                          //debugPrint('saved ${saved}');
                                                           bool ok = await cp.getTodaysCountingData(bp);
                                                           EasyLoading.dismiss();
                                                         if (cp.totalCountingModel != null && ok && saved) {
@@ -283,10 +286,13 @@ class _QualityControlScreenState extends State<QualityControlScreen> with Widget
                                                         onPressed:
                                                             _selectColor != null && _selectSize != null
                                                                 ? () async {
+                                                                    if(!pro.isFreezingWhileSave){
+                                                                      var bp = context.read<BuyerProvider>();
+                                                                      await pro.addDataToLocalList(bp, status: CheckedStatus.pass);
+                                                                      pro.checkedItem();
+                                                                    }
 
-                                                                  var bp = context.read<BuyerProvider>();
-                                                                  await pro.addDataToLocalList(bp, status: CheckedStatus.pass);
-                                                                  pro.checkedItem();
+
                                                                 }
                                                                 : null,
                                                         child: Row(
@@ -493,11 +499,14 @@ class _QualityControlScreenState extends State<QualityControlScreen> with Widget
         var cp = context.read<CountingProvider>();
         var bp = context.read<BuyerProvider>();
 
-        var isNotGreaterThanAlter = await cp.checkedItemFromAlter();
-        if (isNotGreaterThanAlter) {
-          //save counting data locally
-          await cp.addDataToLocalList(bp, status: CheckedStatus.alter_check);
+        if(!cp.isFreezingWhileSave){
+          var isNotGreaterThanAlter = await cp.checkedItemFromAlter();
+          if (isNotGreaterThanAlter) {
+            //save counting data locally
+            await cp.addDataToLocalList(bp, status: CheckedStatus.alter_check);
+          }
         }
+
       },
     );
   }

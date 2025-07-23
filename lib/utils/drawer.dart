@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:nidle_qty/providers/buyer_provider.dart';
 import 'package:nidle_qty/quality_report_screen.dart';
+import 'package:nidle_qty/utils/constants.dart';
 import 'package:nidle_qty/utils/dashboard_helpers.dart';
 import 'package:provider/provider.dart';
 
@@ -107,7 +108,7 @@ class MyDrawer extends StatelessWidget {
           const Divider(),
           ListTile(
             leading: const Icon(Icons.settings, color: Colors.black54),
-            title: const Text('Version 15.7.25'),
+            title:  Text('Version ${AppConstants.versionNumber}'),
             onTap: () {
               Navigator.pop(context);
               // Navigate to settings

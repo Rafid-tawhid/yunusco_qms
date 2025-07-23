@@ -158,18 +158,21 @@ class _AlterationReasonScreenState extends State<AlterationReasonScreen> {
                         ? null
                         : () async {
                           var cp = context.read<CountingProvider>();
-                          var bp = context.read<BuyerProvider>();
-                          if (getStatus(widget.form) == '2') {
-                            cp.alterItem();
-                          } else {
-                            cp.rejectItem();
+                          if(!cp.isFreezingWhileSave){
+
+                            var bp = context.read<BuyerProvider>();
+                            if (getStatus(widget.form) == '2') {
+                              cp.alterItem();
+                            } else {
+                              cp.rejectItem();
+                            }
+                            cp.addDataToLocalList(
+                              bp,
+                              info: {'operationId':cp.operation==null?0: cp.operation!.operationId, 'defectId': cp.allDefectList[selectedIndex ?? 0].defectId, 'operationDetailsId':cp.operation==null?0: cp.operation!.operationDetailsId},
+                              status: getStatus(widget.form),
+                            );
                           }
 
-                          cp.addDataToLocalList(
-                            bp,
-                            info: {'operationId':cp.operation==null?0: cp.operation!.operationId, 'defectId': cp.allDefectList[selectedIndex ?? 0].defectId, 'operationDetailsId':cp.operation==null?0: cp.operation!.operationDetailsId},
-                            status: getStatus(widget.form),
-                          );
 
                           //add to temp defect list
                           selectedReasons.forEach((e){

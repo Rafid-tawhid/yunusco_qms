@@ -61,7 +61,6 @@ class CountingProvider with ChangeNotifier {
       alter_check = alter_check + 1;
      return true;
     }
-
     notifyListeners();
   }
 
@@ -233,14 +232,32 @@ class CountingProvider with ChangeNotifier {
     }
   }
 
-  // Improved version of your start function with safety checks
+  //change 23 july
+  int _sinkingTime = 30; // Initialize with 60 seconds
+  Timer? _countdownTimer;
+  int get sinkingTime=>_sinkingTime;
+
+
   void startPeriodicTask(BuyerProvider buyerPro) {
-    // First stop any existing timer
+    // First stop any existing timers
     stopPeriodicTask();
 
     debugPrint('Starting periodic task with 30-second interval');
 
-    _periodicTimer = Timer.periodic(const Duration(seconds: 30), (timer) {
+    // Start countdown timer (updates every second)
+    _countdownTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      _sinkingTime--;
+      debugPrint('Countdown: $_sinkingTime seconds remaining');
+
+      if (_sinkingTime <= 0) {
+        _sinkingTime = 30; // Reset counter
+      }
+      notifyListeners();
+    });
+
+
+    // Start periodic task (executes every 60 seconds)
+    _periodicTimer = Timer.periodic(const Duration(seconds: 60), (timer) {
       debugPrint('Executing periodic task...');
       saveFullDataPeriodically();
     });
@@ -313,6 +330,8 @@ class CountingProvider with ChangeNotifier {
   //double data saved problem solved
   bool _isSaving = false;
 
+  bool get isFreezingWhileSave=>_isSaving;
+
   Future<bool> saveFullDataPeriodically() async {
     // Return immediately if already saving
     if (_isSaving) {
@@ -329,7 +348,7 @@ class CountingProvider with ChangeNotifier {
         // If connected, send data to the server
         if (isConnected) {
           final apiResponse = await apiService.postData('api/qms/SaveQms', _reportDataList);
-
+          debugPrint('Saved list length : ${_reportDataList.length}');
           if (apiResponse != null) {
 
             _reportDataList.clear();
@@ -355,6 +374,7 @@ class CountingProvider with ChangeNotifier {
       return false; // Exception occurred
     } finally {
       _isSaving = false;
+      notifyListeners();
     }
   }
 
@@ -395,7 +415,10 @@ class CountingProvider with ChangeNotifier {
       if (info != null) {
         debugPrint('Coming from alter or reject.. :: operation Id : ${info['operationId']} and defect ID : ${info['defectId']}');
       }
+      //change july 16 set data to temp list while saving
+      if(_isSaving){
 
+      }
       _reportDataList.add(sendingData);
       debugPrint('_reportDataList local saved list : ${_reportDataList.length}');
 
@@ -585,7 +608,7 @@ class CountingProvider with ChangeNotifier {
 
 
 
-  // lunch time auto checker
+  // lunch time auto checked
   Timer? _lunchTimeChecker;
 
   void initializeLunchTimeChecker() {
