@@ -8,6 +8,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:nidle_qty/login_screen.dart';
 import 'package:nidle_qty/service_class/api_services.dart';
 import 'package:nidle_qty/utils/dashboard_helpers.dart';
 
@@ -57,12 +58,12 @@ class NotificationServices {
       }
 
       debugPrint("FCM Token: $token");
-      await _sendTokenToServer(token); // Send to your backend
+      await _sendTokenToServer(token,context); // Send to your backend
 
       // 4. Handle token refresh (e.g., on app restore or reinstall)
       _firebaseMessaging.onTokenRefresh.listen((newToken) {
         debugPrint("FCM Token refreshed: $newToken");
-        _sendTokenToServer(newToken);
+        _sendTokenToServer(newToken,context);
       });
 
       // 5. Set up foreground/background message handlers
@@ -120,7 +121,7 @@ class NotificationServices {
     }
   }
 
-  static Future<void> _sendTokenToServer(String token) async {
+  static Future<void> _sendTokenToServer(String token,BuildContext context) async {
     // Implement your API call here
     debugPrint('Sending token to server...');
     ApiService apiService=ApiService();
@@ -131,6 +132,10 @@ class NotificationServices {
       "roleId": "${DashboardHelpers.userModel!.roleId}"
     });
     debugPrint('Token Response ${response}');
+    if(response==null){
+      //un authorised.. so logout
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>LoginScreen()));
+    }
   }
 
 

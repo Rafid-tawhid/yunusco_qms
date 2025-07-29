@@ -257,7 +257,7 @@ class CountingProvider with ChangeNotifier {
 
 
     // Start periodic task (executes every 60 seconds)
-    _periodicTimer = Timer.periodic(const Duration(seconds: 60), (timer) {
+    _periodicTimer = Timer.periodic(const Duration(seconds: 30), (timer) {
       debugPrint('Executing periodic task...');
       saveFullDataPeriodically();
     });
