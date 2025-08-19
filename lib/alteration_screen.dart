@@ -158,27 +158,35 @@ class _AlterationReasonScreenState extends State<AlterationReasonScreen> {
                         ? null
                         : () async {
                           var cp = context.read<CountingProvider>();
-                          if(!cp.isFreezingWhileSave){
+                          var bp = context.read<BuyerProvider>();
 
-                            var bp = context.read<BuyerProvider>();
                             if (getStatus(widget.form) == '2') {
                               cp.alterItem();
                             } else {
                               cp.rejectItem();
                             }
-                            cp.addDataToLocalList(
-                              bp,
-                              info: {'operationId':cp.operation==null?0: cp.operation!.operationId, 'defectId': cp.allDefectList[selectedIndex ?? 0].defectId, 'operationDetailsId':cp.operation==null?0: cp.operation!.operationDetailsId},
-                              status: getStatus(widget.form),
-                            );
-                          }
-
+                            //change aug 18
+                            if(cp.isFreezingWhileSave){
+                              Future.delayed(Duration.zero,(){
+                                cp.addDataToLocalList(
+                                  bp,
+                                  info: {'operationId':cp.operation==null?0: cp.operation!.operationId, 'defectId': cp.allDefectList[selectedIndex ?? 0].defectId, 'operationDetailsId':cp.operation==null?0: cp.operation!.operationDetailsId},
+                                  status: getStatus(widget.form),
+                                );
+                              });
+                            }
+                            else {
+                              cp.addDataToLocalList(
+                                bp,
+                                info: {'operationId':cp.operation==null?0: cp.operation!.operationId, 'defectId': cp.allDefectList[selectedIndex ?? 0].defectId, 'operationDetailsId':cp.operation==null?0: cp.operation!.operationDetailsId},
+                                status: getStatus(widget.form),
+                              );
+                            }
 
                           //add to temp defect list
                           selectedReasons.forEach((e){
                             cp.addTempDefectList(e);
                           });
-
 
                           Navigator.pop(context, selectedReasons);
                         },

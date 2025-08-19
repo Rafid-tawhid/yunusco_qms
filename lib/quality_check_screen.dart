@@ -193,7 +193,7 @@ class _QualityControlScreenState extends State<QualityControlScreen> with Widget
                                                 child: Row(
                                                   mainAxisAlignment: MainAxisAlignment.end,
                                                   children: [
-                                                    Consumer<CountingProvider>(builder: (context,pro,_)=>Text(pro.sinkingTime.toString(),style: TextStyle(color: Colors.white),)),
+                                                   // Consumer<CountingProvider>(builder: (context,pro,_)=>Text(pro.sinkingTime.toString(),style: TextStyle(color: Colors.white),)),
                                                     SizedBox(width: 8,),
                                                     RectangleIconButton(
                                                       icon: Icons.message,
@@ -286,12 +286,19 @@ class _QualityControlScreenState extends State<QualityControlScreen> with Widget
                                                         onPressed:
                                                             _selectColor != null && _selectSize != null
                                                                 ? () async {
-                                                                    if(!pro.isFreezingWhileSave){
-                                                                      var bp = context.read<BuyerProvider>();
-                                                                      await pro.addDataToLocalList(bp, status: CheckedStatus.pass);
-                                                                      pro.checkedItem();
-                                                                    }
 
+
+                                                                      //change in aug 16
+                                                                      pro.checkedItem();
+                                                                      var bp = context.read<BuyerProvider>();
+                                                                      if(pro.isFreezingWhileSave){
+                                                                        Future.delayed(Duration.zero,(){
+                                                                          pro.addDataToLocalList(bp, status: CheckedStatus.pass);
+                                                                        });
+                                                                      }
+                                                                      else {
+                                                                        await pro.addDataToLocalList(bp, status: CheckedStatus.pass);
+                                                                      }
 
                                                                 }
                                                                 : null,
@@ -499,13 +506,20 @@ class _QualityControlScreenState extends State<QualityControlScreen> with Widget
         var cp = context.read<CountingProvider>();
         var bp = context.read<BuyerProvider>();
 
-        if(!cp.isFreezingWhileSave){
           var isNotGreaterThanAlter = await cp.checkedItemFromAlter();
           if (isNotGreaterThanAlter) {
+            if(cp.isFreezingWhileSave){
+              Future.delayed(Duration.zero,() async {
+                await cp.addDataToLocalList(bp, status: CheckedStatus.alter_check);
+              });
+            }
+            else {
+              await cp.addDataToLocalList(bp, status: CheckedStatus.alter_check);
+            }
             //save counting data locally
-            await cp.addDataToLocalList(bp, status: CheckedStatus.alter_check);
+
           }
-        }
+
 
       },
     );

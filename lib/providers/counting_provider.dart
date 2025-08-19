@@ -233,9 +233,9 @@ class CountingProvider with ChangeNotifier {
   }
 
   //change 23 july
-  int _sinkingTime = 30; // Initialize with 60 seconds
-  Timer? _countdownTimer;
-  int get sinkingTime=>_sinkingTime;
+  // int _sinkingTime = 30; // Initialize with 60 seconds
+  // // Timer? _countdownTimer;
+  // int get sinkingTime=>_sinkingTime;
 
 
   void startPeriodicTask(BuyerProvider buyerPro) {
@@ -245,15 +245,15 @@ class CountingProvider with ChangeNotifier {
     debugPrint('Starting periodic task with 30-second interval');
 
     // Start countdown timer (updates every second)
-    _countdownTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      _sinkingTime--;
-      debugPrint('Countdown: $_sinkingTime seconds remaining');
-
-      if (_sinkingTime <= 0) {
-        _sinkingTime = 30; // Reset counter
-      }
-      notifyListeners();
-    });
+    // _countdownTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+    //   _sinkingTime--;
+    //   debugPrint('Countdown: $_sinkingTime seconds remaining');
+    //
+    //   if (_sinkingTime <= 0) {
+    //     _sinkingTime = 30; // Reset counter
+    //   }
+    //   notifyListeners();
+    // });
 
 
     // Start periodic task (executes every 60 seconds)
