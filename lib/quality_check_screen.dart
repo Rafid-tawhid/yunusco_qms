@@ -68,11 +68,14 @@ class _QualityControlScreenState extends State<QualityControlScreen> with Widget
   void didChangeDependencies() {
     _countingProvider = Provider.of<CountingProvider>(context, listen: false);
     super.didChangeDependencies();
+
   }
+
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.paused) {
+    if (state == AppLifecycleState.paused||state==AppLifecycleState.detached) {
+      debugPrint('App going to background -save data pausing timers');
       // App is going to background (minimized/switched away)
       saveData(Provider.of<CountingProvider>(context, listen: false));
     }
@@ -193,7 +196,7 @@ class _QualityControlScreenState extends State<QualityControlScreen> with Widget
                                                 child: Row(
                                                   mainAxisAlignment: MainAxisAlignment.end,
                                                   children: [
-                                                   // Consumer<CountingProvider>(builder: (context,pro,_)=>Text(pro.sinkingTime.toString(),style: TextStyle(color: Colors.white),)),
+                                                    Consumer<CountingProvider>(builder: (context,pro,_)=>Text(pro.countdownValue.toString(),style: TextStyle(color: Colors.white),)),
                                                     SizedBox(width: 8,),
                                                     RectangleIconButton(
                                                       icon: Icons.message,
@@ -536,8 +539,8 @@ class _QualityControlScreenState extends State<QualityControlScreen> with Widget
 
   void startSchedulerCallToSaveData() async {
     var cp = context.read<CountingProvider>();
-    var bp = context.read<BuyerProvider>();
-    cp.startPeriodicTask(bp);
+   // var bp = context.read<BuyerProvider>();
+    cp.startPeriodicTask();
   }
 
   void endSchedularSaveData(CountingProvider cp) async {
@@ -589,9 +592,12 @@ class HeaderCountingInfo extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 8.0),
                 child: IconButton(
                   onPressed: () async {
-                    //save data
-                    var cp = context.read<CountingProvider>();
-                    cp.saveFullDataPeriodically();
+
+                    // WidgetsBinding.instance.addPostFrameCallback((v){
+                    //   //save data
+                    //   var cp = context.read<CountingProvider>();
+                    //   cp.saveFullDataPeriodically();
+                    // });
 
                     Navigator.pop(context);
                   },

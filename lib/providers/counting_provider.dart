@@ -225,41 +225,54 @@ class CountingProvider with ChangeNotifier {
   void stopPeriodicTask() {
     if (_periodicTimer != null) {
       _periodicTimer!.cancel();
+      _countdownTimer!.cancel();
       _periodicTimer = null;
+      _countdownTimer=null;
+      _isTimerRunning=false;
       debugPrint('Periodic task stopped');
     } else {
       debugPrint('No periodic task running to stop');
     }
   }
 
-  //change 23 july
-  // int _sinkingTime = 30; // Initialize with 60 seconds
-  // // Timer? _countdownTimer;
-  // int get sinkingTime=>_sinkingTime;
+  //change Aug 20
 
+  Timer? _countdownTimer;
+  int _countdownValue = 30; // Start at 30 seconds
+  bool _isTimerRunning = false;
 
-  void startPeriodicTask(BuyerProvider buyerPro) {
+  // Getter for countdown value
+  int get countdownValue => _countdownValue;
+  bool get isTimerRunning => _isTimerRunning;
+
+  void startPeriodicTask() {
     // First stop any existing timers
     stopPeriodicTask();
 
     debugPrint('Starting periodic task with 30-second interval');
 
+    // Reset countdown
+    _countdownValue = 30;
+    _isTimerRunning = true;
+    notifyListeners();
+
     // Start countdown timer (updates every second)
-    // _countdownTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
-    //   _sinkingTime--;
-    //   debugPrint('Countdown: $_sinkingTime seconds remaining');
-    //
-    //   if (_sinkingTime <= 0) {
-    //     _sinkingTime = 30; // Reset counter
-    //   }
-    //   notifyListeners();
-    // });
+    _countdownTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (_countdownValue > 0) {
+        _countdownValue--;
+        notifyListeners();
+        debugPrint('Countdown: $_countdownValue seconds remaining');
+      }
+    });
 
-
-    // Start periodic task (executes every 60 seconds)
+    // Start periodic task (executes every 30 seconds)
     _periodicTimer = Timer.periodic(const Duration(seconds: 30), (timer) {
       debugPrint('Executing periodic task...');
       saveFullDataPeriodically();
+
+      // Reset countdown after each periodic task
+      _countdownValue = 30;
+      notifyListeners();
     });
   }
 
