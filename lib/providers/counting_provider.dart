@@ -219,18 +219,24 @@ class CountingProvider with ChangeNotifier {
     }
   }
 
-  Timer? _periodicTimer;
+  // Timer? _periodicTimer;
 
   // Function to stop the periodic task
   void stopPeriodicTask() {
-    if (_periodicTimer != null) {
-      _periodicTimer!.cancel();
-      _countdownTimer!.cancel();
-      _periodicTimer = null;
+    // if (_periodicTimer != null) {
+    //   _periodicTimer!.cancel();
+    //   _countdownTimer!.cancel();
+    //   _periodicTimer = null;
+    //   _countdownTimer=null;
+    //   _isTimerRunning=false;
+    //   debugPrint('Periodic task stopped');
+    // }
+    if(_countdownTimer!=null){
       _countdownTimer=null;
       _isTimerRunning=false;
       debugPrint('Periodic task stopped');
-    } else {
+    }
+    else {
       debugPrint('No periodic task running to stop');
     }
   }
@@ -258,28 +264,36 @@ class CountingProvider with ChangeNotifier {
 
     // Start countdown timer (updates every second)
     _countdownTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      //
+      if(_countdownValue==0){
+        debugPrint('Executing Data saving task...');
+        saveFullDataPeriodically();
+
+        // Reset countdown after each periodic task
+        _countdownValue = 30;
+      }
       if (_countdownValue > 0) {
         _countdownValue--;
-        notifyListeners();
-        debugPrint('Countdown: $_countdownValue seconds remaining');
       }
+      notifyListeners();
     });
 
     // Start periodic task (executes every 30 seconds)
-    _periodicTimer = Timer.periodic(const Duration(seconds: 30), (timer) {
-      debugPrint('Executing periodic task...');
-      saveFullDataPeriodically();
-
-      // Reset countdown after each periodic task
-      _countdownValue = 30;
-      notifyListeners();
-    });
+    // _periodicTimer = Timer.periodic(const Duration(seconds: 30), (timer) {
+    //   debugPrint('Executing periodic task...');
+    //   saveFullDataPeriodically();
+    //
+    //   // Reset countdown after each periodic task
+    //   _countdownValue = 30;
+    //   notifyListeners();
+    // });
   }
 
   // Don't forget to cancel in dispose
   @override
   void dispose() {
-    _periodicTimer?.cancel();
+    //_periodicTimer?.cancel();
+    _countdownTimer?.cancel();
     _lunchTimeChecker?.cancel();
     super.dispose();
   }
@@ -360,8 +374,18 @@ class CountingProvider with ChangeNotifier {
 
         // If connected, send data to the server
         if (isConnected) {
+          //change .. add extra count value for no reason just to check
+
+          for (var item in _reportDataList) {
+            item["CountValue"] = _reportDataList.length;
+          }
+
+          //
+
           final apiResponse = await apiService.postData('api/qms/SaveQms', _reportDataList);
           debugPrint('Saved list length : ${_reportDataList.length}');
+
+
           if (apiResponse != null) {
 
             _reportDataList.clear();
@@ -392,14 +416,20 @@ class CountingProvider with ChangeNotifier {
   }
 
 
-  //set in july 15
-  Future<void> addDataToLocalList(BuyerProvider bp, {required String status, dynamic info}) async {
+  //change new aug 27
+
+  Future<void> addDataToLocalList(
+      BuyerProvider bp, {
+        required String status,
+        dynamic info,
+      }) async {
     final secId = await DashboardHelpers.getString('selectedSectionId');
     final line = await DashboardHelpers.getString('selectedLineId');
 
-    // Generate a unique timestamp with milliseconds precision
+    // Generate a timestamp with milliseconds precision
     final now = DateTime.now();
-    final uniqueCreatedDate = '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}T'
+    final uniqueCreatedDate =
+        '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}T'
         '${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}:'
         '${now.second.toString().padLeft(2, '0')}.${now.millisecond.toString().padLeft(3, '0')}';
 
@@ -414,60 +444,65 @@ class CountingProvider with ChangeNotifier {
       "Status": status,
       "ColorId": bp.color!.colorId,
       "SizeId": bp.size!.sizeId,
-      "OperationDetailsId": '${checkForPassOrAlterCheck(status) ? 0 : info!['operationDetailsId']}',
-      "OperationId": '${checkForPassOrAlterCheck(status) ? 0 : info!['operationId']}',
+      "OperationDetailsId":
+      '${checkForPassOrAlterCheck(status) ? 0 : info!['operationDetailsId']}',
+      "OperationId":
+      '${checkForPassOrAlterCheck(status) ? 0 : info!['operationId']}',
       "DefectId": '${checkForPassOrAlterCheck(status) ? 0 : info!['defectId']}',
       "Quantity": 1,
-      "CreatedDate": uniqueCreatedDate, // Using our custom formatted timestamp
+      "CreatedDate": uniqueCreatedDate,
     };
 
-    // Check for duplicate CreatedDate before adding (just in case)
-    bool isDuplicate = _reportDataList.any((item) => item['CreatedDate'] == uniqueCreatedDate);
-
-    if (!isDuplicate) {
-      if (info != null) {
-        debugPrint('Coming from alter or reject.. :: operation Id : ${info['operationId']} and defect ID : ${info['defectId']}');
-      }
-      //change july 16 set data to temp list while saving
-      if(_isSaving){
-
-      }
-      _reportDataList.add(sendingData);
-      debugPrint('_reportDataList local saved list : ${_reportDataList.length}');
-
-      // Save local data for testing
-      await HiveLocalSendDataService.saveLocalSendData(LocalSendDataModel.fromJson(sendingData));
-
-      // SAVE COUNTER DATA TO LOCAL DATABASE
-      final sendData = SendDataModel(
-        idNum: DashboardHelpers.userModel!.iDnum ?? '',
-        passed: checked.toString(),
-        reject: reject.toString(),
-        alter: alter.toString(),
-        alt_check: alter_check.toString(),
-        buyer: bp.buyerInfo!.code.toString(),
-        style: bp.buyerStyle!.style.toString(),
-        po: bp.buyerPo!.po.toString(),
-        color: bp.color.toString(),
-        size: bp.size.toString(),
-      );
-      final box = Hive.box<SendDataModel>('sendDataBox');
-      await box.put('sendDataKey', sendData);
-
-      notifyListeners();
-    } else {
-      debugPrint('Duplicate entry detected with CreatedDate: $uniqueCreatedDate - Not added to list');
+    if (info != null) {
+      debugPrint(
+          'Coming from alter or reject.. :: operation Id : ${info['operationId']} and defect ID : ${info['defectId']}');
     }
+
+    // Add data directly (no duplicate check)
+    _reportDataList.add(sendingData);
+    debugPrint('_reportDataList local saved list : ${_reportDataList.length}');
+
+    // Save local data for testing
+    await HiveLocalSendDataService.saveLocalSendData(
+      LocalSendDataModel.fromJson(sendingData),
+    );
+
+    // SAVE COUNTER DATA TO LOCAL DATABASE
+    final sendData = SendDataModel(
+      idNum: DashboardHelpers.userModel!.iDnum ?? '',
+      passed: checked.toString(),
+      reject: reject.toString(),
+      alter: alter.toString(),
+      alt_check: alter_check.toString(),
+      buyer: bp.buyerInfo!.code.toString(),
+      style: bp.buyerStyle!.style.toString(),
+      po: bp.buyerPo!.po.toString(),
+      color: bp.color.toString(),
+      size: bp.size.toString(),
+    );
+
+    final box = Hive.box<SendDataModel>('sendDataBox');
+    await box.put('sendDataKey', sendData);
+
+    notifyListeners();
 
     // Check every time if it is lunchtime or not
     checkLunchTime();
   }
 
-  //change in july 15
-  // Future<void> addDataToLocalList(BuyerProvider bp, {required String status,dynamic info}) async{
+
+  //change  previous aug 27
+  // Future<void> addDataToLocalList(BuyerProvider bp, {required String status, dynamic info}) async {
   //   final secId = await DashboardHelpers.getString('selectedSectionId');
   //   final line = await DashboardHelpers.getString('selectedLineId');
-  //   var sendingData={
+  //
+  //   // Generate a unique timestamp with milliseconds precision
+  //   final now = DateTime.now();
+  //   final uniqueCreatedDate = '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}T'
+  //       '${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}:'
+  //       '${now.second.toString().padLeft(2, '0')}.${now.millisecond.toString().padLeft(3, '0')}';
+  //
+  //   var sendingData = {
   //     "SectionId": secId,
   //     "LineId": line,
   //     "BuyerId": bp.buyerStyle!.buyerId,
@@ -482,39 +517,50 @@ class CountingProvider with ChangeNotifier {
   //     "OperationId": '${checkForPassOrAlterCheck(status) ? 0 : info!['operationId']}',
   //     "DefectId": '${checkForPassOrAlterCheck(status) ? 0 : info!['defectId']}',
   //     "Quantity": 1,
-  //     "CreatedDate": DateTime.now().toIso8601String(),
-  //     //"CreatedDate": DashboardHelpers.convertDateTime(DateTime.now().toString(),pattern: 'yyyy-MM-ddTHH:mm:ss')
+  //     "CreatedDate": uniqueCreatedDate,
   //   };
-  //   if (info != null) {
-  //     debugPrint('Coming from alter or reject.. :: operation Id : ${info['operationId']} and defect ID : ${info['defectId']}');
+  //
+  //   // Check for duplicate CreatedDate before adding (just in case)
+  //   bool isDuplicate = _reportDataList.any((item) => item['CreatedDate'] == uniqueCreatedDate);
+  //
+  //   if (!isDuplicate) {
+  //     if (info != null) {
+  //       debugPrint('Coming from alter or reject.. :: operation Id : ${info['operationId']} and defect ID : ${info['defectId']}');
+  //     }
+  //     //change july 16 set data to temp list while saving
+  //
+  //     _reportDataList.add(sendingData);
+  //     debugPrint('_reportDataList local saved list : ${_reportDataList.length}');
+  //
+  //     // Save local data for testing
+  //     await HiveLocalSendDataService.saveLocalSendData(LocalSendDataModel.fromJson(sendingData));
+  //
+  //     // SAVE COUNTER DATA TO LOCAL DATABASE
+  //     final sendData = SendDataModel(
+  //       idNum: DashboardHelpers.userModel!.iDnum ?? '',
+  //       passed: checked.toString(),
+  //       reject: reject.toString(),
+  //       alter: alter.toString(),
+  //       alt_check: alter_check.toString(),
+  //       buyer: bp.buyerInfo!.code.toString(),
+  //       style: bp.buyerStyle!.style.toString(),
+  //       po: bp.buyerPo!.po.toString(),
+  //       color: bp.color.toString(),
+  //       size: bp.size.toString(),
+  //     );
+  //     final box = Hive.box<SendDataModel>('sendDataBox');
+  //     await box.put('sendDataKey', sendData);
+  //
+  //     notifyListeners();
+  //   } else {
+  //     debugPrint('Duplicate entry detected with CreatedDate: $uniqueCreatedDate - Not added to list');
   //   }
-  //   _reportDataList.add(sendingData);
-  //   debugPrint('_reportDataList local saved list : ${_reportDataList.length}');
   //
-  //   //save local data for testing
-  //   await HiveLocalSendDataService.saveLocalSendData(LocalSendDataModel.fromJson(sendingData));
-  //
-  //   //SAVE COUNTER DATA TO LOCAL DATABASE
-  //   final sendData = SendDataModel(
-  //     idNum: DashboardHelpers.userModel!.iDnum ?? '',
-  //     passed: checked.toString(),
-  //     reject: reject.toString(),
-  //     alter: alter.toString(),
-  //     alt_check: alter_check.toString(),
-  //     buyer: bp.buyerInfo!.code.toString(),
-  //     style: bp.buyerStyle!.style.toString(),
-  //     po: bp.buyerPo!.po.toString(),
-  //     color: bp.color.toString(),
-  //     size: bp.size.toString(),
-  //   );
-  //   final box = Hive.box<SendDataModel>('sendDataBox');
-  //   await box.put('sendDataKey', sendData);
-  //
-  //   notifyListeners();
-  //
-  //   //check everytime if it is lunchtime or not
+  //   // Check every time if it is lunchtime or not
   //   checkLunchTime();
   // }
+
+
 
 
 
