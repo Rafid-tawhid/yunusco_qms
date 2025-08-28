@@ -62,47 +62,53 @@ class MyDrawer extends StatelessWidget {
             leading: const Icon(Icons.settings, color: Colors.black54),
             title: const Text('Production'),
             onTap: () async {
-              Navigator.pop(context);
+              // Navigator.pop(context);
+              var cp = context.read<CountingProvider>();
+              var bp = context.read<BuyerProvider>();
+              await cp.getTodaysCountingDataHourDetails(bp);
+              if (cp.all_hourly_production_List.isNotEmpty) {
+                Navigator.push(context, CupertinoPageRoute(builder: (context) => AllLineQmsInfoDetails(productionData: cp.all_hourly_production_List)));
+              }
 
               /// Navigate to this screen from another widget
-              showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return AlertDialog(
-                    title: Text("Enter Password"),
-                    content: TextField(
-                      controller: passwordController,
-                      obscureText: true, // Hide password input
-                      decoration: InputDecoration(hintText: "Enter your password", border: OutlineInputBorder()),
-                    ),
-                    actions: <Widget>[
-                      TextButton(
-                        child: Text("Cancel"),
-                        onPressed: () {
-                          Navigator.of(context).pop(); // Close dialog
-                        },
-                      ),
-                      TextButton(
-                        child: Text("Submit"),
-                        onPressed: () async {
-                          final enteredPassword = passwordController.text;
-                          if (enteredPassword == correctPassword) {
-                            print("Password matched! Access granted."); // Or perform action
-                            var cp = context.read<CountingProvider>();
-                            var bp = context.read<BuyerProvider>();
-                            await cp.getTodaysCountingDataHourDetails(bp);
-                            if (cp.all_hourly_production_List.isNotEmpty) {
-                              Navigator.push(context, CupertinoPageRoute(builder: (context) => AllLineQmsInfoDetails(productionData: cp.all_hourly_production_List)));
-                            }
-                          } else {
-                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Wrong password! Try again.")));
-                          }
-                        },
-                      ),
-                    ],
-                  );
-                },
-              );
+              // showDialog(
+              //   context: context,
+              //   builder: (BuildContext context) {
+              //     return AlertDialog(
+              //       title: Text("Enter Password"),
+              //       content: TextField(
+              //         controller: passwordController,
+              //         obscureText: true, // Hide password input
+              //         decoration: InputDecoration(hintText: "Enter your password", border: OutlineInputBorder()),
+              //       ),
+              //       actions: <Widget>[
+              //         TextButton(
+              //           child: Text("Cancel"),
+              //           onPressed: () {
+              //             Navigator.of(context).pop(); // Close dialog
+              //           },
+              //         ),
+              //         TextButton(
+              //           child: Text("Submit"),
+              //           onPressed: () async {
+              //             final enteredPassword = passwordController.text;
+              //             if (enteredPassword == correctPassword) {
+              //               print("Password matched! Access granted."); // Or perform action
+              //               var cp = context.read<CountingProvider>();
+              //               var bp = context.read<BuyerProvider>();
+              //               await cp.getTodaysCountingDataHourDetails(bp);
+              //               if (cp.all_hourly_production_List.isNotEmpty) {
+              //                 Navigator.push(context, CupertinoPageRoute(builder: (context) => AllLineQmsInfoDetails(productionData: cp.all_hourly_production_List)));
+              //               }
+              //             } else {
+              //               ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Wrong password! Try again.")));
+              //             }
+              //           },
+              //         ),
+              //       ],
+              //     );
+              //   },
+              // );
             },
           ),
           const Divider(),
