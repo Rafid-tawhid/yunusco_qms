@@ -13,7 +13,6 @@ import 'package:nidle_qty/models/operation_defect_count_model.dart';
 import 'package:nidle_qty/models/po_models.dart';
 import 'package:nidle_qty/providers/buyer_provider.dart';
 import 'package:nidle_qty/service_class/api_services.dart';
-import 'package:http/http.dart' as http;
 import '../models/difference_count_model.dart';
 import '../models/lunch_time_model.dart';
 import '../models/operation_model.dart';
@@ -52,14 +51,13 @@ class CountingProvider with ChangeNotifier {
   Future<bool> checkedItemFromAlter() async {
     // alter = alter - 1;
 
-    if(alter==alter_check||alter_check>alter){
-      alter_check=alter;
+    if (alter == alter_check || alter_check > alter) {
+      alter_check = alter;
       return false;
-    }
-    else {
+    } else {
       checked = checked + 1;
       alter_check = alter_check + 1;
-     return true;
+      return true;
     }
     notifyListeners();
   }
@@ -78,18 +76,19 @@ class CountingProvider with ChangeNotifier {
 
   Future<void> getAllOperations({required PoModels buyerPo}) async {
     //5PK MF MINI FASH- 1217406
-   // var result = await apiService.getData('api/qms/GetOperations/${buyerPo.itemId}');
-    var result = await apiService.getData('api/qms/GetOperations/${buyerPo.style}');
+    // var result = await apiService.getData('api/qms/GetOperations/${buyerPo.itemId}');
+    var result = await apiService.getData(
+      'api/qms/GetOperations/${buyerPo.style}',
+    );
     if (result != null) {
-     _allOperations.clear();
+      _allOperations.clear();
       for (var i in result['Results']) {
-       _allOperations.add(OperationModel.fromJson(i));
+        _allOperations.add(OperationModel.fromJson(i));
       }
-     //selected first
-     if(allOperations.isNotEmpty){
-       selectedOperation(allOperations.first);
-     }
-
+      //selected first
+      if (allOperations.isNotEmpty) {
+        selectedOperation(allOperations.first);
+      }
     }
     notifyListeners();
   }
@@ -98,13 +97,12 @@ class CountingProvider with ChangeNotifier {
 
   List<DefectModels> get allDefectList => _allDefectList;
 
-
   void getDefectListByOperationId() async {
     var result = await apiService.getData('api/qms/GetDefects');
     if (result != null) {
-     _allDefectList.clear();
+      _allDefectList.clear();
       for (var i in result['Results']) {
-       _allDefectList.add(DefectModels.fromJson(i));
+        _allDefectList.add(DefectModels.fromJson(i));
       }
     }
     debugPrint('_allDefectList ${_allDefectList.length}');
@@ -126,7 +124,6 @@ class CountingProvider with ChangeNotifier {
       final result = await apiService.getData('api/qms/GetLunchTime/$secId');
 
       if (result != null) {
-
         _lunchTime = LunchTimeModel.fromJson(result['Results'][0]);
         ////Testing
         // _lunchTime=LunchTimeModel.fromJson({
@@ -136,7 +133,7 @@ class CountingProvider with ChangeNotifier {
         //   "LunchTimeId": 1,
         //   "IsActive": true
         // });
-        debugPrint('LUNCH TIME ${ _lunchTime}');
+        debugPrint('LUNCH TIME ${_lunchTime}');
         isCurrentTimeInLunchRangeFixed(_lunchTime);
         //automatic screen freezing
         //initializeLunchTimeChecker();
@@ -152,7 +149,6 @@ class CountingProvider with ChangeNotifier {
   bool _isLunchTime = false;
 
   bool get isLunchTime => _isLunchTime;
-
 
   bool isCurrentTimeInLunchRangeFixed(LunchTimeModel? lunchTimeData) {
     if (lunchTime == null) {
@@ -179,7 +175,11 @@ class CountingProvider with ChangeNotifier {
       final currentTime = DateTime.now();
 
       // Compare only the time components
-      _isLunchTime = (currentTime.isAfter(lunchStart) || currentTime.isAtSameMomentAs(lunchStart)) && (currentTime.isBefore(lunchEnd) || currentTime.isAtSameMomentAs(lunchEnd));
+      _isLunchTime =
+          (currentTime.isAfter(lunchStart) ||
+              currentTime.isAtSameMomentAs(lunchStart)) &&
+          (currentTime.isBefore(lunchEnd) ||
+              currentTime.isAtSameMomentAs(lunchEnd));
       notifyListeners();
       return _isLunchTime;
     } catch (e) {
@@ -231,12 +231,11 @@ class CountingProvider with ChangeNotifier {
     //   _isTimerRunning=false;
     //   debugPrint('Periodic task stopped');
     // }
-    if(_countdownTimer!=null){
-      _countdownTimer=null;
-      _isTimerRunning=false;
+    if (_countdownTimer != null) {
+      _countdownTimer = null;
+      _isTimerRunning = false;
       debugPrint('Periodic task stopped');
-    }
-    else {
+    } else {
       debugPrint('No periodic task running to stop');
     }
   }
@@ -265,7 +264,7 @@ class CountingProvider with ChangeNotifier {
     // Start countdown timer (updates every second)
     _countdownTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
       //
-      if(_countdownValue==0){
+      if (_countdownValue == 0) {
         debugPrint('Executing Data saving task...');
         saveFullDataPeriodically();
 
@@ -305,7 +304,7 @@ class CountingProvider with ChangeNotifier {
 
   OperationModel? operation;
   void selectedOperation(OperationModel data) {
-    operation=data;
+    operation = data;
     notifyListeners();
   }
 
@@ -314,12 +313,13 @@ class CountingProvider with ChangeNotifier {
   void setDefectReasons(List<String> selectedReasons) {
     // Check if an operation with this ID already exists
     final existingIndex = finalOperationDefectList.indexWhere(
-          (item) => item["id"] == operation!.operationId,
+      (item) => item["id"] == operation!.operationId,
     );
 
     if (existingIndex >= 0) {
       // Operation exists - update its defects
-      final existingDefects = finalOperationDefectList[existingIndex]["defects"] as List<String>;
+      final existingDefects =
+          finalOperationDefectList[existingIndex]["defects"] as List<String>;
 
       // Add new defects that aren't already present (avoid duplicates)
       for (final reason in selectedReasons) {
@@ -346,18 +346,17 @@ class CountingProvider with ChangeNotifier {
     debugPrint('finalOperationDefectList $finalOperationDefectList');
   }
 
-  List<Map<String, dynamic>> get reportDataList=>_reportDataList ;
+  List<Map<String, dynamic>> get reportDataList => _reportDataList;
   List<Map<String, dynamic>> _reportDataList = [];
 
-  List<LocalSendDataModel> get testingreportDataList=>_testingreportDataList ;
+  List<LocalSendDataModel> get testingreportDataList => _testingreportDataList;
   List<LocalSendDataModel> _testingreportDataList = [];
-
 
   //changed june 24
   //double data saved problem solved
   bool _isSaving = false;
 
-  bool get isFreezingWhileSave=>_isSaving;
+  bool get isFreezingWhileSave => _isSaving;
 
   Future<bool> saveFullDataPeriodically() async {
     // Return immediately if already saving
@@ -370,7 +369,8 @@ class CountingProvider with ChangeNotifier {
       _isSaving = true;
 
       if (_reportDataList.isNotEmpty) {
-        final bool isConnected = await InternetConnectionChecker.instance.hasConnection;
+        final bool isConnected =
+            await InternetConnectionChecker.instance.hasConnection;
 
         // If connected, send data to the server
         if (isConnected) {
@@ -382,19 +382,19 @@ class CountingProvider with ChangeNotifier {
 
           //
 
-          final apiResponse = await apiService.postData('api/qms/SaveQms', _reportDataList);
+          final apiResponse = await apiService.postData(
+            'api/qms/SaveQms',
+            _reportDataList,
+          );
           debugPrint('Saved list length : ${_reportDataList.length}');
 
-
           if (apiResponse != null) {
-
             _reportDataList.clear();
 
             notifyListeners();
             debugPrint('Data saved successfully & cleared');
             return true; // Success
-          }
-          else {
+          } else {
             debugPrint('API request failed (null response)');
             return false; // Failed
           }
@@ -415,14 +415,13 @@ class CountingProvider with ChangeNotifier {
     }
   }
 
-
   //change new aug 27
 
   Future<void> addDataToLocalList(
-      BuyerProvider bp, {
-        required String status,
-        dynamic info,
-      }) async {
+    BuyerProvider bp, {
+    required String status,
+    dynamic info,
+  }) async {
     final secId = await DashboardHelpers.getString('selectedSectionId');
     final line = await DashboardHelpers.getString('selectedLineId');
 
@@ -445,9 +444,9 @@ class CountingProvider with ChangeNotifier {
       "ColorId": bp.color!.colorId,
       "SizeId": bp.size!.sizeId,
       "OperationDetailsId":
-      '${checkForPassOrAlterCheck(status) ? 0 : info!['operationDetailsId']}',
+          '${checkForPassOrAlterCheck(status) ? 0 : info!['operationDetailsId']}',
       "OperationId":
-      '${checkForPassOrAlterCheck(status) ? 0 : info!['operationId']}',
+          '${checkForPassOrAlterCheck(status) ? 0 : info!['operationId']}',
       "DefectId": '${checkForPassOrAlterCheck(status) ? 0 : info!['defectId']}',
       "Quantity": 1,
       "CreatedDate": uniqueCreatedDate,
@@ -455,7 +454,8 @@ class CountingProvider with ChangeNotifier {
 
     if (info != null) {
       debugPrint(
-          'Coming from alter or reject.. :: operation Id : ${info['operationId']} and defect ID : ${info['defectId']}');
+        'Coming from alter or reject.. :: operation Id : ${info['operationId']} and defect ID : ${info['defectId']}',
+      );
     }
 
     // Add data directly (no duplicate check)
@@ -489,7 +489,6 @@ class CountingProvider with ChangeNotifier {
     // Check every time if it is lunchtime or not
     checkLunchTime();
   }
-
 
   //change  previous aug 27
   // Future<void> addDataToLocalList(BuyerProvider bp, {required String status, dynamic info}) async {
@@ -560,74 +559,68 @@ class CountingProvider with ChangeNotifier {
   //   checkLunchTime();
   // }
 
-
-
-
-
-
   TotalCountingModel? _totalCountingModel;
-  TotalCountingModel? get totalCountingModel=>_totalCountingModel;
+  TotalCountingModel? get totalCountingModel => _totalCountingModel;
 
   //
-  Future<bool> getTodaysCountingData(BuyerProvider bp) async{
+  Future<bool> getTodaysCountingData(BuyerProvider bp) async {
     //  final secId = await DashboardHelpers.getString('selectedSectionId');
     final line = await DashboardHelpers.getString('selectedLineId');
 
     //api/qms/GetQmsSummery
     var data = await apiService.postData('api/qms/GetQmsSummery', {
-      "LineId":line,
-      "BuyerId":bp.buyerInfo!.code.toString(),
-      "Style":bp.buyerStyle!.style.toString(),
-      "Po":bp.buyerPo!.po
+      "LineId": line,
+      "BuyerId": bp.buyerInfo!.code.toString(),
+      "Style": bp.buyerStyle!.style.toString(),
+      "Po": bp.buyerPo!.po,
     });
-    if(data!=null){
-      _totalCountingModel=TotalCountingModel.fromJson(data['Results'][0]);
+    if (data != null) {
+      _totalCountingModel = TotalCountingModel.fromJson(data['Results'][0]);
       //changed today june 3
       //sync data auto
-      if(_totalCountingModel!=null){
-        checked=_totalCountingModel!.totalPass!.toInt()+_totalCountingModel!.totalAlterCheck!.toInt();
-        alter=_totalCountingModel!.totalAlter!.toInt();
-        alter_check=_totalCountingModel!.totalAlterCheck!.toInt();
-        reject=_totalCountingModel!.totalReject!.toInt();
+      if (_totalCountingModel != null) {
+        checked =
+            _totalCountingModel!.totalPass!.toInt() +
+            _totalCountingModel!.totalAlterCheck!.toInt();
+        alter = _totalCountingModel!.totalAlter!.toInt();
+        alter_check = _totalCountingModel!.totalAlterCheck!.toInt();
+        reject = _totalCountingModel!.totalReject!.toInt();
       }
 
       debugPrint('FINAL CHECKED VALUE ${checked}');
       notifyListeners();
       return true;
-    }
-    else {
+    } else {
       return false;
     }
-
   }
 
+  List<HourlyProductionDataModel> _all_hourly_production_List = [];
+  List<HourlyProductionDataModel> get all_hourly_production_List =>
+      _all_hourly_production_List;
 
-  List<HourlyProductionDataModel> _all_hourly_production_List=[];
-  List<HourlyProductionDataModel> get all_hourly_production_List=>_all_hourly_production_List;
-
-  Future<bool> getTodaysCountingDataHourDetails(BuyerProvider bp) async{
+  Future<bool> getTodaysCountingDataHourDetails(BuyerProvider bp) async {
     //  final secId = await DashboardHelpers.getString('selectedSectionId');
 
     //api/qms/GetQmsSummery
     var data = await apiService.getData('api/Qms/QualityCheckSummary');
-    if(data!=null){
+    if (data != null) {
       _all_hourly_production_List.clear();
-      for(var i in data['Results']){
+      for (var i in data['Results']) {
         _all_hourly_production_List.add(HourlyProductionDataModel.fromJson(i));
       }
-      debugPrint('_all_hourly_production_List ${_all_hourly_production_List.length}');
+      debugPrint(
+        '_all_hourly_production_List ${_all_hourly_production_List.length}',
+      );
       notifyListeners();
       return true;
-    }
-    else {
+    } else {
       return false;
     }
-
   }
 
-
-  final List<Map<String,dynamic>> _tempDefectList = [];
-  List<Map<String,dynamic>> get tempDefectList => _tempDefectList;
+  final List<Map<String, dynamic>> _tempDefectList = [];
+  List<Map<String, dynamic>> get tempDefectList => _tempDefectList;
   final int _maxSize = 20;
 
   /// Adds a new item to the list, removing the first item if at max capacity
@@ -640,7 +633,7 @@ class CountingProvider with ChangeNotifier {
 
     // Check if item already exists
     final existingItem = _tempDefectList.firstWhere(
-          (e) => e['item'] == newItem,
+      (e) => e['item'] == newItem,
       orElse: () => {},
     );
 
@@ -649,23 +642,17 @@ class CountingProvider with ChangeNotifier {
       existingItem['value']++;
     } else {
       // Add new item if it doesn't exist
-      _tempDefectList.add({
-        "value": 1,
-        "item": newItem
-      });
+      _tempDefectList.add({"value": 1, "item": newItem});
     }
     notifyListeners();
     //save defect data locally
     saveTempDefectList();
   }
 
-
   Future<void> saveTempDefectList() async {
     final jsonString = jsonEncode(_tempDefectList);
     DashboardHelpers.setString('tempDefectList', jsonString);
   }
-
-
 
   // lunch time auto checked
   Timer? _lunchTimeChecker;
@@ -691,7 +678,8 @@ class CountingProvider with ChangeNotifier {
     }
     try {
       final now = DateTime.now();
-      final todayDate = "${now.year.toString().padLeft(4, '0')}-"
+      final todayDate =
+          "${now.year.toString().padLeft(4, '0')}-"
           "${now.month.toString().padLeft(2, '0')}-"
           "${now.day.toString().padLeft(2, '0')}";
 
@@ -704,7 +692,8 @@ class CountingProvider with ChangeNotifier {
       final lunchStart = DateTime.parse("$todayDate $startTimeStr");
       final lunchEnd = DateTime.parse("$todayDate $endTimeStr");
 
-      final newStatus = (now.isAfter(lunchStart) || now.isAtSameMomentAs(lunchStart)) &&
+      final newStatus =
+          (now.isAfter(lunchStart) || now.isAtSameMomentAs(lunchStart)) &&
           (now.isBefore(lunchEnd) || now.isAtSameMomentAs(lunchEnd));
 
       if (newStatus != _isLunchTime) {
@@ -720,25 +709,25 @@ class CountingProvider with ChangeNotifier {
     }
   }
 
+  List<HourlyProductionDataModel> _hourly_production_List = [];
+  List<HourlyProductionDataModel> get hourly_production_List =>
+      _hourly_production_List;
 
-  List<HourlyProductionDataModel> _hourly_production_List=[];
-  List<HourlyProductionDataModel> get hourly_production_List=>_hourly_production_List;
-
-  Future<void> getHourlyProductionData(String date) async{
-
-     var lineId = await DashboardHelpers.getString('selectedLineId');
-     debugPrint('Line ID  ${lineId}');
-      var data=await apiService.getData('api/Qms/QualityCheckSummary?LineNo=${lineId}&FilterDate=${date}');
-      if(data!=null){
-        _hourly_production_List.clear();
-       for(var i in data['Results']){
-         _hourly_production_List.add(HourlyProductionDataModel.fromJson(i));
-       }
-       debugPrint('_hourly_production_List ${_hourly_production_List.length}');
+  Future<void> getHourlyProductionData(String date) async {
+    var lineId = await DashboardHelpers.getString('selectedLineId');
+    debugPrint('Line ID  ${lineId}');
+    var data = await apiService.getData(
+      'api/Qms/QualityCheckSummary?LineNo=${lineId}&FilterDate=${date}',
+    );
+    if (data != null) {
+      _hourly_production_List.clear();
+      for (var i in data['Results']) {
+        _hourly_production_List.add(HourlyProductionDataModel.fromJson(i));
       }
-      notifyListeners();
+      debugPrint('_hourly_production_List ${_hourly_production_List.length}');
+    }
+    notifyListeners();
   }
-
 
   void setDefectList(List<Map<String, dynamic>> defectList) {
     _tempDefectList.clear();
@@ -746,18 +735,18 @@ class CountingProvider with ChangeNotifier {
     notifyListeners();
   }
 
-
-  List<OperationDefectCountModel> _operation_defect=[];
-  List<OperationDefectCountModel> get operation_defect=>_operation_defect;
+  List<OperationDefectCountModel> _operation_defect = [];
+  List<OperationDefectCountModel> get operation_defect => _operation_defect;
 
   Future<void> getHourlyOperationDefects(String formattedDate) async {
-
     var lineId = await DashboardHelpers.getString('selectedLineId');
     debugPrint('Line ID  ${lineId}');
-    var data=await apiService.getData('api/Qms/DefectSummary?LineNo=${lineId}&FilterDate=$formattedDate');
-    if(data!=null){
+    var data = await apiService.getData(
+      'api/Qms/DefectSummary?LineNo=${lineId}&FilterDate=$formattedDate',
+    );
+    if (data != null) {
       _operation_defect.clear();
-      for(var i in data['Results']){
+      for (var i in data['Results']) {
         _operation_defect.add(OperationDefectCountModel.fromJson(i));
       }
       debugPrint('_operation_defect ${_operation_defect.length}');
@@ -765,13 +754,18 @@ class CountingProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  List<DifferenceCountModel> _difference_list=[];
-  List<DifferenceCountModel> get difference_list=>_difference_list;
-  List<double> _yesterDayPassList = List.generate(8, (index) => Random().nextDouble() * 80);
-  List<double> _todayDayPassList = List.generate(8, (index) => Random().nextDouble() * 80);
-  List<double> get yesterDayPassList=>_yesterDayPassList;
-  List<double> get todayDayPassList=>_todayDayPassList;
-
+  List<DifferenceCountModel> _difference_list = [];
+  List<DifferenceCountModel> get difference_list => _difference_list;
+  List<double> _yesterDayPassList = List.generate(
+    8,
+    (index) => Random().nextDouble() * 80,
+  );
+  List<double> _todayDayPassList = List.generate(
+    8,
+    (index) => Random().nextDouble() * 80,
+  );
+  List<double> get yesterDayPassList => _yesterDayPassList;
+  List<double> get todayDayPassList => _todayDayPassList;
 
   Future<void> getTwodaysDifference(String formattedDate) async {
     try {
@@ -828,7 +822,9 @@ class CountingProvider with ChangeNotifier {
         _todayDayPassList.addAll(List.filled(8 - _todayDayPassList.length, 0));
       }
       if (_yesterDayPassList.length < 8) {
-        _yesterDayPassList.addAll(List.filled(8 - _yesterDayPassList.length, 0));
+        _yesterDayPassList.addAll(
+          List.filled(8 - _yesterDayPassList.length, 0),
+        );
       }
 
       notifyListeners();
@@ -843,5 +839,4 @@ class CountingProvider with ChangeNotifier {
       notifyListeners();
     }
   }
-
 }

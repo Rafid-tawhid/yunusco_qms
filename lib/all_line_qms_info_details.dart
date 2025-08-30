@@ -1,12 +1,11 @@
-
-
 import 'package:flutter/material.dart';
 import 'package:nidle_qty/models/hourly_production_data_model.dart';
 
 class AllLineQmsInfoDetails extends StatefulWidget {
   final List<HourlyProductionDataModel> productionData;
 
-  const AllLineQmsInfoDetails({Key? key, required this.productionData}) : super(key: key);
+  const AllLineQmsInfoDetails({Key? key, required this.productionData})
+    : super(key: key);
 
   @override
   _AllLineQmsInfoDetailsState createState() => _AllLineQmsInfoDetailsState();
@@ -101,15 +100,10 @@ class _AllLineQmsInfoDetailsState extends State<AllLineQmsInfoDetails> {
   }
 
   Widget _buildFilters() {
-    final timeRanges = widget.productionData
-        .map((e) => e.timeRange)
-        .toSet()
-        .toList();
+    final timeRanges =
+        widget.productionData.map((e) => e.timeRange).toSet().toList();
 
-    final lineIds = widget.productionData
-        .map((e) => e.lineId)
-        .toSet()
-        .toList();
+    final lineIds = widget.productionData.map((e) => e.lineId).toSet().toList();
 
     return Column(
       children: [
@@ -120,15 +114,9 @@ class _AllLineQmsInfoDetailsState extends State<AllLineQmsInfoDetails> {
             border: OutlineInputBorder(),
           ),
           items: [
-            const DropdownMenuItem(
-              value: null,
-              child: Text('All Time Ranges'),
-            ),
+            const DropdownMenuItem(value: null, child: Text('All Time Ranges')),
             ...timeRanges.map((range) {
-              return DropdownMenuItem(
-                value: range,
-                child: Text(range ?? ''),
-              );
+              return DropdownMenuItem(value: range, child: Text(range ?? ''));
             }).toList(),
           ],
           onChanged: (value) {
@@ -146,10 +134,7 @@ class _AllLineQmsInfoDetailsState extends State<AllLineQmsInfoDetails> {
             border: OutlineInputBorder(),
           ),
           items: [
-            const DropdownMenuItem(
-              value: null,
-              child: Text('All Lines'),
-            ),
+            const DropdownMenuItem(value: null, child: Text('All Lines')),
             ...lineIds.map((lineId) {
               return DropdownMenuItem(
                 value: lineId!.toInt(),
@@ -167,6 +152,7 @@ class _AllLineQmsInfoDetailsState extends State<AllLineQmsInfoDetails> {
       ],
     );
   }
+
   String getLineName(int lineNumber) {
     final lineMapping = {
       9: 'A-01',
@@ -181,15 +167,18 @@ class _AllLineQmsInfoDetailsState extends State<AllLineQmsInfoDetails> {
 
     return lineMapping[lineNumber] ?? lineNumber.toString();
   }
+
   void _applyFilters() {
     setState(() {
-      filteredData = widget.productionData.where((data) {
-        final timeMatch = selectedTimeRange == null ||
-            data.timeRange == selectedTimeRange;
-        final lineMatch = selectedLineId == null ||
-            data.lineId == selectedLineId;
-        return timeMatch && lineMatch;
-      }).toList();
+      filteredData =
+          widget.productionData.where((data) {
+            final timeMatch =
+                selectedTimeRange == null ||
+                data.timeRange == selectedTimeRange;
+            final lineMatch =
+                selectedLineId == null || data.lineId == selectedLineId;
+            return timeMatch && lineMatch;
+          }).toList();
     });
   }
 
@@ -211,21 +200,24 @@ class _AllLineQmsInfoDetailsState extends State<AllLineQmsInfoDetails> {
             DataColumn(label: Text('Reject'), numeric: true),
             DataColumn(label: Text('DHU')),
           ],
-          rows: filteredData.map((data) {
-            final efficiency = (data.alteration!/data.pass!)*100;
+          rows:
+              filteredData.map((data) {
+                final efficiency = (data.alteration! / data.pass!) * 100;
 
-            return DataRow(cells: [
-              DataCell(Text(data.timeRange ?? '')),
-              DataCell(Text(getLineName(data.lineId!.toInt()))),
-              DataCell(Text(data.style ?? '')),
-              DataCell(Text(data.po ?? '')),
-              DataCell(Text(data.pass.toString())),
-              DataCell(Text(data.alteration.toString())),
-              DataCell(Text(data.alterCheck.toString())),
-              DataCell(Text(data.reject.toString())),
-              DataCell(Text('${efficiency!.toStringAsFixed(2)}%')),
-            ]);
-          }).toList(),
+                return DataRow(
+                  cells: [
+                    DataCell(Text(data.timeRange ?? '')),
+                    DataCell(Text(getLineName(data.lineId!.toInt()))),
+                    DataCell(Text(data.style ?? '')),
+                    DataCell(Text(data.po ?? '')),
+                    DataCell(Text(data.pass.toString())),
+                    DataCell(Text(data.alteration.toString())),
+                    DataCell(Text(data.alterCheck.toString())),
+                    DataCell(Text(data.reject.toString())),
+                    DataCell(Text('${efficiency.toStringAsFixed(2)}%')),
+                  ],
+                );
+              }).toList(),
         ),
       ),
     );
@@ -282,10 +274,7 @@ class _AllLineQmsInfoDetailsState extends State<AllLineQmsInfoDetails> {
                   Flexible(
                     child: Text(
                       title,
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.grey[600],
-                      ),
+                      style: TextStyle(fontSize: 14, color: Colors.grey[600]),
                     ),
                   ),
                   Icon(icon, color: color),

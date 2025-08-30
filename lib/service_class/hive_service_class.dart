@@ -3,7 +3,6 @@ import 'package:nidle_qty/utils/dashboard_helpers.dart';
 import '../models/local_send_data_model.dart';
 import '../models/send_data_model.dart';
 
-
 class HiveLocalSendDataService {
   static const String _boxName = 'localSendDataBox';
   static const String _listKey = 'localSendDataList';
@@ -21,7 +20,8 @@ class HiveLocalSendDataService {
     final box = Hive.box(_boxName);
 
     // Get existing list or create new if none exists
-    List<LocalSendDataModel> currentList = box.get(_listKey)?.cast<LocalSendDataModel>() ?? [];
+    List<LocalSendDataModel> currentList =
+        box.get(_listKey)?.cast<LocalSendDataModel>() ?? [];
 
     // Add new object to the list
     currentList.add(data);

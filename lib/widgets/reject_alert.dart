@@ -1,7 +1,9 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-void showRejectionDialog(BuildContext context, {required VoidCallback onConfirm}) {
+void showRejectionDialog(
+  BuildContext context, {
+  required VoidCallback onConfirm,
+}) {
   showDialog(
     context: context,
     builder: (context) {
@@ -33,18 +35,12 @@ void showRejectionDialog(BuildContext context, {required VoidCallback onConfirm}
             children: [
               Text(
                 'Are you sure you want to reject this item?',
-                style: TextStyle(
-                  fontSize: 22,
-                  color: Colors.grey.shade800,
-                ),
+                style: TextStyle(fontSize: 22, color: Colors.grey.shade800),
               ),
               const SizedBox(height: 8),
               Text(
                 'This action cannot be undone.',
-                style: TextStyle(
-                  fontSize: 18,
-                  color: Colors.grey.shade600,
-                ),
+                style: TextStyle(fontSize: 18, color: Colors.grey.shade600),
               ),
             ],
           ),
@@ -61,10 +57,7 @@ void showRejectionDialog(BuildContext context, {required VoidCallback onConfirm}
             ),
             child: const Text(
               'CANCEL',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                letterSpacing: 0.5,
-              ),
+              style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 0.5),
             ),
           ),
           ElevatedButton(
@@ -80,14 +73,10 @@ void showRejectionDialog(BuildContext context, {required VoidCallback onConfirm}
               Navigator.pop(context);
               onConfirm();
               // Show success feedback
-
             },
             child: const Text(
               'REJECT',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                letterSpacing: 0.5,
-              ),
+              style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 0.5),
             ),
           ),
         ],

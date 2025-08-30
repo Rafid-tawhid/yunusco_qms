@@ -1,8 +1,8 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../providers/network_provider.dart';
+
 class NoInternetDialog extends StatelessWidget {
   const NoInternetDialog({Key? key}) : super(key: key);
 
@@ -27,7 +27,10 @@ class NoInternetDialog extends StatelessWidget {
           const SizedBox(height: 16),
           ElevatedButton(
             onPressed: () {
-              Provider.of<NetworkProvider>(context, listen: false).initConnectivity();
+              Provider.of<NetworkProvider>(
+                context,
+                listen: false,
+              ).initConnectivity();
             },
             child: const Text('Retry'),
           ),

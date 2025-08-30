@@ -1,12 +1,9 @@
 class ColorModel {
-  ColorModel({
-      String? colorId,
-      String? po,
-      String? color,}){
+  ColorModel({String? colorId, String? po, String? color}) {
     _colorId = colorId;
     _po = po;
     _color = color;
-}
+  }
 
   ColorModel.fromJson(dynamic json) {
     _colorId = json['ColorId'].toString();
@@ -16,13 +13,12 @@ class ColorModel {
   String? _colorId;
   String? _po;
   String? _color;
-ColorModel copyWith({  String? colorId,
-  String? po,
-  String? color,
-}) => ColorModel(  colorId: colorId ?? _colorId,
-  po: po ?? _po,
-  color: color ?? _color,
-);
+  ColorModel copyWith({String? colorId, String? po, String? color}) =>
+      ColorModel(
+        colorId: colorId ?? _colorId,
+        po: po ?? _po,
+        color: color ?? _color,
+      );
   String? get colorId => _colorId;
   String? get po => _po;
   String? get color => _color;
@@ -34,5 +30,4 @@ ColorModel copyWith({  String? colorId,
     map['Color'] = _color;
     return map;
   }
-
 }

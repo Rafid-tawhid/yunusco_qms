@@ -1,9 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:nidle_qty/utils/drawer.dart';
 import 'package:nidle_qty/providers/buyer_provider.dart';
-import 'package:nidle_qty/purchase_order_list.dart';
 import 'package:nidle_qty/quality_check_screen.dart';
 import 'package:nidle_qty/utils/dashboard_helpers.dart';
 import 'package:nidle_qty/widgets/select_purchase_order.dart';
@@ -103,8 +101,12 @@ class _TabviewBuyerScreenState extends State<TabviewBuyerScreen> {
                                                     pro.buyerPo != null)
                                                 ? () async {
                                                   //get color and size
-                                                  await pro.getColor(pro.buyerPo!.po);
-                                                  await pro.getSize(pro.buyerPo!.po);
+                                                  await pro.getColor(
+                                                    pro.buyerPo!.po,
+                                                  );
+                                                  await pro.getSize(
+                                                    pro.buyerPo!.po,
+                                                  );
 
                                                   Navigator.push(
                                                     context,
@@ -239,31 +241,29 @@ class _TabBuyerListScreenState extends State<TabBuyerListScreen> {
                               ),
                           itemBuilder: (context, index) {
                             final buyer = pro.filteredBuyers[index];
-                            final isSelected =
-                                selectedBuyerCode == buyer.code;
+                            final isSelected = selectedBuyerCode == buyer.code;
 
                             return InkWell(
                               onTap: () async {
                                 setState(() {
-                                  selectedBuyerCode = int.parse(buyer.code.toString());
+                                  selectedBuyerCode = int.parse(
+                                    buyer.code.toString(),
+                                  );
                                 });
                                 debugPrint('selected buyer ${buyer}');
                                 var bp = context.read<BuyerProvider>();
                                 bp.setLoadingStyle(true);
-                               var res= await bp.getStyleDataByBuyerId(
+                                var res = await bp.getStyleDataByBuyerId(
                                   buyer.code.toString(),
                                 );
                                 bp.setLoadingStyle(false);
                                 //clear style and po and set code
                                 bp.clearStyleAndPoList();
-                                bp.setBuyersStylePoInfo(
-                                  buyerInfo: buyer,
-                                );
+                                bp.setBuyersStylePoInfo(buyerInfo: buyer);
                                 //navigate to login if fails api
                                 if (res == false) {
                                   DashboardHelpers.navigateToLogin(context);
                                 }
-
                               },
                               child: Container(
                                 decoration: BoxDecoration(
@@ -286,7 +286,7 @@ class _TabBuyerListScreenState extends State<TabBuyerListScreen> {
                                             CrossAxisAlignment.start,
                                         children: [
                                           Text(
-                                            buyer.name??'',
+                                            buyer.name ?? '',
                                             style: TextStyle(
                                               fontWeight: FontWeight.w600,
                                               color:

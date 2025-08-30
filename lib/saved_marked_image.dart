@@ -1,11 +1,9 @@
 import 'dart:ui' as ui;
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:image_gallery_saver_plus/image_gallery_saver_plus.dart';
-import 'package:permission_handler/permission_handler.dart';
 
 class TouchMarkerScreen extends StatefulWidget {
   @override
@@ -19,9 +17,7 @@ class _TouchMarkerScreenState extends State<TouchMarkerScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Image Touch Marker'),
-      ),
+      appBar: AppBar(title: Text('Image Touch Marker')),
       body: Column(
         children: [
           Expanded(
@@ -33,14 +29,16 @@ class _TouchMarkerScreenState extends State<TouchMarkerScreen> {
                   GestureDetectorWithImage(
                     onTapDown: (details) {
                       setState(() {
-                        touchPoints.add(details.localPosition); // Record touch position
+                        touchPoints.add(
+                          details.localPosition,
+                        ); // Record touch position
                         touchCount++; // Increment touch count
                       });
                     },
                   ),
                   // Touch markers (red circles)
                   ...touchPoints.map(
-                        (point) => Positioned(
+                    (point) => Positioned(
                       left: point.dx - 15, // Center the marker
                       top: point.dy - 15,
                       child: Container(
@@ -73,8 +71,8 @@ class _TouchMarkerScreenState extends State<TouchMarkerScreen> {
                       ),
                     ),
                   ),
-                  // Clear button (bottom-center)
 
+                  // Clear button (bottom-center)
                 ],
               ),
             ),
@@ -95,7 +93,7 @@ class _TouchMarkerScreenState extends State<TouchMarkerScreen> {
               ),
               ElevatedButton(
                 onPressed: () {
-                _saveLocalImage();
+                  _saveLocalImage();
                 },
                 child: Text('Save'),
                 style: ElevatedButton.styleFrom(
@@ -122,12 +120,16 @@ class _TouchMarkerScreenState extends State<TouchMarkerScreen> {
 
       // Get the render object from repaint boundary
       final RenderRepaintBoundary boundary =
-      _globalKey.currentContext!.findRenderObject() as RenderRepaintBoundary;
+          _globalKey.currentContext!.findRenderObject()
+              as RenderRepaintBoundary;
 
       // Convert to image
-      final ui.Image image = await boundary.toImage(pixelRatio: 3.0); // Higher quality
-      final ByteData? byteData =
-      await image.toByteData(format: ui.ImageByteFormat.png);
+      final ui.Image image = await boundary.toImage(
+        pixelRatio: 3.0,
+      ); // Higher quality
+      final ByteData? byteData = await image.toByteData(
+        format: ui.ImageByteFormat.png,
+      );
 
       if (byteData == null) {
         throw Exception('Failed to capture image');
@@ -148,9 +150,9 @@ class _TouchMarkerScreenState extends State<TouchMarkerScreen> {
       //   throw Exception(result.errorMessage ?? 'Failed to save image');
       // }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: ${e.toString()}')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Error: ${e.toString()}')));
     }
   }
 }

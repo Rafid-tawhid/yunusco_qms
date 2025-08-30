@@ -1,14 +1,10 @@
 import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http_interceptor/http/intercepted_client.dart';
-import 'package:nidle_qty/utils/dashboard_helpers.dart';
 
-import '../login_screen.dart';
-import '../main.dart';
 import '../utils/constants.dart';
 import 'interceptor_class.dart'; // Optional for error message display
 
@@ -17,23 +13,26 @@ class ApiService {
   final String baseUrl = AppConstants.baseUrl;
   // final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
-
   // Create the client with the interceptor
-  final client = InterceptedClient.build(interceptors: [CustomInterceptor(),]);
+  final client = InterceptedClient.build(interceptors: [CustomInterceptor()]);
 
   // Method to perform GET request
   Future<dynamic> getData(String endpoint) async {
     try {
       // Perform the GET request
-      final response = await client.get(Uri.parse('$baseUrl$endpoint')).timeout(const Duration(seconds: 10));
+      final response = await client
+          .get(Uri.parse('$baseUrl$endpoint'))
+          .timeout(const Duration(seconds: 10));
       // Handle response based on status code
       if (response.statusCode == 200) {
         // Parse the response body
-        final jsonData = jsonDecode(response.body
-            .replaceAll('â', '’') // Replace garbled apostrophe
-            .replaceAll('â', '“') // Replace garbled quotes
-            .replaceAll('â', '”') // Replace garbled quotes
-            .replaceAll('â¦', '…'));
+        final jsonData = jsonDecode(
+          response.body
+              .replaceAll('â', '’') // Replace garbled apostrophe
+              .replaceAll('â', '“') // Replace garbled quotes
+              .replaceAll('â', '”') // Replace garbled quotes
+              .replaceAll('â¦', '…'),
+        );
         print('Data received: $jsonData');
 
         return jsonData;
@@ -52,16 +51,20 @@ class ApiService {
   Future<dynamic> getData2(String endpoint) async {
     try {
       // Perform the GET request
-      final response = await client.get(Uri.parse('$endpoint')).timeout(const Duration(seconds: 10));
+      final response = await client
+          .get(Uri.parse('$endpoint'))
+          .timeout(const Duration(seconds: 10));
 
       // Handle response based on status code
       if (response.statusCode == 200) {
         // Parse the response body
-        final jsonData = jsonDecode(response.body
-            .replaceAll('â', '’') // Replace garbled apostrophe
-            .replaceAll('â', '“') // Replace garbled quotes
-            .replaceAll('â', '”') // Replace garbled quotes
-            .replaceAll('â¦', '…'));
+        final jsonData = jsonDecode(
+          response.body
+              .replaceAll('â', '’') // Replace garbled apostrophe
+              .replaceAll('â', '“') // Replace garbled quotes
+              .replaceAll('â', '”') // Replace garbled quotes
+              .replaceAll('â¦', '…'),
+        );
         print('Data received: $jsonData');
 
         return jsonData;
@@ -83,23 +86,27 @@ class ApiService {
       debugPrint('pre URL: ${AppConstants.baseUrl}$endpoint');
       debugPrint('SEND DATA: ${body}');
 
-      final response = await client.post(
-        Uri.parse('${AppConstants.baseUrl}$endpoint/'),
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ${{AppConstants.token}}', // Optional
-        },
-        body: jsonEncode(body),
-      ).timeout(const Duration(seconds: 10));
+      final response = await client
+          .post(
+            Uri.parse('${AppConstants.baseUrl}$endpoint/'),
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer ${{AppConstants.token}}', // Optional
+            },
+            body: jsonEncode(body),
+          )
+          .timeout(const Duration(seconds: 10));
 
       // Handle response based on status code
       if (response.statusCode == 200 || response.statusCode == 201) {
         // Parse the response body
-        final jsonData = jsonDecode(response.body
-            .replaceAll('â', '’') // Replace garbled apostrophe
-            .replaceAll('â', '“') // Replace garbled quotes
-            .replaceAll('â', '”') // Replace garbled quotes
-            .replaceAll('â¦', '…'));
+        final jsonData = jsonDecode(
+          response.body
+              .replaceAll('â', '’') // Replace garbled apostrophe
+              .replaceAll('â', '“') // Replace garbled quotes
+              .replaceAll('â', '”') // Replace garbled quotes
+              .replaceAll('â¦', '…'),
+        );
         print('Data posted successfully: $jsonData');
         return jsonData;
       } else {
@@ -121,14 +128,16 @@ class ApiService {
       debugPrint('URL: $endpoint');
       debugPrint('SEND DATA: $body');
 
-      final response = await client.post(
-        Uri.parse('${endpoint}'),
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ${{AppConstants.token}}', // Optional
-        },
-        body: jsonEncode(body),
-      ).timeout(const Duration(seconds: 10));
+      final response = await client
+          .post(
+            Uri.parse('${endpoint}'),
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer ${{AppConstants.token}}', // Optional
+            },
+            body: jsonEncode(body),
+          )
+          .timeout(const Duration(seconds: 10));
 
       // Handle response based on status code
       if (response.statusCode == 200 || response.statusCode == 201) {
@@ -227,7 +236,9 @@ class ApiService {
 
         debugPrint('responseBody ${response}');
 
-        Fluttertoast.showToast(msg: response['Message'] ?? "Resource Not Found");
+        Fluttertoast.showToast(
+          msg: response['Message'] ?? "Resource Not Found",
+        );
         break;
       case 400:
         EasyLoading.dismiss();
@@ -237,31 +248,37 @@ class ApiService {
       case 401:
         EasyLoading.dismiss();
         print("Unauthorized Access: $responseBody");
-        Fluttertoast.showToast(msg:response['Message']?? "Unauthorized Access");
+        Fluttertoast.showToast(
+          msg: response['Message'] ?? "Unauthorized Access",
+        );
 
         break;
       case 403:
         EasyLoading.dismiss();
         print("Forbidden: $responseBody");
-        Fluttertoast.showToast(msg: response['Message']??"Forbidden Access");
+        Fluttertoast.showToast(msg: response['Message'] ?? "Forbidden Access");
         break;
       case 404:
         EasyLoading.dismiss();
         var response = jsonDecode(responseBody);
         debugPrint('responseBody ${response}');
         Fluttertoast.showToast(
-            msg: response['Message'] ?? "Resource Not Found");
+          msg: response['Message'] ?? "Resource Not Found",
+        );
       case 409:
         EasyLoading.dismiss();
         var response = jsonDecode(responseBody);
         debugPrint('responseBody ${response}');
         Fluttertoast.showToast(
-            msg: response['Message'] ?? "Resource Not Found");
+          msg: response['Message'] ?? "Resource Not Found",
+        );
         break;
       case 500:
         EasyLoading.dismiss();
         print("Internal Server Error: $responseBody");
-        Fluttertoast.showToast(msg:response['Message']?? "Internal Server Error");
+        Fluttertoast.showToast(
+          msg: response['Message'] ?? "Internal Server Error",
+        );
         break;
       default:
         EasyLoading.dismiss();
@@ -269,7 +286,6 @@ class ApiService {
         Fluttertoast.showToast(msg: "Error $statusCode: $responseBody");
         break;
     }
-
   }
 
   Future<dynamic> deleteData(String endpoint) async {
@@ -302,6 +318,4 @@ class ApiService {
       return null;
     }
   }
-
-
 }

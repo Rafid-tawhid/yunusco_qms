@@ -44,9 +44,22 @@ class _SearchDropdownScreenState extends State<SearchDropdownScreen> {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       child: Row(
         children: [
-          Icon(isSelected ? Icons.check_circle : Icons.list, color: isSelected ? Colors.green : Colors.grey[600], size: 22),
+          Icon(
+            isSelected ? Icons.check_circle : Icons.list,
+            color: isSelected ? Colors.green : Colors.grey[600],
+            size: 22,
+          ),
           const SizedBox(width: 12),
-          Expanded(child: Text(text, style: TextStyle(fontSize: 16, fontWeight: isSelected ? FontWeight.bold : FontWeight.normal, color: isSelected ? Colors.deepPurple : Colors.black87))),
+          Expanded(
+            child: Text(
+              text,
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                color: isSelected ? Colors.deepPurple : Colors.black87,
+              ),
+            ),
+          ),
         ],
       ),
     );
@@ -54,15 +67,29 @@ class _SearchDropdownScreenState extends State<SearchDropdownScreen> {
 
   Future<void> _saveSelections() async {
     if (selectedSection != null && selectedLine != null) {
-      DashboardHelpers.setString('selectedSection', selectedSection!.item!['SectionName']);
-      DashboardHelpers.setString('selectedSectionId', selectedSection!.item!['SectionId'].toString());
+      DashboardHelpers.setString(
+        'selectedSection',
+        selectedSection!.item!['SectionName'],
+      );
+      DashboardHelpers.setString(
+        'selectedSectionId',
+        selectedSection!.item!['SectionId'].toString(),
+      );
       DashboardHelpers.setString('selectedLine', selectedLine!.item!['Name']);
-      DashboardHelpers.setString('selectedLineId', selectedLine!.item!['LineId'].toString());
-      DashboardHelpers.setString('section', selectedSection!.item!['SectionName']);
+      DashboardHelpers.setString(
+        'selectedLineId',
+        selectedLine!.item!['LineId'].toString(),
+      );
+      DashboardHelpers.setString(
+        'section',
+        selectedSection!.item!['SectionName'],
+      );
       DashboardHelpers.setString('line', selectedLine!.item!['Name']);
       //get Lunch time
-      var cp=context.read<CountingProvider>();
-      cp.getLunchTimeBySectionId(selectedSection!.item!['SectionId'].toString());
+      var cp = context.read<CountingProvider>();
+      cp.getLunchTimeBySectionId(
+        selectedSection!.item!['SectionId'].toString(),
+      );
     }
   }
 
@@ -72,16 +99,28 @@ class _SearchDropdownScreenState extends State<SearchDropdownScreen> {
 
     if (sectionName != null) {
       final sections = context.read<BuyerProvider>().allSection;
-      final section = sections.firstWhere((s) => s['SectionName'] == sectionName, orElse: () => {});
+      final section = sections.firstWhere(
+        (s) => s['SectionName'] == sectionName,
+        orElse: () => {},
+      );
 
       if (section.isNotEmpty) {
-        selectedSection = SearchFieldListItem(section['SectionName'], item: section);
+        selectedSection = SearchFieldListItem(
+          section['SectionName'],
+          item: section,
+        );
 
-        await context.read<BuyerProvider>().getAllLinesBySectionId(_prefs.getString('selectedSectionId') ?? section['SectionId'].toString());
+        await context.read<BuyerProvider>().getAllLinesBySectionId(
+          _prefs.getString('selectedSectionId') ??
+              section['SectionId'].toString(),
+        );
 
         if (lineName != null) {
           final lines = context.read<BuyerProvider>().allLines;
-          final line = lines.firstWhere((l) => l['Name'] == lineName, orElse: () => {});
+          final line = lines.firstWhere(
+            (l) => l['Name'] == lineName,
+            orElse: () => {},
+          );
 
           if (line.isNotEmpty) {
             selectedLine = SearchFieldListItem(line['Name'], item: line);
@@ -121,7 +160,10 @@ class _SearchDropdownScreenState extends State<SearchDropdownScreen> {
                 selectedSection = null;
                 selectedLine = null;
               });
-              Navigator.push(context, MaterialPageRoute(builder: (context) => LoginScreen()));
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => LoginScreen()),
+              );
             },
           ),
         ],
@@ -135,7 +177,10 @@ class _SearchDropdownScreenState extends State<SearchDropdownScreen> {
             Text('Select Section'),
             Card(
               elevation: 2,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12), side: BorderSide(color: Colors.grey.withOpacity(0.2), width: 1)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+                side: BorderSide(color: Colors.grey.withOpacity(0.2), width: 1),
+              ),
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8),
                 child: Consumer<BuyerProvider>(
@@ -146,13 +191,21 @@ class _SearchDropdownScreenState extends State<SearchDropdownScreen> {
                         border: InputBorder.none,
                         hintText: 'Type to search sections',
                         hintStyle: TextStyle(color: Colors.grey[600]),
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                        ),
                       ),
                       maxSuggestionsInViewPort: 6,
                       suggestionsDecoration: SuggestionDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(10),
-                        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 8, spreadRadius: 2)],
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.1),
+                            blurRadius: 8,
+                            spreadRadius: 2,
+                          ),
+                        ],
                       ),
                       itemHeight: 60,
                       onSuggestionTap: (section) async {
@@ -160,14 +213,24 @@ class _SearchDropdownScreenState extends State<SearchDropdownScreen> {
                           selectedSection = section;
                           selectedLine = null;
                         });
-                        debugPrint('HERE : ${section.item!['SectionId'].toString()}');
-                        await provider.getAllLinesBySectionId(section.item!['SectionId'].toString());
+                        debugPrint(
+                          'HERE : ${section.item!['SectionId'].toString()}',
+                        );
+                        await provider.getAllLinesBySectionId(
+                          section.item!['SectionId'].toString(),
+                        );
                       },
-                      suggestions: provider.allSection.map((section) {
+                      suggestions:
+                          provider.allSection.map((section) {
                             return SearchFieldListItem(
                               section['SectionName'],
                               item: section,
-                              child: _buildSuggestionItem(section['SectionName'], isSelected: selectedSection?.item?['SectionName'] == section['SectionName']),
+                              child: _buildSuggestionItem(
+                                section['SectionName'],
+                                isSelected:
+                                    selectedSection?.item?['SectionName'] ==
+                                    section['SectionName'],
+                              ),
                             );
                           }).toList(),
                     );
@@ -182,19 +245,37 @@ class _SearchDropdownScreenState extends State<SearchDropdownScreen> {
             Text('Select Line'),
             Card(
               elevation: 2,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12), side: BorderSide(color: Colors.grey.withOpacity(0.2), width: 1)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+                side: BorderSide(color: Colors.grey.withOpacity(0.2), width: 1),
+              ),
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8),
                 child: Consumer<BuyerProvider>(
                   builder: (context, provider, _) {
                     return SearchField<Map<String, dynamic>>(
-                      hint: selectedSection != null ? 'Search line in ${selectedSection!.item!['SectionName']}...' : 'Select section first...',
-                      searchInputDecoration: SearchInputDecoration(border: InputBorder.none, hintStyle: TextStyle(color: Colors.grey[600]), contentPadding: const EdgeInsets.symmetric(horizontal: 16)),
+                      hint:
+                          selectedSection != null
+                              ? 'Search line in ${selectedSection!.item!['SectionName']}...'
+                              : 'Select section first...',
+                      searchInputDecoration: SearchInputDecoration(
+                        border: InputBorder.none,
+                        hintStyle: TextStyle(color: Colors.grey[600]),
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                        ),
+                      ),
                       maxSuggestionsInViewPort: 6,
                       suggestionsDecoration: SuggestionDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(10),
-                        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 8, spreadRadius: 2)],
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.1),
+                            blurRadius: 8,
+                            spreadRadius: 2,
+                          ),
+                        ],
                       ),
                       itemHeight: 60,
                       onSuggestionTap: (line) async {
@@ -203,7 +284,15 @@ class _SearchDropdownScreenState extends State<SearchDropdownScreen> {
                       },
                       suggestions:
                           provider.allLines.map((line) {
-                            return SearchFieldListItem(line['Name'], item: line, child: _buildSuggestionItem(line['Name'], isSelected: selectedLine?.item?['Name'] == line['Name']));
+                            return SearchFieldListItem(
+                              line['Name'],
+                              item: line,
+                              child: _buildSuggestionItem(
+                                line['Name'],
+                                isSelected:
+                                    selectedLine?.item?['Name'] == line['Name'],
+                              ),
+                            );
                           }).toList(),
                       enabled: selectedSection != null,
                     );
@@ -219,15 +308,36 @@ class _SearchDropdownScreenState extends State<SearchDropdownScreen> {
               AnimatedContainer(
                 duration: const Duration(milliseconds: 300),
                 padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(color: Colors.deepPurple.withOpacity(0.05), borderRadius: BorderRadius.circular(12), border: Border.all(color: Colors.deepPurple.withOpacity(0.3), width: 1)),
+                decoration: BoxDecoration(
+                  color: Colors.deepPurple.withOpacity(0.05),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: Colors.deepPurple.withOpacity(0.3),
+                    width: 1,
+                  ),
+                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('SELECTED:', style: Theme.of(context).textTheme.labelSmall?.copyWith(color: Colors.grey, letterSpacing: 1)),
+                    Text(
+                      'SELECTED:',
+                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                        color: Colors.grey,
+                        letterSpacing: 1,
+                      ),
+                    ),
                     const SizedBox(height: 12),
-                    _buildSelectionRow(Icons.category, 'Section:', selectedSection!.item!['SectionName']),
+                    _buildSelectionRow(
+                      Icons.category,
+                      'Section:',
+                      selectedSection!.item!['SectionName'],
+                    ),
                     const SizedBox(height: 8),
-                    _buildSelectionRow(Icons.line_style, 'Line:', selectedLine!.item!['Name']),
+                    _buildSelectionRow(
+                      Icons.line_style,
+                      'Line:',
+                      selectedLine!.item!['Name'],
+                    ),
                     const SizedBox(height: 8),
                     Consumer<CountingProvider>(
                       builder:
@@ -237,21 +347,38 @@ class _SearchDropdownScreenState extends State<SearchDropdownScreen> {
                                   : _buildSelectionRow(
                                     Icons.emoji_food_beverage_sharp,
                                     'Lunch:',
-                                    DashboardHelpers.formatExactLunchTime(pro.lunchTime!.lunchStartTime??'', pro.lunchTime!.lunchEndTime??''),
+                                    DashboardHelpers.formatExactLunchTime(
+                                      pro.lunchTime!.lunchStartTime ?? '',
+                                      pro.lunchTime!.lunchEndTime ?? '',
+                                    ),
                                   ),
                     ),
                     const SizedBox(height: 12),
                     ElevatedButton(
                       onPressed: () {
                         // Add your submit action here
-                        Navigator.push(context, CupertinoPageRoute(builder: (context) => HomeScreen()));
+                        Navigator.push(
+                          context,
+                          CupertinoPageRoute(
+                            builder: (context) => HomeScreen(),
+                          ),
+                        );
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.deepPurple,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
                         minimumSize: const Size(double.infinity, 48),
                       ),
-                      child:  Text('CONFIRM SELECTION', style: AppConstants.customTextStyle(14, Colors.white, FontWeight.bold)),
+                      child: Text(
+                        'CONFIRM SELECTION',
+                        style: AppConstants.customTextStyle(
+                          14,
+                          Colors.white,
+                          FontWeight.bold,
+                        ),
+                      ),
                     ),
                   ],
                 ),
@@ -272,9 +399,19 @@ class _SearchDropdownScreenState extends State<SearchDropdownScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(label, style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.grey[600])),
+              Text(
+                label,
+                style: Theme.of(
+                  context,
+                ).textTheme.bodySmall?.copyWith(color: Colors.grey[600]),
+              ),
               const SizedBox(height: 2),
-              Text(value, style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w500)),
+              Text(
+                value,
+                style: Theme.of(
+                  context,
+                ).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w500),
+              ),
             ],
           ),
         ),

@@ -3,7 +3,6 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import '../main.dart';
 
 class NetworkProvider with ChangeNotifier {
   List<ConnectivityResult> _connectionStatus = [ConnectivityResult.none];
@@ -13,11 +12,14 @@ class NetworkProvider with ChangeNotifier {
   Timer? _toastTimer;
 
   List<ConnectivityResult> get connectionStatus => _connectionStatus;
-  bool get isConnected => _connectionStatus.any((status) => status != ConnectivityResult.none);
+  bool get isConnected =>
+      _connectionStatus.any((status) => status != ConnectivityResult.none);
 
   NetworkProvider() {
     initConnectivity();
-    _connectivitySubscription = _connectivity.onConnectivityChanged.listen(_updateConnectionStatus);
+    _connectivitySubscription = _connectivity.onConnectivityChanged.listen(
+      _updateConnectionStatus,
+    );
   }
 
   Future<void> initConnectivity() async {

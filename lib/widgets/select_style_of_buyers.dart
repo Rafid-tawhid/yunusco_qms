@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -20,10 +19,11 @@ class _SelectStyleOfBuyersState extends State<SelectStyleOfBuyers> {
     _focusNode.dispose();
     super.dispose();
   }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: (){
+      onTap: () {
         _focusNode.unfocus();
       },
       child: Card(
@@ -64,7 +64,8 @@ class _SelectStyleOfBuyersState extends State<SelectStyleOfBuyers> {
                 child: Consumer<BuyerProvider>(
                   builder: (context, pro, _) {
                     // Create a dedicated ScrollController
-                    final ScrollController _scrollController = ScrollController();
+                    final ScrollController _scrollController =
+                        ScrollController();
 
                     if (pro.loadingStyle) {
                       return const Center(child: CircularProgressIndicator());
@@ -87,41 +88,55 @@ class _SelectStyleOfBuyersState extends State<SelectStyleOfBuyers> {
                         child: Wrap(
                           spacing: 4.0,
                           runSpacing: 4.0,
-                          children: pro.filteredStyleList.map((e) {
-                            bool isSelected = e.style.toString() == selectedStyle;
-                            return ChoiceChip(
-                              label: Text(e.style.toString()),
-                              selected: isSelected,
-                              onSelected: (selected) async {
-                                setState(() {
-                                  selectedStyle = isSelected ? null : e.style;
-                                });
-                                var bp = context.read<BuyerProvider>();
-                                bp.setLoadingPo(true);
-                                await bp.getBoByStyleOfBuyers(e.style.toString());
-                                bp.setLoadingPo(false);
-                                bp.setBuyersStylePoInfo(buyerStyle: e);
-                              },
-                              selectedColor: Colors.blue.shade200,
-                              backgroundColor: Colors.grey.shade200,
-                              labelStyle: TextStyle(
-                                color: isSelected ? Colors.blue.shade900 : Colors.black,
-                                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                              ),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8),
-                                side: BorderSide(
-                                  color: isSelected ? Colors.blue : Colors.grey.shade400,
-                                ),
-                              ),
-                            );
-                          }).toList(),
+                          children:
+                              pro.filteredStyleList.map((e) {
+                                bool isSelected =
+                                    e.style.toString() == selectedStyle;
+                                return ChoiceChip(
+                                  label: Text(e.style.toString()),
+                                  selected: isSelected,
+                                  onSelected: (selected) async {
+                                    setState(() {
+                                      selectedStyle =
+                                          isSelected ? null : e.style;
+                                    });
+                                    var bp = context.read<BuyerProvider>();
+                                    bp.setLoadingPo(true);
+                                    await bp.getBoByStyleOfBuyers(
+                                      e.style.toString(),
+                                    );
+                                    bp.setLoadingPo(false);
+                                    bp.setBuyersStylePoInfo(buyerStyle: e);
+                                  },
+                                  selectedColor: Colors.blue.shade200,
+                                  backgroundColor: Colors.grey.shade200,
+                                  labelStyle: TextStyle(
+                                    color:
+                                        isSelected
+                                            ? Colors.blue.shade900
+                                            : Colors.black,
+                                    fontWeight:
+                                        isSelected
+                                            ? FontWeight.bold
+                                            : FontWeight.normal,
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                    side: BorderSide(
+                                      color:
+                                          isSelected
+                                              ? Colors.blue
+                                              : Colors.grey.shade400,
+                                    ),
+                                  ),
+                                );
+                              }).toList(),
                         ),
                       ),
                     );
                   },
                 ),
-              )
+              ),
             ],
           ),
         ),

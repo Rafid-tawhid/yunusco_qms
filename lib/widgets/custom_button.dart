@@ -34,10 +34,7 @@ class ActionButton extends StatelessWidget {
         icon: Icon(icon, size: iconSize),
         label: Padding(
           padding: padding,
-          child: Text(
-            text,
-            style: TextStyle(fontSize: fontSize),
-          ),
+          child: Text(text, style: TextStyle(fontSize: fontSize)),
         ),
         style: ElevatedButton.styleFrom(
           foregroundColor: Colors.white,

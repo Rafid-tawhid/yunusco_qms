@@ -33,8 +33,8 @@ class SendDataModel {
   @HiveField(9)
   final String alt_check;
 
-  @HiveField(10)  // Next available field number
-  bool sent;      // Non-final to allow modification
+  @HiveField(10) // Next available field number
+  bool sent; // Non-final to allow modification
 
   SendDataModel({
     required this.idNum,
@@ -47,7 +47,7 @@ class SendDataModel {
     required this.color,
     required this.size,
     required this.alt_check,
-    this.sent = false,  // Default value
+    this.sent = false, // Default value
   });
 
   // Add copyWith method for easy modification

@@ -1,14 +1,15 @@
 class TotalCountingModel {
   TotalCountingModel({
-      num? totalPass, 
-      num? totalAlter, 
-      num? totalAlterCheck, 
-      num? totalReject,}){
+    num? totalPass,
+    num? totalAlter,
+    num? totalAlterCheck,
+    num? totalReject,
+  }) {
     _totalPass = totalPass;
     _totalAlter = totalAlter;
     _totalAlterCheck = totalAlterCheck;
     _totalReject = totalReject;
-}
+  }
 
   TotalCountingModel.fromJson(dynamic json) {
     _totalPass = json['TotalPass'];
@@ -20,15 +21,17 @@ class TotalCountingModel {
   num? _totalAlter;
   num? _totalAlterCheck;
   num? _totalReject;
-TotalCountingModel copyWith({  num? totalPass,
-  num? totalAlter,
-  num? totalAlterCheck,
-  num? totalReject,
-}) => TotalCountingModel(  totalPass: totalPass ?? _totalPass,
-  totalAlter: totalAlter ?? _totalAlter,
-  totalAlterCheck: totalAlterCheck ?? _totalAlterCheck,
-  totalReject: totalReject ?? _totalReject,
-);
+  TotalCountingModel copyWith({
+    num? totalPass,
+    num? totalAlter,
+    num? totalAlterCheck,
+    num? totalReject,
+  }) => TotalCountingModel(
+    totalPass: totalPass ?? _totalPass,
+    totalAlter: totalAlter ?? _totalAlter,
+    totalAlterCheck: totalAlterCheck ?? _totalAlterCheck,
+    totalReject: totalReject ?? _totalReject,
+  );
   num? get totalPass => _totalPass;
   num? get totalAlter => _totalAlter;
   num? get totalAlterCheck => _totalAlterCheck;
@@ -42,5 +45,4 @@ TotalCountingModel copyWith({  num? totalPass,
     map['TotalReject'] = _totalReject;
     return map;
   }
-
 }

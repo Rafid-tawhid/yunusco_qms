@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
-import 'package:hive/hive.dart';
 import 'package:nidle_qty/models/po_models.dart';
 import 'package:nidle_qty/models/size_model.dart';
 import 'package:nidle_qty/models/user_model.dart';
@@ -33,7 +32,10 @@ class BuyerProvider extends ChangeNotifier {
 
   Future<bool> userLogin(String email, String pass) async {
     debugPrint('Email : $email and Pass : ${pass}');
-    var result = await apiService.postData('api/Accounts/GetUserLogin', {'username': email, 'password': pass});
+    var result = await apiService.postData('api/Accounts/GetUserLogin', {
+      'username': email,
+      'password': pass,
+    });
     if (result != null) {
       DashboardHelpers.setToken(result['token']);
 
@@ -111,7 +113,8 @@ class BuyerProvider extends ChangeNotifier {
             // Convert all comparisons to lowercase for case-insensitive search
             final searchLower = query.toLowerCase();
             // Search in all relevant fields
-            return (item.style.toString().toLowerCase().contains(searchLower) ?? false);
+            return (item.style.toString().toLowerCase().contains(searchLower) ??
+                false);
           }).toList();
     }
 
@@ -129,7 +132,8 @@ class BuyerProvider extends ChangeNotifier {
             // Convert all comparisons to lowercase for case-insensitive search
             final searchLower = query.toLowerCase();
             // Search in all relevant fields
-            return (item.po.toString().toLowerCase().contains(searchLower) ?? false);
+            return (item.po.toString().toLowerCase().contains(searchLower) ??
+                false);
           }).toList();
     }
 
@@ -200,7 +204,13 @@ class BuyerProvider extends ChangeNotifier {
 
   SizeModel? get size => _size;
 
-  Future<void> setBuyersStylePoInfo({BuyerModel? buyerInfo, BuyerStyleModel? buyerStyle, PoModels? buyerPO, ColorModel? color, SizeModel? size}) async {
+  Future<void> setBuyersStylePoInfo({
+    BuyerModel? buyerInfo,
+    BuyerStyleModel? buyerStyle,
+    PoModels? buyerPO,
+    ColorModel? color,
+    SizeModel? size,
+  }) async {
     // Update only the provided values
     if (buyerInfo != null) _buyerInfo = buyerInfo;
     if (buyerStyle != null) _buyerStyle = buyerStyle;
@@ -285,11 +295,10 @@ class BuyerProvider extends ChangeNotifier {
 
   bool get lock => _lock;
 
-  Future<void> lockUnlockSizeColor({bool? val})async {
-    if(val!=null){
-      _lock=val;
-    }
-    else {
+  Future<void> lockUnlockSizeColor({bool? val}) async {
+    if (val != null) {
+      _lock = val;
+    } else {
       _lock = !_lock;
     }
     notifyListeners();

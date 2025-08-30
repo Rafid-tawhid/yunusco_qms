@@ -1,26 +1,27 @@
 class DifferenceCountModel {
   DifferenceCountModel({
-      String? timeRange, 
-      num? lineId, 
-      num? buyerId, 
-      String? buyerName, 
-      String? po, 
-      String? style, 
-      num? todayPass, 
-      num? yesterdayPass, 
-      num? passDiffrence, 
-      num? todayAlteration, 
-      num? yesterdayAlteration, 
-      num? alterationDifference, 
-      num? todayAlterCheck, 
-      num? yesterdayAlterCheck, 
-      num? alterCheckDifference, 
-      num? todayReject, 
-      num? yesterdayReject, 
-      num? rejectDifference, 
-      num? todayTotal, 
-      num? yesterdayTotal, 
-      num? totalDifference,}){
+    String? timeRange,
+    num? lineId,
+    num? buyerId,
+    String? buyerName,
+    String? po,
+    String? style,
+    num? todayPass,
+    num? yesterdayPass,
+    num? passDiffrence,
+    num? todayAlteration,
+    num? yesterdayAlteration,
+    num? alterationDifference,
+    num? todayAlterCheck,
+    num? yesterdayAlterCheck,
+    num? alterCheckDifference,
+    num? todayReject,
+    num? yesterdayReject,
+    num? rejectDifference,
+    num? todayTotal,
+    num? yesterdayTotal,
+    num? totalDifference,
+  }) {
     _timeRange = timeRange;
     _lineId = lineId;
     _buyerId = buyerId;
@@ -42,7 +43,7 @@ class DifferenceCountModel {
     _todayTotal = todayTotal;
     _yesterdayTotal = yesterdayTotal;
     _totalDifference = totalDifference;
-}
+  }
 
   DifferenceCountModel.fromJson(dynamic json) {
     _timeRange = json['TimeRange'];
@@ -88,49 +89,51 @@ class DifferenceCountModel {
   num? _todayTotal;
   num? _yesterdayTotal;
   num? _totalDifference;
-DifferenceCountModel copyWith({  String? timeRange,
-  num? lineId,
-  num? buyerId,
-  String? buyerName,
-  String? po,
-  String? style,
-  num? todayPass,
-  num? yesterdayPass,
-  num? passDiffrence,
-  num? todayAlteration,
-  num? yesterdayAlteration,
-  num? alterationDifference,
-  num? todayAlterCheck,
-  num? yesterdayAlterCheck,
-  num? alterCheckDifference,
-  num? todayReject,
-  num? yesterdayReject,
-  num? rejectDifference,
-  num? todayTotal,
-  num? yesterdayTotal,
-  num? totalDifference,
-}) => DifferenceCountModel(  timeRange: timeRange ?? _timeRange,
-  lineId: lineId ?? _lineId,
-  buyerId: buyerId ?? _buyerId,
-  buyerName: buyerName ?? _buyerName,
-  po: po ?? _po,
-  style: style ?? _style,
-  todayPass: todayPass ?? _todayPass,
-  yesterdayPass: yesterdayPass ?? _yesterdayPass,
-  passDiffrence: passDiffrence ?? _passDiffrence,
-  todayAlteration: todayAlteration ?? _todayAlteration,
-  yesterdayAlteration: yesterdayAlteration ?? _yesterdayAlteration,
-  alterationDifference: alterationDifference ?? _alterationDifference,
-  todayAlterCheck: todayAlterCheck ?? _todayAlterCheck,
-  yesterdayAlterCheck: yesterdayAlterCheck ?? _yesterdayAlterCheck,
-  alterCheckDifference: alterCheckDifference ?? _alterCheckDifference,
-  todayReject: todayReject ?? _todayReject,
-  yesterdayReject: yesterdayReject ?? _yesterdayReject,
-  rejectDifference: rejectDifference ?? _rejectDifference,
-  todayTotal: todayTotal ?? _todayTotal,
-  yesterdayTotal: yesterdayTotal ?? _yesterdayTotal,
-  totalDifference: totalDifference ?? _totalDifference,
-);
+  DifferenceCountModel copyWith({
+    String? timeRange,
+    num? lineId,
+    num? buyerId,
+    String? buyerName,
+    String? po,
+    String? style,
+    num? todayPass,
+    num? yesterdayPass,
+    num? passDiffrence,
+    num? todayAlteration,
+    num? yesterdayAlteration,
+    num? alterationDifference,
+    num? todayAlterCheck,
+    num? yesterdayAlterCheck,
+    num? alterCheckDifference,
+    num? todayReject,
+    num? yesterdayReject,
+    num? rejectDifference,
+    num? todayTotal,
+    num? yesterdayTotal,
+    num? totalDifference,
+  }) => DifferenceCountModel(
+    timeRange: timeRange ?? _timeRange,
+    lineId: lineId ?? _lineId,
+    buyerId: buyerId ?? _buyerId,
+    buyerName: buyerName ?? _buyerName,
+    po: po ?? _po,
+    style: style ?? _style,
+    todayPass: todayPass ?? _todayPass,
+    yesterdayPass: yesterdayPass ?? _yesterdayPass,
+    passDiffrence: passDiffrence ?? _passDiffrence,
+    todayAlteration: todayAlteration ?? _todayAlteration,
+    yesterdayAlteration: yesterdayAlteration ?? _yesterdayAlteration,
+    alterationDifference: alterationDifference ?? _alterationDifference,
+    todayAlterCheck: todayAlterCheck ?? _todayAlterCheck,
+    yesterdayAlterCheck: yesterdayAlterCheck ?? _yesterdayAlterCheck,
+    alterCheckDifference: alterCheckDifference ?? _alterCheckDifference,
+    todayReject: todayReject ?? _todayReject,
+    yesterdayReject: yesterdayReject ?? _yesterdayReject,
+    rejectDifference: rejectDifference ?? _rejectDifference,
+    todayTotal: todayTotal ?? _todayTotal,
+    yesterdayTotal: yesterdayTotal ?? _yesterdayTotal,
+    totalDifference: totalDifference ?? _totalDifference,
+  );
   String? get timeRange => _timeRange;
   num? get lineId => _lineId;
   num? get buyerId => _buyerId;
@@ -178,5 +181,4 @@ DifferenceCountModel copyWith({  String? timeRange,
     map['TotalDifference'] = _totalDifference;
     return map;
   }
-
 }

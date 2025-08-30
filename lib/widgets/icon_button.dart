@@ -67,20 +67,21 @@ class _RectangleIconButtonState extends State<RectangleIconButton> {
             borderRadius: BorderRadius.circular(widget.borderRadius),
             border: widget.border,
           ),
-          child: _isLoading
-              ? const SizedBox(
-            width: 24,
-            height: 24,
-            child: CircularProgressIndicator(
-              strokeWidth: 2,
-              valueColor: AlwaysStoppedAnimation(Colors.white),
-            ),
-          )
-              : Icon(
-            widget.icon,
-            size: widget.iconSize,
-            color: widget.iconColor,
-          ),
+          child:
+              _isLoading
+                  ? const SizedBox(
+                    width: 24,
+                    height: 24,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      valueColor: AlwaysStoppedAnimation(Colors.white),
+                    ),
+                  )
+                  : Icon(
+                    widget.icon,
+                    size: widget.iconSize,
+                    color: widget.iconColor,
+                  ),
         ),
       ),
     );

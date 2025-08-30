@@ -1,16 +1,17 @@
 class HourlyProductionDataModel {
   HourlyProductionDataModel({
-      String? timeRange, 
-      num? lineId, 
-      num? buyerId, 
-      String? buyerName, 
-      String? po, 
-      String? style, 
-      num? pass, 
-      num? alteration, 
-      num? alterCheck, 
-      num? reject, 
-      num? totalRecords,}){
+    String? timeRange,
+    num? lineId,
+    num? buyerId,
+    String? buyerName,
+    String? po,
+    String? style,
+    num? pass,
+    num? alteration,
+    num? alterCheck,
+    num? reject,
+    num? totalRecords,
+  }) {
     _timeRange = timeRange;
     _lineId = lineId;
     _buyerId = buyerId;
@@ -22,7 +23,7 @@ class HourlyProductionDataModel {
     _alterCheck = alterCheck;
     _reject = reject;
     _totalRecords = totalRecords;
-}
+  }
 
   HourlyProductionDataModel.fromJson(dynamic json) {
     _timeRange = json['TimeRange'];
@@ -48,29 +49,31 @@ class HourlyProductionDataModel {
   num? _alterCheck;
   num? _reject;
   num? _totalRecords;
-HourlyProductionDataModel copyWith({  String? timeRange,
-  num? lineId,
-  num? buyerId,
-  String? buyerName,
-  String? po,
-  String? style,
-  num? pass,
-  num? alteration,
-  num? alterCheck,
-  num? reject,
-  num? totalRecords,
-}) => HourlyProductionDataModel(  timeRange: timeRange ?? _timeRange,
-  lineId: lineId ?? _lineId,
-  buyerId: buyerId ?? _buyerId,
-  buyerName: buyerName ?? _buyerName,
-  po: po ?? _po,
-  style: style ?? _style,
-  pass: pass ?? _pass,
-  alteration: alteration ?? _alteration,
-  alterCheck: alterCheck ?? _alterCheck,
-  reject: reject ?? _reject,
-  totalRecords: totalRecords ?? _totalRecords,
-);
+  HourlyProductionDataModel copyWith({
+    String? timeRange,
+    num? lineId,
+    num? buyerId,
+    String? buyerName,
+    String? po,
+    String? style,
+    num? pass,
+    num? alteration,
+    num? alterCheck,
+    num? reject,
+    num? totalRecords,
+  }) => HourlyProductionDataModel(
+    timeRange: timeRange ?? _timeRange,
+    lineId: lineId ?? _lineId,
+    buyerId: buyerId ?? _buyerId,
+    buyerName: buyerName ?? _buyerName,
+    po: po ?? _po,
+    style: style ?? _style,
+    pass: pass ?? _pass,
+    alteration: alteration ?? _alteration,
+    alterCheck: alterCheck ?? _alterCheck,
+    reject: reject ?? _reject,
+    totalRecords: totalRecords ?? _totalRecords,
+  );
   String? get timeRange => _timeRange;
   num? get lineId => _lineId;
   num? get buyerId => _buyerId;
@@ -98,5 +101,4 @@ HourlyProductionDataModel copyWith({  String? timeRange,
     map['TotalRecords'] = _totalRecords;
     return map;
   }
-
 }

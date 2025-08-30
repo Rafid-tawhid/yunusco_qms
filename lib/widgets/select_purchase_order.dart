@@ -65,7 +65,8 @@ class _SelectPurchaseOrderState extends State<SelectPurchaseOrder> {
                 child: Consumer<BuyerProvider>(
                   builder: (context, pro, _) {
                     // Create a dedicated ScrollController
-                    final ScrollController _scrollController = ScrollController();
+                    final ScrollController _scrollController =
+                        ScrollController();
 
                     if (pro.loadingPurchase) {
                       return const Center(child: CircularProgressIndicator());
@@ -89,34 +90,44 @@ class _SelectPurchaseOrderState extends State<SelectPurchaseOrder> {
                         child: Wrap(
                           spacing: 8.0,
                           runSpacing: 8.0,
-                          children: pro.filteredPoListByStyle.map((e) {
-                            bool isSelected = selectedPO == e.po;
-                            return ChoiceChip(
-                              label: Text(e.po.toString()),
-                              selected: isSelected,
-                              onSelected: (selected) {
-                                // Your selection logic here
-                                setState(() {
-                                  selectedPO=e.po;
-                                });
+                          children:
+                              pro.filteredPoListByStyle.map((e) {
+                                bool isSelected = selectedPO == e.po;
+                                return ChoiceChip(
+                                  label: Text(e.po.toString()),
+                                  selected: isSelected,
+                                  onSelected: (selected) {
+                                    // Your selection logic here
+                                    setState(() {
+                                      selectedPO = e.po;
+                                    });
 
-                                var bp=context.read<BuyerProvider>();
-                                bp.setBuyersStylePoInfo(buyerPO: e);
-                              },
-                              selectedColor: Colors.blue.shade200,
-                              backgroundColor: Colors.grey.shade200,
-                              labelStyle: TextStyle(
-                                color: isSelected ? Colors.blue.shade900 : Colors.black,
-                                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                              ),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8),
-                                side: BorderSide(
-                                  color: isSelected ? Colors.blue : Colors.grey.shade400,
-                                ),
-                              ),
-                            );
-                          }).toList(),
+                                    var bp = context.read<BuyerProvider>();
+                                    bp.setBuyersStylePoInfo(buyerPO: e);
+                                  },
+                                  selectedColor: Colors.blue.shade200,
+                                  backgroundColor: Colors.grey.shade200,
+                                  labelStyle: TextStyle(
+                                    color:
+                                        isSelected
+                                            ? Colors.blue.shade900
+                                            : Colors.black,
+                                    fontWeight:
+                                        isSelected
+                                            ? FontWeight.bold
+                                            : FontWeight.normal,
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                    side: BorderSide(
+                                      color:
+                                          isSelected
+                                              ? Colors.blue
+                                              : Colors.grey.shade400,
+                                    ),
+                                  ),
+                                );
+                              }).toList(),
                         ),
                       ),
                     );

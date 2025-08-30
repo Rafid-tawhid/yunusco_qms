@@ -7,15 +7,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:nidle_qty/buyer_list_screen.dart';
-import 'package:nidle_qty/service_class/hive_service_class.dart';
 import 'package:nidle_qty/service_class/notofication_helper.dart';
-import 'package:nidle_qty/tabview_buyer_screen.dart';
-import 'package:nidle_qty/saved_marked_image.dart';
 import 'package:nidle_qty/utils/constants.dart';
-import 'package:nidle_qty/utils/dashboard_helpers.dart';
 import 'package:nidle_qty/widgets/custom_button.dart';
 import 'package:nidle_qty/widgets/logout_alert.dart';
-import 'package:provider/provider.dart';
 
 import 'utils/drawer.dart';
 
@@ -29,10 +24,9 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
-
   @override
   void initState() {
-    if(Platform.isAndroid){
+    if (Platform.isAndroid) {
       NotificationServices.setupPushNotifications(context);
       NotificationServices.initializeNotifications();
     }
@@ -41,22 +35,21 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
   }
 
-
-
   @pragma('vm:entry-point')
   static Future<void> _firebaseBackgroundHandler(RemoteMessage message) async {
     await Firebase.initializeApp();
 
     final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-    FlutterLocalNotificationsPlugin();
+        FlutterLocalNotificationsPlugin();
 
     const AndroidInitializationSettings initializationSettingsAndroid =
-    AndroidInitializationSettings('@mipmap/ic_launcher');
+        AndroidInitializationSettings('@mipmap/ic_launcher');
 
-    final InitializationSettings initializationSettings = InitializationSettings(
-      android: initializationSettingsAndroid,
-      iOS: DarwinInitializationSettings(),
-    );
+    final InitializationSettings initializationSettings =
+        InitializationSettings(
+          android: initializationSettingsAndroid,
+          iOS: DarwinInitializationSettings(),
+        );
 
     await flutterLocalNotificationsPlugin.initialize(initializationSettings);
 
@@ -72,7 +65,8 @@ class _HomeScreenState extends State<HomeScreen> {
           android: AndroidNotificationDetails(
             'high_importance_channel',
             'High Importance Notifications',
-            channelDescription: 'This channel is used for important notifications.',
+            channelDescription:
+                'This channel is used for important notifications.',
             icon: android?.smallIcon ?? '@mipmap/ic_launcher',
             importance: Importance.max,
             priority: Priority.high,
@@ -88,7 +82,6 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -97,13 +90,16 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(
         title: const Text('Welcome'),
         actions: [
-          IconButton(onPressed: () async {
-            await showLogoutAlert(context);
-            // Handle logout
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Logging out...')),
-            );
-          }, icon: Icon(Icons.logout))
+          IconButton(
+            onPressed: () async {
+              await showLogoutAlert(context);
+              // Handle logout
+              ScaffoldMessenger.of(
+                context,
+              ).showSnackBar(const SnackBar(content: Text('Logging out...')));
+            },
+            icon: Icon(Icons.logout),
+          ),
         ],
       ),
       drawer: MyDrawer(),
@@ -112,10 +108,14 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Image.asset('images/logo.png',height: 120,width: 120,),
-             Text(
+            Image.asset('images/logo.png', height: 120, width: 120),
+            Text(
               'Yunusco QMS',
-              style: AppConstants.customTextStyle(24, Colors.black, FontWeight.bold)
+              style: AppConstants.customTextStyle(
+                24,
+                Colors.black,
+                FontWeight.bold,
+              ),
             ),
             const SizedBox(height: 30),
             ActionButton(
@@ -124,7 +124,10 @@ class _HomeScreenState extends State<HomeScreen> {
               color: Colors.blue,
               onPressed: () {
                 // Handle first button press
-                Navigator.push(context, CupertinoPageRoute(builder: (context)=>BuyerListScreen()));
+                Navigator.push(
+                  context,
+                  CupertinoPageRoute(builder: (context) => BuyerListScreen()),
+                );
               },
             ),
             const SizedBox(height: 20),
@@ -133,14 +136,12 @@ class _HomeScreenState extends State<HomeScreen> {
               text: 'In Process Check',
               color: Colors.deepPurple,
               onPressed: () {
-
                 // if(MediaQuery.of(context).size.width>600){
-              // Navigator.push(context, CupertinoPageRoute(builder: (context)=>TouchMarkerScreen()));
+                // Navigator.push(context, CupertinoPageRoute(builder: (context)=>TouchMarkerScreen()));
                 // }
                 // else {
                 //   Navigator.push(context, CupertinoPageRoute(builder: (context)=>BuyerListScreen()));
                 // }
-
               },
             ),
             const SizedBox(height: 40),
@@ -154,12 +155,8 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-
-  void _getBearerTokenFromServer() async{
+  void _getBearerTokenFromServer() async {
     //var data=await NotificationServices.getFirebaseBearerToken();
-   // debugPrint('Server Key : ${data}');
+    // debugPrint('Server Key : ${data}');
   }
-
-
-
 }

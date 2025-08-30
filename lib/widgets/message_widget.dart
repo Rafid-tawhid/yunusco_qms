@@ -18,7 +18,7 @@ class _SupportScreenState extends State<SupportScreen> {
     "Where can I find my order history?",
     "The app keeps crashing",
     "I need help with payment",
-    "Other issue..."
+    "Other issue...",
   ];
 
   void _sendMessage() {
@@ -36,9 +36,7 @@ class _SupportScreenState extends State<SupportScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        title: const Text('Support'),
-      ),
+      appBar: AppBar(title: const Text('Support')),
       body: Column(
         children: [
           // Predefined messages section
@@ -54,17 +52,22 @@ class _SupportScreenState extends State<SupportScreen> {
             spacing: 8,
             runSpacing: 8,
 
-            children: _predefinedMessages.map((msg) => ChoiceChip(
-              backgroundColor: Colors.white,
-              label: Text(msg),
-              selected: _selectedPredefinedMessage == msg,
-              onSelected: (selected) {
-                setState(() {
-                  _selectedPredefinedMessage = selected ? msg : null;
-                  if (selected) _messageController.clear();
-                });
-              },
-            )).toList(),
+            children:
+                _predefinedMessages
+                    .map(
+                      (msg) => ChoiceChip(
+                        backgroundColor: Colors.white,
+                        label: Text(msg),
+                        selected: _selectedPredefinedMessage == msg,
+                        onSelected: (selected) {
+                          setState(() {
+                            _selectedPredefinedMessage = selected ? msg : null;
+                            if (selected) _messageController.clear();
+                          });
+                        },
+                      ),
+                    )
+                    .toList(),
           ),
 
           // Message history
@@ -100,11 +103,14 @@ class _SupportScreenState extends State<SupportScreen> {
                   child: TextField(
                     controller: _messageController,
                     decoration: InputDecoration(
-                      hintText: _selectedPredefinedMessage != null
-                          ? 'Selected: $_selectedPredefinedMessage'
-                          : 'Type your message...',
+                      hintText:
+                          _selectedPredefinedMessage != null
+                              ? 'Selected: $_selectedPredefinedMessage'
+                              : 'Type your message...',
                       border: const OutlineInputBorder(),
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                      ),
                     ),
                     onChanged: (text) {
                       if (text.isNotEmpty) {

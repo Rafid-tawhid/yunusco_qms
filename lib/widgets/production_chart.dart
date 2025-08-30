@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-
-
 class DualLineChart extends StatelessWidget {
   final List<double> primaryValues;
   final List<double> secondaryValues;
@@ -66,9 +64,10 @@ class _DualLineChartPainter extends CustomPainter {
     final range = maxValue - minValue;
     final colWidth = size.width / (primaryValues.length - 1);
 
-    final gridPaint = Paint()
-      ..color = Colors.grey.withOpacity(0.3)
-      ..strokeWidth = 1;
+    final gridPaint =
+        Paint()
+          ..color = Colors.grey.withOpacity(0.3)
+          ..strokeWidth = 1;
 
     final textStyle = TextStyle(color: Colors.white, fontSize: 10);
 
@@ -83,7 +82,10 @@ class _DualLineChartPainter extends CustomPainter {
         text: textSpan,
         textDirection: TextDirection.ltr,
       )..layout();
-      textPainter.paint(canvas, Offset(-textPainter.width - 4, y - textPainter.height / 2));
+      textPainter.paint(
+        canvas,
+        Offset(-textPainter.width - 4, y - textPainter.height / 2),
+      );
     }
 
     // Draw primary line with points
@@ -130,10 +132,11 @@ class _DualLineChartPainter extends CustomPainter {
     required double range,
     required double colWidth,
   }) {
-    final paint = Paint()
-      ..color = color
-      ..strokeWidth = 2
-      ..style = PaintingStyle.stroke;
+    final paint =
+        Paint()
+          ..color = color
+          ..strokeWidth = 2
+          ..style = PaintingStyle.stroke;
 
     final path = Path();
 

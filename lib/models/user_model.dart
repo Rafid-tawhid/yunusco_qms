@@ -24,7 +24,8 @@ class UserModel {
     dynamic modifier,
     dynamic modifiedDate,
     dynamic hasAuthority,
-    dynamic firebaseDeviceToken,}){
+    dynamic firebaseDeviceToken,
+  }) {
     _userRoleName = userRoleName;
     _tokenInfo = tokenInfo;
     _designation = designation;
@@ -104,7 +105,8 @@ class UserModel {
   dynamic _modifiedDate;
   dynamic _hasAuthority;
   dynamic _firebaseDeviceToken;
-  UserModel copyWith({  String? userRoleName,
+  UserModel copyWith({
+    String? userRoleName,
     dynamic tokenInfo,
     String? designation,
     String? iDnum,
@@ -129,7 +131,8 @@ class UserModel {
     dynamic modifiedDate,
     dynamic hasAuthority,
     dynamic firebaseDeviceToken,
-  }) => UserModel(  userRoleName: userRoleName ?? _userRoleName,
+  }) => UserModel(
+    userRoleName: userRoleName ?? _userRoleName,
     tokenInfo: tokenInfo ?? _tokenInfo,
     designation: designation ?? _designation,
     iDnum: iDnum ?? _iDnum,
@@ -210,7 +213,6 @@ class UserModel {
     map['FirebaseDeviceToken'] = _firebaseDeviceToken;
     return map;
   }
-
 }
 
 //

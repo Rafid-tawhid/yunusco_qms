@@ -11,14 +11,22 @@ class DefectsDisplayWidget extends StatelessWidget {
     // Group defects by operation name
     final Map<String, List<OperationDefectCountModel>> groupedDefects = {};
     for (var defect in defects) {
-      groupedDefects.putIfAbsent(defect.operationName ?? '', () => []).add(defect);
+      groupedDefects
+          .putIfAbsent(defect.operationName ?? '', () => [])
+          .add(defect);
     }
 
     // Sort operations by total defect count (descending)
     final sortedOperations =
         groupedDefects.entries.toList()..sort((a, b) {
-          final aTotal = a.value.fold(0, (sum, defect) => sum + (defect.defectCount?.toInt() ?? 0));
-          final bTotal = b.value.fold(0, (sum, defect) => sum + (defect.defectCount?.toInt() ?? 0));
+          final aTotal = a.value.fold(
+            0,
+            (sum, defect) => sum + (defect.defectCount?.toInt() ?? 0),
+          );
+          final bTotal = b.value.fold(
+            0,
+            (sum, defect) => sum + (defect.defectCount?.toInt() ?? 0),
+          );
           return bTotal.compareTo(aTotal);
         });
 
@@ -26,23 +34,33 @@ class DefectsDisplayWidget extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.only(left: 16.0,top: 12),
-          child: Text('Defects Report',style: TextStyle(fontSize: 22,fontWeight: FontWeight.w600),),
+          padding: const EdgeInsets.only(left: 16.0, top: 12),
+          child: Text(
+            'Defects Report',
+            style: TextStyle(fontSize: 22, fontWeight: FontWeight.w600),
+          ),
         ),
         Expanded(
           child: ListView.separated(
             padding: const EdgeInsets.all(16),
-          
+
             itemCount: sortedOperations.length,
             separatorBuilder: (context, index) => const SizedBox(height: 12),
             itemBuilder: (context, index) {
               final operation = sortedOperations[index];
-              operation.value.sort((a, b) => (b.defectCount ?? 0).compareTo(a.defectCount ?? 0));
-              final totalDefects = operation.value.fold(0, (sum, defect) => sum + (defect.defectCount?.toInt() ?? 0));
-          
+              operation.value.sort(
+                (a, b) => (b.defectCount ?? 0).compareTo(a.defectCount ?? 0),
+              );
+              final totalDefects = operation.value.fold(
+                0,
+                (sum, defect) => sum + (defect.defectCount?.toInt() ?? 0),
+              );
+
               return Card(
                 elevation: 2,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
                 child: Padding(
                   padding: const EdgeInsets.all(16),
                   child: Column(
@@ -51,28 +69,58 @@ class DefectsDisplayWidget extends StatelessWidget {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(operation.key, style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
+                          Text(
+                            operation.key,
+                            style: Theme.of(context).textTheme.titleMedium
+                                ?.copyWith(fontWeight: FontWeight.bold),
+                          ),
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                            decoration: BoxDecoration(color: Colors.blue[50], borderRadius: BorderRadius.circular(20)),
-                            child: Text('Total: $totalDefects', style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.blue[800])),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 4,
+                            ),
+                            decoration: BoxDecoration(
+                              color: Colors.blue[50],
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Text(
+                              'Total: $totalDefects',
+                              style: Theme.of(context).textTheme.bodyMedium
+                                  ?.copyWith(color: Colors.blue[800]),
+                            ),
                           ),
                         ],
                       ),
                       //
                       const SizedBox(height: 4),
                       ...operation.value.map(
-                            (defect) => Padding(
+                        (defect) => Padding(
                           padding: const EdgeInsets.symmetric(vertical: 4),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Flexible(child: Text(defect.defectName ?? '', style: Theme.of(context).textTheme.bodyMedium)),
+                              Flexible(
+                                child: Text(
+                                  defect.defectName ?? '',
+                                  style: Theme.of(context).textTheme.bodyMedium,
+                                ),
+                              ),
                               Chip(
-                                label: Text(defect.defectCount.toString(), style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.white)),
-                                backgroundColor: _getDefectColor(defect.defectCount?.toInt() ?? 0),
-                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 0),
+                                label: Text(
+                                  defect.defectCount.toString(),
+                                  style: Theme.of(context).textTheme.bodySmall
+                                      ?.copyWith(color: Colors.white),
+                                ),
+                                backgroundColor: _getDefectColor(
+                                  defect.defectCount?.toInt() ?? 0,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                  vertical: 0,
+                                ),
                                 labelPadding: EdgeInsets.zero,
                               ),
                             ],

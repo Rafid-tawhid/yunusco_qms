@@ -1,5 +1,5 @@
 import 'package:hive/hive.dart';
-part 'local_send_data_model.g.dart';  // T
+part 'local_send_data_model.g.dart'; // T
 
 @HiveType(typeId: 0)
 class LocalSendDataModel {

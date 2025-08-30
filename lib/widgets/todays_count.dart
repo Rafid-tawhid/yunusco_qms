@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:intl/intl.dart';
 
 class TodayQualitySummary extends StatelessWidget {
   const TodayQualitySummary({super.key});
@@ -12,11 +11,12 @@ class TodayQualitySummary extends StatelessWidget {
     final endOfDay = DateTime(today.year, today.month, today.day, 23, 59, 59);
 
     return StreamBuilder<QuerySnapshot>(
-      stream: FirebaseFirestore.instance
-          .collection('qms')
-          .where('check_time', isGreaterThan: startOfDay.toIso8601String())
-          .where('check_time', isLessThan: endOfDay.toIso8601String())
-          .snapshots(),
+      stream:
+          FirebaseFirestore.instance
+              .collection('qms')
+              .where('check_time', isGreaterThan: startOfDay.toIso8601String())
+              .where('check_time', isLessThan: endOfDay.toIso8601String())
+              .snapshots(),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
           return const Center(child: Text('Error loading data'));
@@ -42,7 +42,8 @@ class TodayQualitySummary extends StatelessWidget {
         }
 
         final total = passed + rejected + altered;
-        final passRate = total > 0 ? (passed / total * 100).toStringAsFixed(1) : '0.0';
+        final passRate =
+            total > 0 ? (passed / total * 100).toStringAsFixed(1) : '0.0';
 
         return Card(
           margin: const EdgeInsets.all(8),
@@ -101,10 +102,7 @@ class TodayQualitySummary extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 4),
-        Text(
-          label,
-          style: const TextStyle(fontSize: 12),
-        ),
+        Text(label, style: const TextStyle(fontSize: 12)),
       ],
     );
   }

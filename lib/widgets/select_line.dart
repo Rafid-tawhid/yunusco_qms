@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:nidle_qty/providers/buyer_provider.dart';
 import 'package:nidle_qty/utils/dashboard_helpers.dart';
@@ -39,9 +38,10 @@ class _ItemSelectionWidgetState extends State<SelectLine> {
         centerTitle: true,
         elevation: 0,
       ),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : _buildContent(),
+      body:
+          _isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : _buildContent(),
     );
   }
 
@@ -105,17 +105,15 @@ class _ItemSelectionWidgetState extends State<SelectLine> {
               return Container(
                 decoration: BoxDecoration(
                   border: Border(
-                    bottom: BorderSide(
-                      color: Colors.grey.shade200,
-                      width: 1,
-                    ),
+                    bottom: BorderSide(color: Colors.grey.shade200, width: 1),
                   ),
                 ),
                 child: ListTile(
                   title: Text(
                     item['name'] ?? 'No Name',
                     style: TextStyle(
-                      fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                      fontWeight:
+                          isSelected ? FontWeight.bold : FontWeight.normal,
                     ),
                   ),
                   subtitle: Text(
@@ -126,8 +124,11 @@ class _ItemSelectionWidgetState extends State<SelectLine> {
                     value: index,
                     groupValue: selectedIndex,
                     onChanged: (int? value) => _handleSelection(value, item),
-                    fillColor: MaterialStateProperty.resolveWith<Color>(
-                          (states) => isSelected ? Theme.of(context).primaryColor : Colors.grey,
+                    fillColor: WidgetStateProperty.resolveWith<Color>(
+                      (states) =>
+                          isSelected
+                              ? Theme.of(context).primaryColor
+                              : Colors.grey,
                     ),
                   ),
                   tileColor: isSelected ? Colors.blue.shade50 : null,
@@ -147,7 +148,7 @@ class _ItemSelectionWidgetState extends State<SelectLine> {
   void _handleSelection(int? index, Map<String, dynamic> item) {
     setState(() => selectedIndex = index);
     DashboardHelpers.setString('line', item['name']);
-    Navigator.pop(context,item);
+    Navigator.pop(context, item);
   }
 
   Future<void> getPreviousSelectedLines() async {

@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:nidle_qty/login_screen.dart';
 import 'package:nidle_qty/utils/dashboard_helpers.dart';
@@ -18,15 +16,15 @@ Future<void> showLogoutAlert(BuildContext context) async {
             onPressed: () => Navigator.of(context).pop(), // Close dialog
           ),
           TextButton(
-            child: Text(
-              'Logout',
-              style: TextStyle(color: Colors.red),
-            ),
+            child: Text('Logout', style: TextStyle(color: Colors.red)),
             onPressed: () {
               // Perform logout
               DashboardHelpers.clearUser();
               Navigator.of(context).pop();
-              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>LoginScreen()));
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => LoginScreen()),
+              );
             },
           ),
         ],
@@ -34,4 +32,3 @@ Future<void> showLogoutAlert(BuildContext context) async {
     },
   );
 }
-

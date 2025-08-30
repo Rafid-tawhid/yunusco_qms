@@ -37,7 +37,17 @@ class _BuyerListScreenState extends State<BuyerListScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: isSearching ? _buildSearchField() :  Text('Buyer List',style: AppConstants.customTextStyle(18, Colors.black, FontWeight.w500),),
+        title:
+            isSearching
+                ? _buildSearchField()
+                : Text(
+                  'Buyer List',
+                  style: AppConstants.customTextStyle(
+                    18,
+                    Colors.black,
+                    FontWeight.w500,
+                  ),
+                ),
         centerTitle: true,
         elevation: 0,
         actions: [
@@ -45,15 +55,29 @@ class _BuyerListScreenState extends State<BuyerListScreen> {
             duration: const Duration(milliseconds: 200),
             child:
                 isSearching
-                    ? IconButton(key: const ValueKey('close'), onPressed: _toggleSearch, icon: const Icon(Icons.close))
-                    : IconButton(key: const ValueKey('search'), onPressed: _toggleSearch, icon: const Icon(Icons.search)),
+                    ? IconButton(
+                      key: const ValueKey('close'),
+                      onPressed: _toggleSearch,
+                      icon: const Icon(Icons.close),
+                    )
+                    : IconButton(
+                      key: const ValueKey('search'),
+                      onPressed: _toggleSearch,
+                      icon: const Icon(Icons.search),
+                    ),
           ),
         ],
       ),
       body: Consumer<BuyerProvider>(
         builder:
             (context, pro, _) => Container(
-              decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Colors.blue.shade50, Colors.white])),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [Colors.blue.shade50, Colors.white],
+                ),
+              ),
               child:
                   pro.loadingBuyer
                       ? Center(child: CircularProgressIndicator())
@@ -68,36 +92,70 @@ class _BuyerListScreenState extends State<BuyerListScreen> {
                             elevation: 2,
                             color: Colors.white,
                             margin: const EdgeInsets.only(bottom: 12),
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
                             child: ListTile(
-                              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 12,
+                              ),
                               leading: Container(
                                 width: 50,
                                 height: 50,
-                                decoration: BoxDecoration(color: Colors.blue.shade100, borderRadius: BorderRadius.circular(8)),
+                                decoration: BoxDecoration(
+                                  color: Colors.blue.shade100,
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
                                 alignment: Alignment.center,
-                                child: Text(buyer.code.toString(), style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black)),
+                                child: Text(
+                                  buyer.code.toString(),
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black,
+                                  ),
+                                ),
                               ),
-                              title: Text(buyer.name ?? '', style: AppConstants.customTextStyle(16, Colors.black, FontWeight.w600),),
-                              trailing: Icon(Icons.chevron_right, color: Colors.grey.shade600),
+                              title: Text(
+                                buyer.name ?? '',
+                                style: AppConstants.customTextStyle(
+                                  16,
+                                  Colors.black,
+                                  FontWeight.w600,
+                                ),
+                              ),
+                              trailing: Icon(
+                                Icons.chevron_right,
+                                color: Colors.grey.shade600,
+                              ),
                               onTap: () async {
                                 debugPrint('selected buyer ${buyer}');
                                 var bp = context.read<BuyerProvider>();
                                 bp.setLoadingStyle(true);
-                                EasyLoading.show(maskType: EasyLoadingMaskType.black);
-                                var res = await bp.getStyleDataByBuyerId(buyer.code.toString());
+                                EasyLoading.show(
+                                  maskType: EasyLoadingMaskType.black,
+                                );
+                                var res = await bp.getStyleDataByBuyerId(
+                                  buyer.code.toString(),
+                                );
                                 EasyLoading.dismiss();
                                 bp.setLoadingStyle(false);
                                 //clear style and po and set code
-                                bp.
-                                clearStyleAndPoList();
+                                bp.clearStyleAndPoList();
                                 bp.setBuyersStylePoInfo(buyerInfo: buyer);
                                 //navigate to login if fails api
                                 if (res == false) {
                                   DashboardHelpers.navigateToLogin(context);
                                 }
 
-                                Navigator.push(context, MaterialPageRoute(builder: (context) => StyleSelectionScreen()));
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder:
+                                        (context) => StyleSelectionScreen(),
+                                  ),
+                                );
                               },
                             ),
                           );
@@ -124,7 +182,11 @@ class _BuyerListScreenState extends State<BuyerListScreen> {
       controller: _searchController,
       focusNode: _searchFocusNode,
       autofocus: true,
-      decoration: InputDecoration(hintText: 'Search buyer...', border: InputBorder.none, hintStyle: TextStyle(color: Colors.black.withOpacity(0.7))),
+      decoration: InputDecoration(
+        hintText: 'Search buyer...',
+        border: InputBorder.none,
+        hintStyle: TextStyle(color: Colors.black.withOpacity(0.7)),
+      ),
       style: const TextStyle(color: Colors.black, fontSize: 16),
       onChanged: (query) async {
         mp.setLoadingStyle(true);

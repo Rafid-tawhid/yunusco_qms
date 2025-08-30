@@ -1,12 +1,9 @@
 class PoModels {
-  PoModels({
-      String? style, 
-      String? po, 
-      String? itemId,}){
+  PoModels({String? style, String? po, String? itemId}) {
     _style = style;
     _po = po;
     _itemId = itemId;
-}
+  }
 
   PoModels.fromJson(dynamic json) {
     _style = json['Style'];
@@ -16,13 +13,11 @@ class PoModels {
   String? _style;
   String? _po;
   String? _itemId;
-PoModels copyWith({  String? style,
-  String? po,
-  String? itemId,
-}) => PoModels(  style: style ?? _style,
-  po: po ?? _po,
-  itemId: itemId ?? _itemId,
-);
+  PoModels copyWith({String? style, String? po, String? itemId}) => PoModels(
+    style: style ?? _style,
+    po: po ?? _po,
+    itemId: itemId ?? _itemId,
+  );
   String? get style => _style;
   String? get po => _po;
   String? get itemId => _itemId;
@@ -34,5 +29,4 @@ PoModels copyWith({  String? style,
     map['ItemId'] = _itemId;
     return map;
   }
-
 }

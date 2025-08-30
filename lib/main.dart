@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:hive/hive.dart';
@@ -9,14 +8,9 @@ import 'package:nidle_qty/providers/buyer_provider.dart';
 import 'package:nidle_qty/providers/counting_provider.dart';
 import 'package:nidle_qty/providers/network_provider.dart';
 import 'package:nidle_qty/service_class/hive_service_class.dart';
-import 'package:nidle_qty/utils/constants.dart';
 import 'package:nidle_qty/utils/dashboard_helpers.dart';
 import 'package:nidle_qty/widgets/launcher_screen.dart';
-import 'package:nidle_qty/widgets/network_alert.dart';
 import 'package:provider/provider.dart';
-import 'login_screen.dart';
-import 'models/local_send_data_model.dart';
-import 'models/send_data_model.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
@@ -42,12 +36,12 @@ void main() async {
       providers: [
         ChangeNotifierProvider(create: (_) => BuyerProvider()),
         ChangeNotifierProvider(create: (_) => CountingProvider()),
-        ChangeNotifierProvider(create: (_) => NetworkProvider())],
-      child: MyApp(isNewDay:isNewDay),
+        ChangeNotifierProvider(create: (_) => NetworkProvider()),
+      ],
+      child: MyApp(isNewDay: isNewDay),
     ),
   );
 }
-
 
 class MyApp extends StatelessWidget {
   final bool isNewDay;
@@ -64,12 +58,15 @@ class MyApp extends StatelessWidget {
         // Initialize network listener
         WidgetsBinding.instance.addPostFrameCallback((_) {
           print('App: Initializing network listener');
-          Provider.of<NetworkProvider>(context, listen: false).initConnectivity();
+          Provider.of<NetworkProvider>(
+            context,
+            listen: false,
+          ).initConnectivity();
         });
 
         return EasyLoading.init()(context, child);
       },
-      home: LauncherScreen(isNewDay: isNewDay,),
+      home: LauncherScreen(isNewDay: isNewDay),
     );
   }
 }

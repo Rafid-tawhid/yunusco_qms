@@ -9,7 +9,6 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:nidle_qty/login_screen.dart';
 import 'package:nidle_qty/service_class/hive_service_class.dart';
-import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/send_data_model.dart';
 import '../models/user_model.dart';
@@ -24,22 +23,22 @@ class DashboardHelpers {
   static AnimationController? localAnimationController;
   static String profileImageUrl = '';
 
-
   static void showAlert({required String msg}) {
     Fluttertoast.showToast(
-        msg: msg,
-        toastLength: Toast.LENGTH_LONG,
-        gravity: ToastGravity.SNACKBAR,
-        backgroundColor: Colors.black.withOpacity(.5),
-        textColor: Colors.white,
-        fontSize: 16.0);
+      msg: msg,
+      toastLength: Toast.LENGTH_LONG,
+      gravity: ToastGravity.SNACKBAR,
+      backgroundColor: Colors.black.withOpacity(.5),
+      textColor: Colors.white,
+      fontSize: 16.0,
+    );
   }
 
   static Future<UserModel?> setUserInfo() async {
     // 3. When retrieving
     var data = await DashboardHelpers.getString('user');
     UserModel storedUser = UserModel.fromJson(jsonDecode(data));
-    userModel=storedUser;
+    userModel = storedUser;
     debugPrint('USER INFO ${userModel!.toJson()}');
     return userModel;
   }
@@ -55,14 +54,12 @@ class DashboardHelpers {
     sp.setString(key, val);
   }
 
-
   static String convertDateTime(String dateTimeString, {String? pattern}) {
     // Parse the original date-time string into a DateTime object
     DateTime originalDateTime = DateTime.parse(dateTimeString);
 
     // Create a DateFormat object for the desired format
-    DateFormat desiredFormat =
-        DateFormat(pattern ?? 'd MMM yyyy HH:mm:aa');
+    DateFormat desiredFormat = DateFormat(pattern ?? 'd MMM yyyy HH:mm:aa');
 
     // Format the date according to the desired format
     String formattedDate = desiredFormat.format(originalDateTime);
@@ -112,23 +109,35 @@ class DashboardHelpers {
                     CupertinoButton(
                       child: Text(
                         'Cancel',
-                        style: AppConstants.customTextStyle(14, Colors.black, FontWeight.bold),
+                        style: AppConstants.customTextStyle(
+                          14,
+                          Colors.black,
+                          FontWeight.bold,
+                        ),
                       ),
                       onPressed: () {
-                        completer
-                            .complete(null); // Complete with null if canceled
+                        completer.complete(
+                          null,
+                        ); // Complete with null if canceled
                         Navigator.of(context).pop(); // Close the bottom sheet
                       },
                     ),
                     CupertinoButton(
-                      child: Text('Done',
-                          style:
-                              AppConstants.customTextStyle(14, Colors.green, FontWeight.bold)),
+                      child: Text(
+                        'Done',
+                        style: AppConstants.customTextStyle(
+                          14,
+                          Colors.green,
+                          FontWeight.bold,
+                        ),
+                      ),
                       onPressed: () {
-                        String formattedDate =
-                            DateFormat('yyyy-MM-dd').format(selectedDate);
+                        String formattedDate = DateFormat(
+                          'yyyy-MM-dd',
+                        ).format(selectedDate);
                         completer.complete(
-                            formattedDate); // Complete with selected date
+                          formattedDate,
+                        ); // Complete with selected date
                         Navigator.of(context).pop(); // Close the bottom sheet
                       },
                     ),
@@ -216,14 +225,14 @@ class DashboardHelpers {
     return newTimeString;
   }
 
-
-
   static bool isKeyboardOpen(BuildContext context) {
     return MediaQuery.of(context).viewInsets.bottom > 0;
   }
 
   static String getFirstCharacterCombinationName(
-      String firstName, String? lastName) {
+    String firstName,
+    String? lastName,
+  ) {
     if (lastName == null) {
       if (firstName.contains(' ')) {
         List<String> nameParts = firstName.split(' ');
@@ -287,15 +296,15 @@ class DashboardHelpers {
     }
   }
 
-
   static String convertDecimalToHoursMinutes(double? decimalHours) {
     if (decimalHours == null || decimalHours.isNaN || decimalHours < 0) {
       return '00hr 00min';
     }
 
     int hours = decimalHours.floor(); // Get the integer part as hours
-    int minutes = ((decimalHours - hours) * 60)
-        .round(); // Convert the decimal part to minutes
+    int minutes =
+        ((decimalHours - hours) * 60)
+            .round(); // Convert the decimal part to minutes
 
     return '${hours}hr ${minutes}min';
   }
@@ -306,7 +315,10 @@ class DashboardHelpers {
   }
 
   static void showAnimatedDialog(
-      BuildContext context, String message, String? title) {
+    BuildContext context,
+    String message,
+    String? title,
+  ) {
     showGeneralDialog(
       context: context,
       barrierDismissible: true,
@@ -341,7 +353,11 @@ class DashboardHelpers {
                   Text(
                     textAlign: TextAlign.center,
                     'Your documents have some issues',
-                    style: AppConstants.customTextStyle(22, Colors.black, FontWeight.w700),
+                    style: AppConstants.customTextStyle(
+                      22,
+                      Colors.black,
+                      FontWeight.w700,
+                    ),
                   ),
                   SizedBox(height: 24),
                   Text(
@@ -355,9 +371,15 @@ class DashboardHelpers {
                   ),
                   SizedBox(height: 12),
                   // Alert Content
-                  Text(message,
-                      textAlign: TextAlign.left,
-                      style: AppConstants.customTextStyle(14, Colors.grey, FontWeight.w500)),
+                  Text(
+                    message,
+                    textAlign: TextAlign.left,
+                    style: AppConstants.customTextStyle(
+                      14,
+                      Colors.grey,
+                      FontWeight.w500,
+                    ),
+                  ),
                   SizedBox(height: 20),
                   // Action Buttons
                   Row(
@@ -376,10 +398,16 @@ class DashboardHelpers {
                         },
                         child: Padding(
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 12, vertical: 4),
+                            horizontal: 12,
+                            vertical: 4,
+                          ),
                           child: Text(
                             'Close',
-                            style: AppConstants.customTextStyle(16, Colors.black, FontWeight.w600),
+                            style: AppConstants.customTextStyle(
+                              16,
+                              Colors.black,
+                              FontWeight.w600,
+                            ),
                           ),
                         ),
                       ),
@@ -394,20 +422,21 @@ class DashboardHelpers {
       transitionBuilder: (context, anim1, anim2, child) {
         return Transform.scale(
           scale: anim1.value,
-          child: Opacity(
-            opacity: anim1.value,
-            child: child,
-          ),
+          child: Opacity(opacity: anim1.value, child: child),
         );
       },
     );
   }
 
-  static showCustomAnimatedDialog(
-      {required BuildContext context, required Widget child, double? height,bool? dismiss}) {
+  static showCustomAnimatedDialog({
+    required BuildContext context,
+    required Widget child,
+    double? height,
+    bool? dismiss,
+  }) {
     showGeneralDialog(
       context: context,
-      barrierDismissible: dismiss??true,
+      barrierDismissible: dismiss ?? true,
       barrierLabel: "Dismiss",
       barrierColor: Colors.black.withOpacity(0.5),
       // Background dimming
@@ -417,9 +446,10 @@ class DashboardHelpers {
         return Center(
           child: Container(
             width: MediaQuery.of(context).size.width * 0.9,
-            height: height == null
-                ? height
-                : MediaQuery.of(context).size.height / 1.8,
+            height:
+                height == null
+                    ? height
+                    : MediaQuery.of(context).size.height / 1.8,
             padding: EdgeInsets.all(20),
             decoration: BoxDecoration(
               color: Colors.white,
@@ -432,31 +462,26 @@ class DashboardHelpers {
                 ),
               ],
             ),
-            child: Material(
-              type: MaterialType.transparency,
-              child: child,
-            ),
+            child: Material(type: MaterialType.transparency, child: child),
           ),
         );
       },
       transitionBuilder: (context, anim1, anim2, child) {
         return Transform.scale(
           scale: anim1.value,
-          child: Opacity(
-            opacity: anim1.value,
-            child: child,
-          ),
+          child: Opacity(opacity: anim1.value, child: child),
         );
       },
     );
   }
 
-  static Future<dynamic> showBottomDialog(
-      {required BuildContext context,
-      bool? dragable,
-      bool? dismissible,
-      double? height,
-      required Widget child}) {
+  static Future<dynamic> showBottomDialog({
+    required BuildContext context,
+    bool? dragable,
+    bool? dismissible,
+    double? height,
+    required Widget child,
+  }) {
     return showModalBottomSheet(
       context: context,
       enableDrag: dragable ?? true,
@@ -503,12 +528,12 @@ class DashboardHelpers {
     }
   }
 
-
-
   static String formatTime24Hour(TimeOfDay time) {
     final String hour = time.hour.toString().padLeft(2, '0'); // Ensure 2 digits
-    final String minute =
-        time.minute.toString().padLeft(2, '0'); // Ensure 2 digits
+    final String minute = time.minute.toString().padLeft(
+      2,
+      '0',
+    ); // Ensure 2 digits
     return '$hour:$minute';
   }
 
@@ -538,8 +563,10 @@ class DashboardHelpers {
             children: [
               // Action Bar
               Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 12,
+                ),
                 decoration: BoxDecoration(
                   color: Colors.blueAccent,
                   borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
@@ -613,7 +640,9 @@ class DashboardHelpers {
   }
 
   static Future<TimeOfDay?> pickTime(
-      BuildContext context, TimeOfDay? initialTime) async {
+    BuildContext context,
+    TimeOfDay? initialTime,
+  ) async {
     final TimeOfDay? pickedTime = await showTimePicker(
       context: context,
       initialTime: initialTime ?? TimeOfDay.now(),
@@ -691,9 +720,9 @@ class DashboardHelpers {
     }
   }
 
-
   static Future<List<Map<String, dynamic>>> fetchLatLngs(
-      List<String> zipCodes) async {
+    List<String> zipCodes,
+  ) async {
     const apiKey = 'AIzaSyAwpFYRk4i1gCEXqDepia2LXtsNuuMHkEY';
     List<Map<String, dynamic>> coordinates = [];
 
@@ -717,15 +746,10 @@ class DashboardHelpers {
     return coordinates;
   }
 
-
-
-
   static String removeSpecialCharacters(String input) {
     // Replace all non-alphanumeric characters (except spaces) with an empty string
     return input.replaceAll(RegExp(r'[^\w\s]'), '');
   }
-
-
 
   static Future<void> clearUser() async {
     final prefs = await SharedPreferences.getInstance();
@@ -737,17 +761,16 @@ class DashboardHelpers {
     prefs.remove("selectedSectionId");
     prefs.remove("selectedLine");
     prefs.remove("selectedLineId");
-    userModel=null;
-    AppConstants.token='';
+    userModel = null;
+    AppConstants.token = '';
     final box = Hive.box<SendDataModel>('sendDataBox');
     await box.clear();
   }
 
-
   static void setToken(String? s) {
-      setString('token',s??'');
-      AppConstants.token=s??'';
-      debugPrint('Token has set');
+    setString('token', s ?? '');
+    AppConstants.token = s ?? '';
+    debugPrint('Token has set');
   }
 
   static GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -755,7 +778,9 @@ class DashboardHelpers {
   static void navigateToLogin(BuildContext context) {
     clearUser();
     Navigator.pushReplacement(
-        context, MaterialPageRoute(builder: (context) => LoginScreen()));
+      context,
+      MaterialPageRoute(builder: (context) => LoginScreen()),
+    );
   }
 
   static Future<void> saveUser(UserModel user) async {
@@ -795,7 +820,12 @@ class DashboardHelpers {
         final hour = int.parse(parts[0]);
         final minute = parts[1];
         final period = hour >= 12 ? 'PM' : 'AM';
-        final hour12 = hour > 12 ? hour - 12 : hour == 0 ? 12 : hour;
+        final hour12 =
+            hour > 12
+                ? hour - 12
+                : hour == 0
+                ? 12
+                : hour;
         return '$hour12:$minute $period';
       }
 
@@ -810,10 +840,8 @@ class DashboardHelpers {
     return size.width > size.height;
   }
 
-  static void removeString(String key) async{
-    SharedPreferences pref=await SharedPreferences.getInstance();
+  static void removeString(String key) async {
+    SharedPreferences pref = await SharedPreferences.getInstance();
     pref.remove(key);
   }
-
 }
-

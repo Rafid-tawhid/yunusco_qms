@@ -1,16 +1,17 @@
 class LunchTimeModel {
   LunchTimeModel({
-      String? lunchStartTime, 
-      String? lunchEndTime, 
-      num? sectionId, 
-      num? lunchTimeId, 
-      bool? isActive,}){
+    String? lunchStartTime,
+    String? lunchEndTime,
+    num? sectionId,
+    num? lunchTimeId,
+    bool? isActive,
+  }) {
     _lunchStartTime = lunchStartTime;
     _lunchEndTime = lunchEndTime;
     _sectionId = sectionId;
     _lunchTimeId = lunchTimeId;
     _isActive = isActive;
-}
+  }
 
   LunchTimeModel.fromJson(dynamic json) {
     _lunchStartTime = json['LunchStartTime'];
@@ -24,17 +25,19 @@ class LunchTimeModel {
   num? _sectionId;
   num? _lunchTimeId;
   bool? _isActive;
-LunchTimeModel copyWith({  String? lunchStartTime,
-  String? lunchEndTime,
-  num? sectionId,
-  num? lunchTimeId,
-  bool? isActive,
-}) => LunchTimeModel(  lunchStartTime: lunchStartTime ?? _lunchStartTime,
-  lunchEndTime: lunchEndTime ?? _lunchEndTime,
-  sectionId: sectionId ?? _sectionId,
-  lunchTimeId: lunchTimeId ?? _lunchTimeId,
-  isActive: isActive ?? _isActive,
-);
+  LunchTimeModel copyWith({
+    String? lunchStartTime,
+    String? lunchEndTime,
+    num? sectionId,
+    num? lunchTimeId,
+    bool? isActive,
+  }) => LunchTimeModel(
+    lunchStartTime: lunchStartTime ?? _lunchStartTime,
+    lunchEndTime: lunchEndTime ?? _lunchEndTime,
+    sectionId: sectionId ?? _sectionId,
+    lunchTimeId: lunchTimeId ?? _lunchTimeId,
+    isActive: isActive ?? _isActive,
+  );
   String? get lunchStartTime => _lunchStartTime;
   String? get lunchEndTime => _lunchEndTime;
   num? get sectionId => _sectionId;
@@ -50,5 +53,4 @@ LunchTimeModel copyWith({  String? lunchStartTime,
     map['IsActive'] = _isActive;
     return map;
   }
-
 }

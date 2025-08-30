@@ -4,7 +4,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:nidle_qty/login_screen.dart';
 import 'package:nidle_qty/models/checked_enum.dart';
 import 'package:nidle_qty/models/color_model.dart';
 import 'package:nidle_qty/models/size_model.dart';
@@ -68,13 +67,11 @@ class _QualityControlScreenState extends State<QualityControlScreen> with Widget
   void didChangeDependencies() {
     _countingProvider = Provider.of<CountingProvider>(context, listen: false);
     super.didChangeDependencies();
-
   }
-
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.paused||state==AppLifecycleState.detached) {
+    if (state == AppLifecycleState.paused || state == AppLifecycleState.detached) {
       debugPrint('App going to background -save data pausing timers');
       // App is going to background (minimized/switched away)
       saveData(Provider.of<CountingProvider>(context, listen: false));
@@ -196,16 +193,13 @@ class _QualityControlScreenState extends State<QualityControlScreen> with Widget
                                                 child: Row(
                                                   mainAxisAlignment: MainAxisAlignment.end,
                                                   children: [
-                                                    Consumer<CountingProvider>(builder: (context,pro,_)=>Text(pro.countdownValue.toString(),style: TextStyle(color: Colors.white),)),
-                                                    SizedBox(width: 8,),
+                                                    Consumer<CountingProvider>(builder: (context, pro, _) => Text(pro.countdownValue.toString(), style: TextStyle(color: Colors.white))),
+                                                    SizedBox(width: 8),
                                                     RectangleIconButton(
                                                       icon: Icons.message,
                                                       onPressed: () async {
                                                         //support message
-                                                        Navigator.push(
-                                                          context,
-                                                          MaterialPageRoute(builder: (context) => const SupportScreen()),
-                                                        );
+                                                        Navigator.push(context, MaterialPageRoute(builder: (context) => const SupportScreen()));
                                                       },
                                                       backgroundColor: myColors.blackSecond,
                                                       iconColor: Colors.white,
@@ -221,11 +215,11 @@ class _QualityControlScreenState extends State<QualityControlScreen> with Widget
                                                         var bp = context.read<BuyerProvider>();
                                                         //save before chart..
                                                         //june3
-                                                          EasyLoading.show(maskType: EasyLoadingMaskType.black);
-                                                          bool saved= await _countingProvider.saveFullDataPeriodically();
-                                                          //debugPrint('saved ${saved}');
-                                                          bool ok = await cp.getTodaysCountingData(bp);
-                                                          EasyLoading.dismiss();
+                                                        EasyLoading.show(maskType: EasyLoadingMaskType.black);
+                                                        bool saved = await _countingProvider.saveFullDataPeriodically();
+                                                        //debugPrint('saved ${saved}');
+                                                        bool ok = await cp.getTodaysCountingData(bp);
+                                                        EasyLoading.dismiss();
                                                         if (cp.totalCountingModel != null && ok && saved) {
                                                           Navigator.push(context, CupertinoPageRoute(builder: (context) => ProductionReportScreen(stats: cp.totalCountingModel!)));
                                                         }
@@ -289,20 +283,18 @@ class _QualityControlScreenState extends State<QualityControlScreen> with Widget
                                                         onPressed:
                                                             _selectColor != null && _selectSize != null
                                                                 ? () async {
+                                                                  //change in aug 30
 
-
-                                                                      //change in aug 16
-                                                                      pro.checkedItem();
-                                                                      var bp = context.read<BuyerProvider>();
-                                                                      if(pro.isFreezingWhileSave){
-                                                                        Future.delayed(Duration.zero,(){
-                                                                          pro.addDataToLocalList(bp, status: CheckedStatus.pass);
-                                                                        });
-                                                                      }
-                                                                      else {
-                                                                        await pro.addDataToLocalList(bp, status: CheckedStatus.pass);
-                                                                      }
-
+                                                                  var bp = context.read<BuyerProvider>();
+                                                                  if (pro.isFreezingWhileSave) {
+                                                                    Future.delayed(Duration.zero, () {
+                                                                      pro.addDataToLocalList(bp, status: CheckedStatus.pass);
+                                                                    });
+                                                                    pro.checkedItem();
+                                                                  } else {
+                                                                    await pro.addDataToLocalList(bp, status: CheckedStatus.pass);
+                                                                    pro.checkedItem();
+                                                                  }
                                                                 }
                                                                 : null,
                                                         child: Row(
@@ -448,11 +440,11 @@ class _QualityControlScreenState extends State<QualityControlScreen> with Widget
                                                   child: DualLineChart(
                                                     primaryValues: pro.todayDayPassList,
                                                     // First production line values
-                                                    secondaryValues:pro.yesterDayPassList,
+                                                    secondaryValues: pro.yesterDayPassList,
                                                     // Second production line values
                                                     primaryColor: Colors.orange,
                                                     secondaryColor: Colors.blue,
-                                                    labels: ['8am', '10am', '12pm', '2pm', '4pm','6pm','8pm'], // Day labels
+                                                    labels: ['8am', '10am', '12pm', '2pm', '4pm', '6pm', '8pm'], // Day labels
                                                   ),
                                                 ),
                                                 if (ccp.tempDefectList.isNotEmpty) OperationsListWidget(operations: ccp.tempDefectList),
@@ -509,21 +501,17 @@ class _QualityControlScreenState extends State<QualityControlScreen> with Widget
         var cp = context.read<CountingProvider>();
         var bp = context.read<BuyerProvider>();
 
-          var isNotGreaterThanAlter = await cp.checkedItemFromAlter();
-          if (isNotGreaterThanAlter) {
-            if(cp.isFreezingWhileSave){
-              Future.delayed(Duration.zero,() async {
-                await cp.addDataToLocalList(bp, status: CheckedStatus.alter_check);
-              });
-            }
-            else {
+        var isNotGreaterThanAlter = await cp.checkedItemFromAlter();
+        if (isNotGreaterThanAlter) {
+          if (cp.isFreezingWhileSave) {
+            Future.delayed(Duration.zero, () async {
               await cp.addDataToLocalList(bp, status: CheckedStatus.alter_check);
-            }
-            //save counting data locally
-
+            });
+          } else {
+            await cp.addDataToLocalList(bp, status: CheckedStatus.alter_check);
           }
-
-
+          //save counting data locally
+        }
       },
     );
   }
@@ -539,7 +527,7 @@ class _QualityControlScreenState extends State<QualityControlScreen> with Widget
 
   void startSchedulerCallToSaveData() async {
     var cp = context.read<CountingProvider>();
-   // var bp = context.read<BuyerProvider>();
+    // var bp = context.read<BuyerProvider>();
     cp.startPeriodicTask();
   }
 
@@ -592,7 +580,6 @@ class HeaderCountingInfo extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 8.0),
                 child: IconButton(
                   onPressed: () async {
-
                     // WidgetsBinding.instance.addPostFrameCallback((v){
                     //   //save data
                     //   var cp = context.read<CountingProvider>();

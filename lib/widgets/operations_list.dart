@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:nidle_qty/providers/buyer_provider.dart';
 import 'package:nidle_qty/providers/counting_provider.dart';
@@ -29,14 +28,21 @@ class _OperationListState extends State<OperationList> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 16.0,horizontal: 16),
+      padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 16),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('Select Operation:', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.grey[800])),
+              Text(
+                'Select Operation:',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                  color: Colors.grey[800],
+                ),
+              ),
               Icon(Icons.arrow_forward_rounded, color: myColors.primaryColor),
             ],
           ),
@@ -50,7 +56,10 @@ class _OperationListState extends State<OperationList> {
                 final isSelected = selectedIndex == index;
                 final operation = widget.items[index];
                 return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 4.0,vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 4.0,
+                    vertical: 4,
+                  ),
                   child: AnimatedContainer(
                     duration: const Duration(milliseconds: 200),
                     curve: Curves.easeInOut,
@@ -83,22 +92,33 @@ class _OperationListState extends State<OperationList> {
                             Positioned(
                               top: 8,
                               right: 12,
-                              child: isSelected? Icon(Icons.check_circle,color: Colors.deepOrange,size: 20,):SizedBox(),
+                              child:
+                                  isSelected
+                                      ? Icon(
+                                        Icons.check_circle,
+                                        color: Colors.deepOrange,
+                                        size: 20,
+                                      )
+                                      : SizedBox(),
                             ),
                             Container(
                               child: Center(
                                 child: Padding(
-                                  padding: const EdgeInsets.symmetric(vertical: 16.0),
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 16.0,
+                                  ),
                                   child: Text(
                                     operation.operationName ?? '',
                                     style: TextStyle(
                                       fontSize: 14,
-                                      fontWeight: isSelected
-                                          ? FontWeight.w600
-                                          : FontWeight.w500,
-                                      color: isSelected
-                                          ? Colors.orange[800]
-                                          : Colors.grey[800],
+                                      fontWeight:
+                                          isSelected
+                                              ? FontWeight.w600
+                                              : FontWeight.w500,
+                                      color:
+                                          isSelected
+                                              ? Colors.orange[800]
+                                              : Colors.grey[800],
                                     ),
                                     textAlign: TextAlign.center,
                                     maxLines: 1,
@@ -115,8 +135,7 @@ class _OperationListState extends State<OperationList> {
                 );
               },
             ),
-          )
-
+          ),
         ],
       ),
     );
@@ -125,16 +144,13 @@ class _OperationListState extends State<OperationList> {
   void getOperations() async {
     final cp = context.read<CountingProvider>();
     final bp = context.read<BuyerProvider>();
-    if(cp.allOperations.isEmpty){
+    if (cp.allOperations.isEmpty) {
       await cp.getAllOperations(buyerPo: bp.buyerPo!);
     }
     // Ensure first item remains selected after data loads
     if (widget.items.isNotEmpty && selectedIndex == null) {
       setState(() => selectedIndex = 0);
-     // cp.getDefectListByOperationId(widget.items[0].operationId.toString());
+      // cp.getDefectListByOperationId(widget.items[0].operationId.toString());
     }
   }
 }
-
-
-
