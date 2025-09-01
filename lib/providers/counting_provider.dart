@@ -352,68 +352,117 @@ class CountingProvider with ChangeNotifier {
   List<LocalSendDataModel> get testingreportDataList => _testingreportDataList;
   List<LocalSendDataModel> _testingreportDataList = [];
 
-  //changed june 24
+  //changed june 30
   //double data saved problem solved
   bool _isSaving = false;
 
   bool get isFreezingWhileSave => _isSaving;
 
   Future<bool> saveFullDataPeriodically() async {
-    // Return immediately if already saving
     if (_isSaving) {
-      debugPrint('Save operation already in progress');
+      debugPrint('Save already in progress. New items will be handled in next flush.');
       return false;
     }
 
+    _isSaving = true;
     try {
-      _isSaving = true;
-
-      if (_reportDataList.isNotEmpty) {
+      while (_reportDataList.isNotEmpty) {
         final bool isConnected =
-            await InternetConnectionChecker.instance.hasConnection;
+        await InternetConnectionChecker.instance.hasConnection;
 
-        // If connected, send data to the server
-        if (isConnected) {
-          //change .. add extra count value for no reason just to check
-
-          for (var item in _reportDataList) {
-            item["CountValue"] = _reportDataList.length;
-          }
-
-          //
-
-          final apiResponse = await apiService.postData(
-            'api/qms/SaveQms',
-            _reportDataList,
-          );
-          debugPrint('Saved list length : ${_reportDataList.length}');
-
-          if (apiResponse != null) {
-            _reportDataList.clear();
-
-            notifyListeners();
-            debugPrint('Data saved successfully & cleared');
-            return true; // Success
-          } else {
-            debugPrint('API request failed (null response)');
-            return false; // Failed
-          }
-        } else {
-          debugPrint('No internet connection');
-          return false; // Failed
+        if (!isConnected) {
+          debugPrint('No internet connection. Keep data locally.');
+          return false;
         }
-      } else {
-        debugPrint('No data found in _reportDataList');
-        return true; // No data to save
+
+        // Make a snapshot of current data (so new arrivals are safe in _reportDataList)
+        final List<Map<String, dynamic>> snapshot =
+        List<Map<String, dynamic>>.from(_reportDataList);
+
+        debugPrint('Trying to sync ${snapshot.length} items...');
+
+        final apiResponse = await apiService.postData(
+          'api/qms/SaveQms',
+          snapshot,
+        );
+
+        if (apiResponse != null) {
+          // Remove only the items we successfully synced
+          _reportDataList.removeRange(0, snapshot.length);
+          notifyListeners();
+          debugPrint('Synced ${snapshot.length} items. Remaining: ${_reportDataList.length}');
+        } else {
+          debugPrint('API failed. Keeping data for retry.');
+          return false;
+        }
       }
+      return true;
     } catch (e) {
       debugPrint('Error in saveFullDataPeriodically(): $e');
-      return false; // Exception occurred
+      return false;
     } finally {
       _isSaving = false;
       notifyListeners();
     }
   }
+
+
+  // Future<bool> saveFullDataPeriodically() async {
+  //   // Return immediately if already saving
+  //   if (_isSaving) {
+  //     debugPrint('Save operation already in progress');
+  //     return false;
+  //   }
+  //
+  //   try {
+  //     _isSaving = true;
+  //
+  //     if (_reportDataList.isNotEmpty) {
+  //       final bool isConnected =
+  //           await InternetConnectionChecker.instance.hasConnection;
+  //
+  //       // If connected, send data to the server
+  //       if (isConnected) {
+  //         //change .. add extra count value for no reason just to check
+  //
+  //         for (var item in _reportDataList) {
+  //           item["CountValue"] = _reportDataList.length;
+  //         }
+  //
+  //         //
+  //
+  //         final apiResponse = await apiService.postData(
+  //           'api/qms/SaveQms',
+  //           _reportDataList,
+  //         );
+  //         debugPrint('Saved list length : ${_reportDataList.length}');
+  //
+  //         if (apiResponse != null) {
+  //           _reportDataList.clear();
+  //
+  //           notifyListeners();
+  //           debugPrint('Data saved successfully & cleared');
+  //           return true; // Success
+  //         } else {
+  //           debugPrint('API request failed (null response)');
+  //           return false; // Failed
+  //         }
+  //       } else {
+  //         debugPrint('No internet connection');
+  //         return false; // Failed
+  //       }
+  //     } else {
+  //       debugPrint('No data found in _reportDataList');
+  //       return true; // No data to save
+  //     }
+  //   } catch (e) {
+  //     debugPrint('Error in saveFullDataPeriodically(): $e');
+  //     return false; // Exception occurred
+  //   } finally {
+  //     _isSaving = false;
+  //     notifyListeners();
+  //   }
+  // }
 
   //change new aug 27
 

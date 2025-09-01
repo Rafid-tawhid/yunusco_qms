@@ -211,18 +211,38 @@ class _QualityControlScreenState extends State<QualityControlScreen> with Widget
                                                     RectangleIconButton(
                                                       icon: Icons.add_chart_outlined,
                                                       onPressed: () async {
-                                                        var cp = context.read<CountingProvider>();
-                                                        var bp = context.read<BuyerProvider>();
-                                                        //save before chart..
-                                                        //june3
-                                                        EasyLoading.show(maskType: EasyLoadingMaskType.black);
-                                                        bool saved = await _countingProvider.saveFullDataPeriodically();
-                                                        //debugPrint('saved ${saved}');
-                                                        bool ok = await cp.getTodaysCountingData(bp);
-                                                        EasyLoading.dismiss();
-                                                        if (cp.totalCountingModel != null && ok && saved) {
-                                                          Navigator.push(context, CupertinoPageRoute(builder: (context) => ProductionReportScreen(stats: cp.totalCountingModel!)));
+                                                        final cp = context.read<CountingProvider>();
+                                                        final bp = context.read<BuyerProvider>();
+
+                                                        try {
+                                                          EasyLoading.show(status: "Saving data...", maskType: EasyLoadingMaskType.black);
+
+                                                          final saved = await cp.saveFullDataPeriodically();
+                                                          if (saved) {
+                                                            final gotData = await cp.getTodaysCountingData(bp);
+
+                                                            if (gotData && cp.totalCountingModel != null) {
+                                                              // Dismiss loader *before* navigating
+                                                              EasyLoading.dismiss();
+
+                                                              Navigator.push(
+                                                                context,
+                                                                CupertinoPageRoute(
+                                                                  builder: (context) => ProductionReportScreen(stats: cp.totalCountingModel!),
+                                                                ),
+                                                              );
+                                                              return; // exit early so we don’t dismiss again
+                                                            }
+                                                          }
+
+                                                          // If we reach here, either saving or data fetch failed
+                                                          EasyLoading.showError("Failed to save or fetch data");
+                                                        } catch (e) {
+                                                          EasyLoading.showError("Unexpected error: $e");
+                                                        } finally {
+                                                          EasyLoading.dismiss();
                                                         }
+
                                                       },
                                                       backgroundColor: myColors.blackSecond,
                                                       iconColor: Colors.white,
@@ -286,15 +306,8 @@ class _QualityControlScreenState extends State<QualityControlScreen> with Widget
                                                                   //change in aug 30
 
                                                                   var bp = context.read<BuyerProvider>();
-                                                                  if (pro.isFreezingWhileSave) {
-                                                                    Future.delayed(Duration.zero, () {
-                                                                      pro.addDataToLocalList(bp, status: CheckedStatus.pass);
-                                                                    });
-                                                                    pro.checkedItem();
-                                                                  } else {
-                                                                    await pro.addDataToLocalList(bp, status: CheckedStatus.pass);
-                                                                    pro.checkedItem();
-                                                                  }
+                                                                  pro.addDataToLocalList(bp, status: CheckedStatus.pass);
+                                                                  pro.checkedItem();
                                                                 }
                                                                 : null,
                                                         child: Row(
@@ -503,13 +516,7 @@ class _QualityControlScreenState extends State<QualityControlScreen> with Widget
 
         var isNotGreaterThanAlter = await cp.checkedItemFromAlter();
         if (isNotGreaterThanAlter) {
-          if (cp.isFreezingWhileSave) {
-            Future.delayed(Duration.zero, () async {
-              await cp.addDataToLocalList(bp, status: CheckedStatus.alter_check);
-            });
-          } else {
-            await cp.addDataToLocalList(bp, status: CheckedStatus.alter_check);
-          }
+          await cp.addDataToLocalList(bp, status: CheckedStatus.alter_check);
           //save counting data locally
         }
       },
