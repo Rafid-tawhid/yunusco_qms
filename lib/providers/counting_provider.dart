@@ -888,4 +888,36 @@ class CountingProvider with ChangeNotifier {
       notifyListeners();
     }
   }
+
+
+  //new
+  // final List<Map<String, dynamic>> _sectionWiseDhu = [];
+  // List<Map<String, dynamic>> get sectionWiseDhu => _sectionWiseDhu;
+  //
+  // final List<Map<String, dynamic>> _lineWiseDHU = [];
+  // List<Map<String, dynamic>> get lineWiseDHU => _lineWiseDHU;
+  // String _totalDhu='';
+  // String get totalDhu=>_totalDhu;
+  //
+  // Future<void> getAllDhuInfo(DateTime dateTime) async {
+  //   var dateFormat = DashboardHelpers.convertDateTime2(dateTime);
+  //   debugPrint('dateFormat $dateFormat');
+  //   var data = await apiService.getData('api/QMS/GetDHU?qmsDate=$dateFormat');
+  //   if (data != null) {
+  //     _sectionWiseDhu.clear();
+  //     _lineWiseDHU.clear();
+  //     for (var i in data['Data']['SectionWiseDHU']) {
+  //       _sectionWiseDhu.add(i);
+  //     }
+  //     for (var i in data['Data']['LineWiseDHU']) {
+  //       _lineWiseDHU.add(i);
+  //     }
+  //     _totalDhu=data['Data']['TotalDHU']['TotalDHU'].toString();
+  //
+  //     debugPrint('_sectionWiseDhu ${_sectionWiseDhu.length}');
+  //     debugPrint('_lineWiseDHU ${_lineWiseDHU.length}');
+  //     debugPrint('_totalDhu $_totalDhu');
+  //   }
+  //   notifyListeners();
+  // }
 }
