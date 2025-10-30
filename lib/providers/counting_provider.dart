@@ -77,9 +77,7 @@ class CountingProvider with ChangeNotifier {
   Future<void> getAllOperations({required PoModels buyerPo}) async {
     //5PK MF MINI FASH- 1217406
     // var result = await apiService.getData('api/qms/GetOperations/${buyerPo.itemId}');
-    var result = await apiService.getData(
-      'api/qms/GetOperations/${buyerPo.style}',
-    );
+    var result = await apiService.getData('api/qms/GetOperations/${buyerPo.style}');
     if (result != null) {
       _allOperations.clear();
       for (var i in result['Results']) {
@@ -175,11 +173,7 @@ class CountingProvider with ChangeNotifier {
       final currentTime = DateTime.now();
 
       // Compare only the time components
-      _isLunchTime =
-          (currentTime.isAfter(lunchStart) ||
-              currentTime.isAtSameMomentAs(lunchStart)) &&
-          (currentTime.isBefore(lunchEnd) ||
-              currentTime.isAtSameMomentAs(lunchEnd));
+      _isLunchTime = (currentTime.isAfter(lunchStart) || currentTime.isAtSameMomentAs(lunchStart)) && (currentTime.isBefore(lunchEnd) || currentTime.isAtSameMomentAs(lunchEnd));
       notifyListeners();
       return _isLunchTime;
     } catch (e) {
@@ -312,14 +306,11 @@ class CountingProvider with ChangeNotifier {
 
   void setDefectReasons(List<String> selectedReasons) {
     // Check if an operation with this ID already exists
-    final existingIndex = finalOperationDefectList.indexWhere(
-      (item) => item["id"] == operation!.operationId,
-    );
+    final existingIndex = finalOperationDefectList.indexWhere((item) => item["id"] == operation!.operationId);
 
     if (existingIndex >= 0) {
       // Operation exists - update its defects
-      final existingDefects =
-          finalOperationDefectList[existingIndex]["defects"] as List<String>;
+      final existingDefects = finalOperationDefectList[existingIndex]["defects"] as List<String>;
 
       // Add new defects that aren't already present (avoid duplicates)
       for (final reason in selectedReasons) {
@@ -329,18 +320,10 @@ class CountingProvider with ChangeNotifier {
       }
 
       // Update the entry
-      finalOperationDefectList[existingIndex] = {
-        "id": operation!.operationId,
-        "operation": operation!.operationName,
-        "defects": existingDefects,
-      };
+      finalOperationDefectList[existingIndex] = {"id": operation!.operationId, "operation": operation!.operationName, "defects": existingDefects};
     } else {
       // Operation doesn't exist - add new entry
-      finalOperationDefectList.add({
-        "id": operation!.operationId,
-        "operation": operation!.operationName,
-        "defects": selectedReasons,
-      });
+      finalOperationDefectList.add({"id": operation!.operationId, "operation": operation!.operationName, "defects": selectedReasons});
     }
 
     debugPrint('finalOperationDefectList $finalOperationDefectList');
@@ -367,8 +350,7 @@ class CountingProvider with ChangeNotifier {
     _isSaving = true;
     try {
       while (_reportDataList.isNotEmpty) {
-        final bool isConnected =
-        await InternetConnectionChecker.instance.hasConnection;
+        final bool isConnected = await InternetConnectionChecker.instance.hasConnection;
 
         if (!isConnected) {
           debugPrint('No internet connection. Keep data locally.');
@@ -376,15 +358,14 @@ class CountingProvider with ChangeNotifier {
         }
 
         // Make a snapshot of current data (so new arrivals are safe in _reportDataList)
-        final List<Map<String, dynamic>> snapshot =
-        List<Map<String, dynamic>>.from(_reportDataList);
+        final List<Map<String, dynamic>> snapshot = List<Map<String, dynamic>>.from(_reportDataList);
 
         debugPrint('Trying to sync ${snapshot.length} items...');
+        for (var item in snapshot) {
+          item["CountValue"] = snapshot.length;
+        }
 
-        final apiResponse = await apiService.postData(
-          'api/qms/SaveQms',
-          snapshot,
-        );
+        final apiResponse = await apiService.postData('api/qms/SaveQms', snapshot);
 
         if (apiResponse != null) {
           // Remove only the items we successfully synced
@@ -405,7 +386,6 @@ class CountingProvider with ChangeNotifier {
       notifyListeners();
     }
   }
-
 
   // Future<bool> saveFullDataPeriodically() async {
   //   // Return immediately if already saving
@@ -466,11 +446,7 @@ class CountingProvider with ChangeNotifier {
 
   //change new aug 27
 
-  Future<void> addDataToLocalList(
-    BuyerProvider bp, {
-    required String status,
-    dynamic info,
-  }) async {
+  Future<void> addDataToLocalList(BuyerProvider bp, {required String status, dynamic info}) async {
     final secId = await DashboardHelpers.getString('selectedSectionId');
     final line = await DashboardHelpers.getString('selectedLineId');
 
@@ -492,19 +468,15 @@ class CountingProvider with ChangeNotifier {
       "Status": status,
       "ColorId": bp.color!.colorId,
       "SizeId": bp.size!.sizeId,
-      "OperationDetailsId":
-          '${checkForPassOrAlterCheck(status) ? 0 : info!['operationDetailsId']}',
-      "OperationId":
-          '${checkForPassOrAlterCheck(status) ? 0 : info!['operationId']}',
+      "OperationDetailsId": '${checkForPassOrAlterCheck(status) ? 0 : info!['operationDetailsId']}',
+      "OperationId": '${checkForPassOrAlterCheck(status) ? 0 : info!['operationId']}',
       "DefectId": '${checkForPassOrAlterCheck(status) ? 0 : info!['defectId']}',
       "Quantity": 1,
       "CreatedDate": uniqueCreatedDate,
     };
 
     if (info != null) {
-      debugPrint(
-        'Coming from alter or reject.. :: operation Id : ${info['operationId']} and defect ID : ${info['defectId']}',
-      );
+      debugPrint('Coming from alter or reject.. :: operation Id : ${info['operationId']} and defect ID : ${info['defectId']}');
     }
 
     // Add data directly (no duplicate check)
@@ -512,9 +484,7 @@ class CountingProvider with ChangeNotifier {
     debugPrint('_reportDataList local saved list : ${_reportDataList.length}');
 
     // Save local data for testing
-    await HiveLocalSendDataService.saveLocalSendData(
-      LocalSendDataModel.fromJson(sendingData),
-    );
+    await HiveLocalSendDataService.saveLocalSendData(LocalSendDataModel.fromJson(sendingData));
 
     // SAVE COUNTER DATA TO LOCAL DATABASE
     final sendData = SendDataModel(
@@ -617,20 +587,13 @@ class CountingProvider with ChangeNotifier {
     final line = await DashboardHelpers.getString('selectedLineId');
 
     //api/qms/GetQmsSummery
-    var data = await apiService.postData('api/qms/GetQmsSummery', {
-      "LineId": line,
-      "BuyerId": bp.buyerInfo!.code.toString(),
-      "Style": bp.buyerStyle!.style.toString(),
-      "Po": bp.buyerPo!.po,
-    });
+    var data = await apiService.postData('api/qms/GetQmsSummery', {"LineId": line, "BuyerId": bp.buyerInfo!.code.toString(), "Style": bp.buyerStyle!.style.toString(), "Po": bp.buyerPo!.po});
     if (data != null) {
       _totalCountingModel = TotalCountingModel.fromJson(data['Results'][0]);
       //changed today june 3
       //sync data auto
       if (_totalCountingModel != null) {
-        checked =
-            _totalCountingModel!.totalPass!.toInt() +
-            _totalCountingModel!.totalAlterCheck!.toInt();
+        checked = _totalCountingModel!.totalPass!.toInt() + _totalCountingModel!.totalAlterCheck!.toInt();
         alter = _totalCountingModel!.totalAlter!.toInt();
         alter_check = _totalCountingModel!.totalAlterCheck!.toInt();
         reject = _totalCountingModel!.totalReject!.toInt();
@@ -645,8 +608,7 @@ class CountingProvider with ChangeNotifier {
   }
 
   List<HourlyProductionDataModel> _all_hourly_production_List = [];
-  List<HourlyProductionDataModel> get all_hourly_production_List =>
-      _all_hourly_production_List;
+  List<HourlyProductionDataModel> get all_hourly_production_List => _all_hourly_production_List;
 
   Future<bool> getTodaysCountingDataHourDetails(BuyerProvider bp) async {
     //  final secId = await DashboardHelpers.getString('selectedSectionId');
@@ -658,9 +620,7 @@ class CountingProvider with ChangeNotifier {
       for (var i in data['Results']) {
         _all_hourly_production_List.add(HourlyProductionDataModel.fromJson(i));
       }
-      debugPrint(
-        '_all_hourly_production_List ${_all_hourly_production_List.length}',
-      );
+      debugPrint('_all_hourly_production_List ${_all_hourly_production_List.length}');
       notifyListeners();
       return true;
     } else {
@@ -681,10 +641,7 @@ class CountingProvider with ChangeNotifier {
     }
 
     // Check if item already exists
-    final existingItem = _tempDefectList.firstWhere(
-      (e) => e['item'] == newItem,
-      orElse: () => {},
-    );
+    final existingItem = _tempDefectList.firstWhere((e) => e['item'] == newItem, orElse: () => {});
 
     if (existingItem.isNotEmpty) {
       // Increment count if item exists
@@ -741,9 +698,7 @@ class CountingProvider with ChangeNotifier {
       final lunchStart = DateTime.parse("$todayDate $startTimeStr");
       final lunchEnd = DateTime.parse("$todayDate $endTimeStr");
 
-      final newStatus =
-          (now.isAfter(lunchStart) || now.isAtSameMomentAs(lunchStart)) &&
-          (now.isBefore(lunchEnd) || now.isAtSameMomentAs(lunchEnd));
+      final newStatus = (now.isAfter(lunchStart) || now.isAtSameMomentAs(lunchStart)) && (now.isBefore(lunchEnd) || now.isAtSameMomentAs(lunchEnd));
 
       if (newStatus != _isLunchTime) {
         _isLunchTime = newStatus;
@@ -759,15 +714,12 @@ class CountingProvider with ChangeNotifier {
   }
 
   List<HourlyProductionDataModel> _hourly_production_List = [];
-  List<HourlyProductionDataModel> get hourly_production_List =>
-      _hourly_production_List;
+  List<HourlyProductionDataModel> get hourly_production_List => _hourly_production_List;
 
   Future<void> getHourlyProductionData(String date) async {
     var lineId = await DashboardHelpers.getString('selectedLineId');
     debugPrint('Line ID  ${lineId}');
-    var data = await apiService.getData(
-      'api/Qms/QualityCheckSummary?LineNo=${lineId}&FilterDate=${date}',
-    );
+    var data = await apiService.getData('api/Qms/QualityCheckSummary?LineNo=${lineId}&FilterDate=${date}');
     if (data != null) {
       _hourly_production_List.clear();
       for (var i in data['Results']) {
@@ -790,9 +742,7 @@ class CountingProvider with ChangeNotifier {
   Future<void> getHourlyOperationDefects(String formattedDate) async {
     var lineId = await DashboardHelpers.getString('selectedLineId');
     debugPrint('Line ID  ${lineId}');
-    var data = await apiService.getData(
-      'api/Qms/DefectSummary?LineNo=${lineId}&FilterDate=$formattedDate',
-    );
+    var data = await apiService.getData('api/Qms/DefectSummary?LineNo=${lineId}&FilterDate=$formattedDate');
     if (data != null) {
       _operation_defect.clear();
       for (var i in data['Results']) {
@@ -805,14 +755,8 @@ class CountingProvider with ChangeNotifier {
 
   List<DifferenceCountModel> _difference_list = [];
   List<DifferenceCountModel> get difference_list => _difference_list;
-  List<double> _yesterDayPassList = List.generate(
-    8,
-    (index) => Random().nextDouble() * 80,
-  );
-  List<double> _todayDayPassList = List.generate(
-    8,
-    (index) => Random().nextDouble() * 80,
-  );
+  List<double> _yesterDayPassList = List.generate(8, (index) => Random().nextDouble() * 80);
+  List<double> _todayDayPassList = List.generate(8, (index) => Random().nextDouble() * 80);
   List<double> get yesterDayPassList => _yesterDayPassList;
   List<double> get todayDayPassList => _todayDayPassList;
 
@@ -824,9 +768,7 @@ class CountingProvider with ChangeNotifier {
         return;
       }
 
-      var data = await apiService.getData(
-        'api/Qms/QualityCheckComprasionByLine?LineNo=$lineId&FilterDate=$formattedDate',
-      );
+      var data = await apiService.getData('api/Qms/QualityCheckComprasionByLine?LineNo=$lineId&FilterDate=$formattedDate');
 
       // Clear lists before processing new data
       _difference_list.clear();
@@ -871,9 +813,7 @@ class CountingProvider with ChangeNotifier {
         _todayDayPassList.addAll(List.filled(8 - _todayDayPassList.length, 0));
       }
       if (_yesterDayPassList.length < 8) {
-        _yesterDayPassList.addAll(
-          List.filled(8 - _yesterDayPassList.length, 0),
-        );
+        _yesterDayPassList.addAll(List.filled(8 - _yesterDayPassList.length, 0));
       }
 
       notifyListeners();
@@ -888,7 +828,6 @@ class CountingProvider with ChangeNotifier {
       notifyListeners();
     }
   }
-
 
   //new
   // final List<Map<String, dynamic>> _sectionWiseDhu = [];
