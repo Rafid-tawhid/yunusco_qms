@@ -22,7 +22,7 @@ class ApiService {
       // Perform the GET request
       final response = await client
           .get(Uri.parse('$baseUrl$endpoint'))
-          .timeout(const Duration(seconds: 10));
+          .timeout(const Duration(seconds: 20));
       // Handle response based on status code
       if (response.statusCode == 200) {
         // Parse the response body
@@ -53,7 +53,7 @@ class ApiService {
       // Perform the GET request
       final response = await client
           .get(Uri.parse('$endpoint'))
-          .timeout(const Duration(seconds: 10));
+          .timeout(const Duration(seconds: 20));
 
       // Handle response based on status code
       if (response.statusCode == 200) {
@@ -95,7 +95,7 @@ class ApiService {
             },
             body: jsonEncode(body),
           )
-          .timeout(const Duration(seconds: 10));
+          .timeout(const Duration(seconds: 20));
 
       // Handle response based on status code
       if (response.statusCode == 200 || response.statusCode == 201) {
@@ -137,7 +137,7 @@ class ApiService {
             },
             body: jsonEncode(body),
           )
-          .timeout(const Duration(seconds: 10));
+          .timeout(const Duration(seconds: 20));
 
       // Handle response based on status code
       if (response.statusCode == 200 || response.statusCode == 201) {
