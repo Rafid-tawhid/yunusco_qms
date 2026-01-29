@@ -10,19 +10,8 @@ import 'package:nidle_qty/service_class/api_services.dart';
 import 'package:nidle_qty/utils/dashboard_helpers.dart';
 
 class NotificationServices {
-  // static Future<AccessToken> getFirebaseBearerToken() async {
-  //   final accountCredentials = ServiceAccountCredentials.fromJson(
-  //       json.decode(await rootBundle.loadString('images/utils/server_key.json')));
-  //
-  //   final scopes = ['https://www.googleapis.com/auth/firebase.messaging'];
-  //
-  //   final client = await clientViaServiceAccount(accountCredentials, scopes);
-  //
-  //   final token = await client.credentials.accessToken;
-  //   client.close();
-  //
-  //   return token;
-  // }
+
+
 
   static Future<void> setupPushNotifications(BuildContext context) async {
     try {

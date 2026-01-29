@@ -792,7 +792,6 @@ class CountingProvider with ChangeNotifier {
         try {
           var model = DifferenceCountModel.fromJson(item);
           _difference_list.add(model);
-
           // Safely parse todayPass and yesterdayPass (fallback to 0 if null)
           _todayDayPassList.add((model.todayPass ?? 0).toDouble());
           _yesterDayPassList.add((model.yesterdayPass ?? 0).toDouble());

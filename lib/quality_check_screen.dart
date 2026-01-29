@@ -4,12 +4,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:nidle_qty/login_screen.dart';
 import 'package:nidle_qty/models/checked_enum.dart';
 import 'package:nidle_qty/models/color_model.dart';
 import 'package:nidle_qty/models/size_model.dart';
 import 'package:nidle_qty/providers/buyer_provider.dart';
 import 'package:nidle_qty/providers/counting_provider.dart';
 import 'package:nidle_qty/quality_report_screen.dart';
+import 'package:nidle_qty/service_class/api_services.dart';
 import 'package:nidle_qty/utils/constants.dart';
 import 'package:nidle_qty/utils/dashboard_helpers.dart';
 import 'package:nidle_qty/widgets/alter_check.dart';
@@ -52,10 +54,12 @@ class _QualityControlScreenState extends State<QualityControlScreen> with Widget
       startSchedulerCallToSaveData();
       checkIfThereIsAnyDefectList();
     });
+    WidgetsBinding.instance.addObserver(this);
   }
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     saveData(_countingProvider);
     WidgetsBinding.instance.removeObserver(this);
     endSchedularSaveData(_countingProvider);
@@ -69,15 +73,24 @@ class _QualityControlScreenState extends State<QualityControlScreen> with Widget
     super.didChangeDependencies();
   }
 
+
+
+
+  //this is changed for automatic logout each time check in jan 29 2026
   @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
+  Future<void> didChangeAppLifecycleState(AppLifecycleState state) async {
     if (state == AppLifecycleState.paused || state == AppLifecycleState.detached) {
       debugPrint('App going to background -save data pausing timers');
       // App is going to background (minimized/switched away)
       saveData(Provider.of<CountingProvider>(context, listen: false));
     }
     if (state == AppLifecycleState.resumed) {
-      //onAppOpened(); // Called every time the app is entered from anywhere
+      ApiService().getData('api/qms/GetSections').then((response){
+        if(response==null){
+          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>LoginScreen()));
+        }
+      });
+
     }
   }
 
